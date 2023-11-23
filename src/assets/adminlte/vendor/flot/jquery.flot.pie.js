@@ -32,7 +32,7 @@ The plugin supports these options:
 			},
 			label: {
 				show: true/false, or 'auto'
-				formatter:  a user-defined function that modifies the text/style of the label text
+				formatter:  a order-defined function that modifies the text/style of the label text
 				radius: 0-1 for percentage of fullsize, or a specified pixel length
 				background: {
 					color: any hexidecimal color value (other formats may or may not work, so best to stick with something like '#000')
@@ -179,7 +179,7 @@ More detail and specific examples can be found in the included HTML file.
 
 				// Note how we use the original array, rather than creating a
 				// new one; this is more efficient and preserves any extra data
-				// that the user may have stored in higher indexes.
+				// that the order may have stored in higher indexes.
 
 				if ($.isArray(value) && value.length == 1) {
     				value = value[0];

@@ -5,13 +5,21 @@ import {Carousel, Navigation, Slide} from 'vue3-carousel'
 import {useToast} from "vue-toastification";
 import {Form, Field} from 'vee-validate';
 import * as Yup from 'yup';
+import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 
 export default {
   name: "ProductDetails",
-  components: {Navigation, LayoutView, Carousel, Slide, Form, Field},
-  created() {
+  components: {ModalAddToCart, Navigation, LayoutView, Carousel, Slide, Form, Field},
 
+  watch: {
+    "$route.params"(){
+      this.id = this.$route.params.id;
+      this.slug = this.$route.params.slug;
+      this.fetchData()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   },
+
   setup() {
     const toast = useToast();
     return {toast}
@@ -23,12 +31,14 @@ export default {
           .typeError("Không đúng định dạng.")
           .positive("Số lượng phải dương")
           .min(1, "Số lượng phải lớn hơn 0")
-          .max(20, "Số lượng phải nhỏ hơn 10")
+          .max(10, "Số lượng phải nhỏ hơn 10")
 
     })
     return {
       schemaQuantity,
       currentSlide: 0,
+
+      productId: null,
 
       id: null,
       slug: null,
@@ -69,14 +79,13 @@ export default {
 
   computed: {
     filteredSizes() {
-      let sizesFiltered = this.sizesVN.map(sizeVN => {
+      return this.sizesVN.map(sizeVN => {
         const outStock = !this.sizesProduct.includes(sizeVN);
         return {
           size: sizeVN,
           outStock: outStock
         };
       });
-      return sizesFiltered;
     },
   },
 
@@ -111,6 +120,7 @@ export default {
 
       await axios.get(`http://localhost:3030/api/product/related-products/${this.id}`).then(res => {
         this.relatedProducts = res.data
+        console.log(res.data)
       }).catch(err => {
         console.log(err)
       })
@@ -139,10 +149,14 @@ export default {
 
       localStorage.setItem('cartList', JSON.stringify(cartList));
       this.toast.success("Đã thêm vào giỏ hàng.")
+      setTimeout(() => {
+        this.$router.push("/cart")
+      },1000)
     },
   },
 
   mounted() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     this.id = this.$route.params.id;
     this.slug = this.$route.params.slug;
     this.fetchData();
@@ -389,7 +403,8 @@ export default {
                                  alt="image description">
                             <img v-else src="http://placehold.it/275x285" alt="image description">
                             <ul class="links add">
-                              <li><a href="#"><i class="icon-handbag"></i></a></li>
+                              <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
+                                     data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
                               <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
                               <li>
                                 <router-link
@@ -427,6 +442,7 @@ export default {
         </div>
       </div>
     </main>
+    <div><ModalAddToCart :id="productId"/></div>
   </LayoutView>
 </template>
 

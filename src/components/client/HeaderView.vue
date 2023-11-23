@@ -1,35 +1,188 @@
 <script>
-import TopBar from "@/components/client/TopBar.vue";
-// import axios from "axios";
-import {Form} from 'vee-validate';
+import axios from "axios";
+import {Field, Form} from 'vee-validate';
+import * as Yup from 'yup';
+import {useToast} from "vue-toastification";
+import jwtDecode from "jwt-decode";
 
 export default {
   name: "HeaderView",
-  components: {TopBar, Form},
-  props: ["cartList"],
+  components: {Form, Field},
+  props: ['countCartItem'],
+  setup() {
+    const toast = useToast();
+    return {toast}
+  },
   data() {
+    const schemaLogin = Yup.object().shape({
+      email: Yup.string().required("Email khônng được trống.")
+          .email("Sai định dạng email."),
+      password: Yup.string().required("Mật khẩu không được trống."),
+    })
+    const schemaSignup = Yup.object().shape({
+      fullName: Yup.string().required("Họ và tên không được trống."),
+      emailSignup: Yup.string().required("Email không được trống.")
+          .email("Sai định dạng email."),
+      passwordSignup: Yup.string().required("Mật khẩu không được trống.")
+          .min(6, "Mật khẩu phải có ít nhất 6 ký tự.")
+          .max(50, "Mật khẩu tối đa 50 ký tự.."),
+      confirmPassword: Yup.string().required("Mật khẩu không được trống.")
+          .oneOf([Yup.ref('passwordSignup'), null], 'Hai mật khẩu không giống nhau.'),
+
+    })
     return {
-    banner: "https://images.pexels.com/photos/4225393/pexels-photo-4225393.jpeg?auto=compress&cs=tinysrgb&w=600",
-    // banner: "https://images.pexels.com/photos/5785308/pexels-photo-5785308.jpeg?auto=compress&cs=tinysrgb&w=600",
+      schemaLogin,
+      schemaSignup,
+      emailToken: null,
+      token: null,
+      user: null,
+
+      email: null,
+      password: null,
+
+      fullName: null,
+      emailSignup: null,
+      passwordSignup: null,
+      confirmPassword: null,
+
+      banner: "https://images.pexels.com/photos/4225393/pexels-photo-4225393.jpeg?auto=compress&cs=tinysrgb&w=600",
       keyword: null,
     }
   },
 
   methods: {
-     handleSearch() {
-      this.$router.push({name: "SearchProducts", query: {keyword: this.keyword}})
-       console.log(this.keyword)
-       this.$refs.closeSearch.click()
+    async login() {
+      const body = {
+        email: this.email,
+        password: this.password
+      }
+
+      await axios({
+        method: "POST",
+        url: 'http://localhost:3030/api/login',
+        data: body
+      }).then(async res => {
+        this.toast.success("Đăng nhập thành công.")
+        const token = res.data
+        this.token = token
+        this.emailToken = this.email
+        try {
+          this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
+          await this.getUser()
+        } catch (err) {
+          console.log(err)
+        }
+        this.$router.push("/")
+        // this.$router.back()
+        this.$refs.closeSidebar.click()
+      }).catch(err => {
+        this.toast.error(err.response.data.message)
+        console.log(err)
+      })
     },
+
+    async signup() {
+      const body = {
+        fullName: this.fullName,
+        email: this.emailSignup,
+        password: this.passwordSignup,
+      }
+      await axios({
+        method: "POST",
+        url: "http://localhost:3030/api/register",
+        data: body,
+      }).then(res => {
+        this.toast.success("Đăng ký thành công.")
+        const token = res.data
+        this.token = token
+        this.emailToken = this.emailSignup
+        try {
+          this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
+          this.getUser()
+        } catch (err) {
+          console.log(err)
+        }
+        // this.$router.back()
+        this.$router.push("/")
+        this.$refs.closeSidebar.click()
+      }).catch(err => {
+        this.toast.error(err.response.data.message)
+        console.log(err)
+      })
+    },
+
+    handleSearch() {
+      this.$router.push({name: "SearchProducts", query: {keyword: this.keyword}})
+      console.log(this.keyword)
+      this.$refs.closeSearch.click()
+    },
+
+    // Giải mã JWT token sang object User
+    decodeJwt() {
+      // JWT token to be decoded
+      const token = this.$cookies.get("JWT_TOKEN"); // Replace with your JWT token
+      if (token) {
+        try {
+          this.token = token
+          // Decode the JWT
+          const decodedToken = jwtDecode(token);
+          this.emailToken = decodedToken.sub;
+          this.getUser()
+          // You can access the decoded claims in the `decodedToken` object
+          // console.log('Decoded JWT Claims:', decodedToken);
+        } catch (error) {
+          // Handle any errors (e.g., invalid JWT format)
+          console.error('JWT Decoding Error:', error);
+        }
+      }
+    },
+
+    signout() {
+      this.$cookies.remove('JWT_TOKEN')
+      this.token = null
+      this.user = null
+      this.emailToken = null
+      this.$router.push("/")
+    },
+
+    async getUser() {
+      if (this.emailToken) {
+        await axios.get(`http://localhost:3030/user/${this.emailToken}`).then(res => {
+          this.user = res.data
+          console.log(this.user)
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    },
+
   },
   mounted() {
-    // console.log(this.cartList)
+    this.decodeJwt()
   }
 }
 </script>
 
 <template>
-    <TopBar/>
+  <div class="mt-top-bar">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 hidden-xs">
+          <span class="tel"> <i class="fa fa-phone" aria-hidden="true"></i> +84 113 113 113</span>
+          <a href="#" class="tel"> <i class="fa fa-envelope-o" aria-hidden="true"></i> giay.phake@donếtchotao</a>
+        </div>
+        <div class="col-xs-12 col-sm-6 text-right">
+          <span v-if="!user" class="account">
+            <router-link to="/signin">Đăng nhập</router-link> hoặc <router-link
+              to="/signup">Đăng ký</router-link></span>
+          <span v-if="user" class="account">Xin chào, <router-link to="/account">{{
+              user.fullName
+            }}</router-link> <span> | </span> <span class="signout"
+                                                    @click="signout">Đăng xuất</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
   <header id="mt-header" class="style17">
     <!-- mt bottom bar start here -->
     <div class="mt-bottom-bar">
@@ -37,7 +190,11 @@ export default {
         <div class="row">
           <div class="col-xs-12">
             <!-- mt logo start here -->
-            <div class="mt-logo"><router-link to="/"><img style="height: 50px" src="https://cdn.printgo.vn/uploads/media/772948/thiet-ke-logo-shop-giay-19_1584095087.jpg" alt="Logo sóp"></router-link></div>
+            <div class="mt-logo">
+              <router-link to="/"><img style="height: 50px"
+                                       src="@/assets/logo.png"
+                                       alt="Logo sóp"></router-link>
+            </div>
             <!-- mt icon list start here -->
             <ul class="mt-icon-list">
               <li class="hidden-lg hidden-md">
@@ -48,96 +205,22 @@ export default {
                 </a>
               </li>
               <li><a href="#" class="icon-magnifier"></a></li>
-              <li class="drop">
+              <li class="">
                 <a href="#" class="icon-heart cart-opener"><span style="margin-bottom: -3px;" class="num">3</span></a>
-                <!-- mt drop start here -->
-                <div class="mt-drop">
-                  <!-- mt drop sub start here -->
-                  <div class="mt-drop-sub">
-                    <!-- mt side widget start here -->
-                    <div class="mt-side-widget">
-                      <!-- cart row start here -->
-                      <div class="cart-row">
-                        <a href="#" class="img"><img src="http://placehold.it/75x75" alt="image" class="img-responsive"></a>
-                        <div class="mt-h">
-                          <span class="mt-h-title"><a href="#">Marvelous Modern 3 Seater</a></span>
-                          <span class="price"><i class="fa fa-eur" aria-hidden="true"></i> 599,00</span>
-                        </div>
-                        <a href="#" class="close fa fa-times"></a>
-                      </div><!-- cart row end here -->
-                      <!-- cart row start here -->
-                      <div class="cart-row">
-                        <a href="#" class="img"><img src="http://placehold.it/75x75" alt="image" class="img-responsive"></a>
-                        <div class="mt-h">
-                          <span class="mt-h-title"><a href="#">Marvelous Modern 3 Seater</a></span>
-                          <span class="price"><i class="fa fa-eur" aria-hidden="true"></i> 599,00</span>
-                        </div>
-                        <a href="#" class="close fa fa-times"></a>
-                      </div><!-- cart row end here -->
-                      <!-- cart row start here -->
-                      <div class="cart-row">
-                        <a href="#" class="img"><img src="http://placehold.it/75x75" alt="image" class="img-responsive"></a>
-                        <div class="mt-h">
-                          <span class="mt-h-title"><a href="#">Marvelous Modern 3 Seater</a></span>
-                          <span class="price"><i class="fa fa-eur" aria-hidden="true"></i> 599,00</span>
-                        </div>
-                        <a href="#" class="close fa fa-times"></a>
-                      </div><!-- cart row end here -->
-                      <!-- cart row total start here -->
-                      <div class="cart-row-total">
-                        <span class="mt-total">Add them all</span>
-                        <span class="mt-total-txt"><a href="#" class="btn-type2">add to CART</a></span>
-                      </div>
-                      <!-- cart row total end here -->
-                    </div><!-- mt side widget end here -->
-                  </div>
-                  <!-- mt drop sub end here -->
-                </div><!-- mt drop end here -->
-                <span class="mt-mdropover"></span>
               </li>
               <li class="">
                 <router-link to="/cart" class="cart-opener">
                   <span class="icon-handbag"></span>
-<!--                  <span class="num">{{this.cartList.length}}</span>-->
+                                    <span class="num">{{countCartItem}}</span>
                 </router-link>
-                <!-- mt drop start here -->
-<!--                <div class="mt-drop">-->
-<!--                  &lt;!&ndash; mt drop sub start here &ndash;&gt;-->
-<!--                  <div class="mt-drop-sub">-->
-<!--                    &lt;!&ndash; mt side widget start here &ndash;&gt;-->
-<!--                    <div class="mt-side-widget">-->
-<!--                      &lt;!&ndash; cart row start here &ndash;&gt;-->
-<!--                      <div v-for="(item, index) in this.cartList" :key="index" class="cart-row">-->
-<!--                        <a href="#" class="img"><img src="http://placehold.it/75x75" alt="image" class="img-responsive"></a>-->
-<!--                        <div class="mt-h">-->
-<!--                          <span class="mt-h-title"><a href="#">{{ item.product_id }}</a></span>-->
-<!--                          <span class="price"><i class="fa fa-eur" aria-hidden="true"></i> 599,00</span>-->
-<!--                          <span class="mt-h-title">Số lượng: {{item.quantity}}</span>-->
-<!--                        </div>-->
-<!--                        <a href="#" class="close fa fa-times"></a>-->
-<!--                      </div>-->
-<!--                      &lt;!&ndash; cart row end here &ndash;&gt;-->
-<!--                      <div class="cart-row-total">-->
-<!--                        <span class="mt-total">Sub Total</span>-->
-<!--                        <span class="mt-total-txt"><i class="fa fa-eur" aria-hidden="true"></i> 799,00</span>-->
-<!--                      </div>-->
-<!--                      &lt;!&ndash; cart row total end here &ndash;&gt;-->
-<!--                      <div class="cart-btn-row">-->
-<!--                        <a href="#" class="btn-type2">VIEW CART</a>-->
-<!--                        <a href="#" class="btn-type3">CHECKOUT</a>-->
-<!--                      </div>-->
-<!--                    </div>&lt;!&ndash; mt side widget end here &ndash;&gt;-->
-<!--                  </div>-->
-<!--                  &lt;!&ndash; mt drop sub end here &ndash;&gt;-->
-<!--                </div>-->
-                <!-- mt drop end here -->
-<!--                <span class="mt-mdropover"></span>-->
               </li>
-              <li>
-                <a href="#" class="bar-opener side-opener">
-                  <span class="bar"></span>
-                  <span class="bar small"></span>
-                  <span class="bar"></span>
+
+              <li v-if="token">
+                <router-link to="/account" class=""><i class="bi bi-person text-4"></i>
+                </router-link>
+              </li>
+              <li v-else>
+                <a href="#" class="side-opener"><i class="bi bi-person text-4"></i>
                 </a>
               </li>
             </ul><!-- mt icon list end here -->
@@ -147,118 +230,14 @@ export default {
                 <li>
                   <router-link :to="{name: 'HomePage'}">TRANG CHỦ</router-link>
                 </li>
-                <li class="drop">
-                  <router-link to="/products">SẢN PHẨM <i class="fa fa-angle-down" aria-hidden="true"></i></router-link>
-                  <!-- mt dropmenu start here -->
-                  <div class="mt-dropmenu text-left">
-                    <!-- mt frame start here -->
-                    <div class="mt-frame">
-                      <!-- mt f box start here -->
-                      <div class="mt-f-box">
-                        <!-- mt col3 start here -->
-                        <div class="mt-col-3">
-                          <div class="sub-dropcont">
-                            <strong class="title"><a href="product-grid-view.html"
-                                                     class="mt-subopener">PRODUCTS</a></strong>
-                            <div class="sub-drop">
-                              <ul>
-                                <li><a href="product-grid-view.html">Product Grid View</a></li>
-                                <li><a href="product-list-view.html">Product List View</a></li>
-                                <li><a href="product-detail.html">Product Detail</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                          <div class="sub-dropcont">
-                            <strong class="title"><a href="#" class="mt-subopener">404 Pages</a></strong>
-                            <div class="sub-drop">
-                              <ul>
-                                <li><a href="404-page.html">404 Page</a></li>
-                                <li><a href="404-page2.html">404 Page2</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- mt col3 end here -->
-
-                        <!-- mt col3 start here -->
-                        <div class="mt-col-3">
-                          <div class="sub-dropcont">
-                            <strong class="title"><a href="#" class="mt-subopener">About US</a></strong>
-                            <div class="sub-drop">
-                              <ul>
-                                <li><a href="about-us.html">About</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                          <div class="sub-dropcont">
-                            <strong class="title"><a href="#" class="mt-subopener">Contact US</a></strong>
-                            <div class="sub-drop">
-                              <ul>
-                                <li>
-                                  <router-link to="/signin">Contact</router-link>
-                                </li>
-                                <li>
-                                  <router-link to="/signup">Contact 2</router-link>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                          <div class="sub-dropcont">
-                            <strong class="title"><a href="#" class="mt-subopener">Coming Soon</a></strong>
-                            <div class="sub-drop">
-                              <ul>
-                                <li><a href="coming-soon.html">Coming Soon</a></li>
-                                <li><a href="coming-soon2.html">Coming Soon2</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- mt col3 end here -->
-
-                        <!-- mt col3 start here -->
-                        <div class="mt-col-3">
-                          <div class="sub-dropcont">
-                            <strong class="title"><a href="#" class="mt-subopener">KITCHEN FURNITURE</a></strong>
-                            <div class="sub-drop">
-                              <ul>
-                                <li><a href="#">Kitchen Taps</a></li>
-                                <li><a href="#">Breakfast time</a></li>
-                                <li><a href="#">Cooking</a></li>
-                                <li><a href="#">Food Storage Boxes</a></li>
-                                <li><a href="#">Spice Jars</a></li>
-                                <li><a href="#">Napskins</a></li>
-                                <li><a href="#">Oven Gloves</a></li>
-                                <li><a href="#">Placemats</a></li>
-                                <li><a href="#">Cooking</a></li>
-                                <li><a href="#">Food Storage Boxes</a></li>
-                                <li><a href="#">Spice Jars</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- mt col3 end here -->
-
-                        <!-- mt col3 start here -->
-                        <div class="mt-col-3 promo">
-                          <div class="mt-promobox">
-                            <a href="#"><img style="" :src="banner" alt="promo banner"
-                                             class="img-responsive"></a>
-                          </div>
-                        </div>
-                        <!-- mt col3 end here -->
-                      </div>
-                      <!-- mt f box end here -->
-                    </div>
-                    <!-- mt frame end here -->
-                  </div>
-                  <!-- mt dropmenu end here -->
-                  <span class="mt-mdropover"></span>
+                <li>
+                  <router-link to="/products">SẢN PHẨM</router-link>
                 </li>
-                <li><a href="about-us.html">TIN TỨC</a></li>
-                <li><a href="about-us.html">CHÍNH SÁCH</a></li>
+                <li><a href="#">TIN TỨC</a></li>
+                <li><a href="#">CHÍNH SÁCH</a></li>
                 <li>
                   <a class="drop-link" href="contact-us.html">LIÊN HỆ<i class="fa fa-angle-down hidden-lg hidden-md"
-                                                                         aria-hidden="true"></i></a>
+                                                                        aria-hidden="true"></i></a>
                   <div class="s-drop">
                     <ul>
                       <li><a href="contact-us.html">Contact</a></li>
@@ -280,41 +259,66 @@ export default {
   <div class="mt-side-menu">
     <!-- mt holder start here -->
     <div class="mt-holder">
-      <a href="#" class="side-close"><span></span><span></span></a>
-      <strong class="mt-side-title">MY ACCOUNT</strong>
+      <a href="#" ref="closeSidebar" class="side-close"><span></span><span></span></a>
+      <!--      <strong class="mt-side-title">MY ACCOUNT</strong>-->
       <!-- mt side widget start here -->
       <div class="mt-side-widget">
         <header>
-          <span class="mt-side-subtitle">SIGN IN</span>
-          <p>Welcome back! Sign in to Your Account</p>
+          <span class="mt-side-subtitle">Đăng nhập</span>
+          <!--          <p>Welcome back! Sign in to Your Account</p>-->
         </header>
-        <form action="#">
+        <Form @submit="login" :validation-schema="schemaLogin" v-slot="{ errors }">
           <fieldset>
-            <input type="text" placeholder="Username or email address" class="input">
-            <input type="password" placeholder="Password" class="input">
+            <Field v-model="email" name="email" type="text" placeholder="Email"
+                   :class="{ 'is-invalid': errors.email}"
+                   class="input"/>
+            <div class="text-danger font-italic text-1 text-end">{{ errors.email }}</div>
+            <Field v-model="password" name="password" type="password" placeholder="Mật khẩu" class="input"
+                   :class="{ 'is-invalid': errors.email }"/>
+            <div class="text-danger font-italic text-1 text-end">{{ errors.password }}</div>
             <div class="box">
-              <span class="left"><input class="checkbox" type="checkbox" id="check1"><label
-                  for="check1">Remember Me</label></span>
-              <a href="#" class="help">Help?</a>
+              <button type="submit" class="btn-type1">Đăng nhập</button>
             </div>
-            <button type="submit" class="btn-type1">Login</button>
+
           </fieldset>
-        </form>
+        </Form>
       </div>
       <!-- mt side widget end here -->
-      <div class="or-divider"><span class="txt">or</span></div>
+      <div class="or-divider"><span class="txt"></span></div>
       <!-- mt side widget start here -->
       <div class="mt-side-widget">
         <header>
-          <span class="mt-side-subtitle">CREATE NEW ACCOUNT</span>
-          <p>Create your very own account</p>
+          <span class="mt-side-subtitle">Đăng ký</span>
+          <!--          <p>Create your very own account</p>-->
         </header>
-        <form action="#">
+        <Form @submit="signup" style="margin: 0 0 80px;" :validation-schema="schemaSignup" v-slot="{errors}">
           <fieldset>
-            <input type="text" placeholder="Username or email address" class="input">
-            <button type="submit" class="btn-type1">Register</button>
+            <div class="row">
+              <div class="col-xs-12 col-sm-12">
+                <Field v-model="fullName" name="fullName" type="text" placeholder="Họ và tên của mày" class="input"/>
+                <div class="text-danger font-italic text-1 text-end">{{ errors.fullName }}</div>
+              </div>
+              <div class="col-xs-12 col-sm-12">
+                <Field v-model="emailSignup" type="text" name="emailSignup" placeholder="Email" class="input"/>
+                <div class="text-danger font-italic text-1 text-end">{{ errors.emailSignup }}</div>
+              </div>
+              <div class="col-xs-12 col-sm-12">
+                <Field v-model="passwordSignup" type="password" name="passwordSignup" placeholder="Mật khẩu"
+                       class="input"/>
+                <div class="text-danger font-italic text-1 text-end">{{ errors.passwordSignup }}</div>
+              </div>
+              <div class="col-xs-12 col-sm-12">
+                <Field v-model="confirmPassword" type="password" name="confirmPassword"
+                       placeholder="Nhập lại mật khẩu" class="input"/>
+                <div class="text-danger font-italic text-1 text-end">{{ errors.confirmPassword }}</div>
+              </div>
+            </div>
+            <div class="box">
+              <button type="submit" class="btn-type1">Đăng ký</button>
+            </div>
+
           </fieldset>
-        </form>
+        </Form>
       </div>
       <!-- mt side widget end here -->
     </div>
@@ -328,7 +332,7 @@ export default {
         <Form @submit="handleSearch">
           <fieldset class="d-flex">
             <input v-model="keyword" type="text" placeholder="Tìm kiếm...">
-            <button  class="btn text-5" type="submit"><i class="bi bi-search"></i></button>
+            <button class="btn text-5" type="submit"><i class="bi bi-search"></i></button>
 
           </fieldset>
         </Form>
@@ -337,8 +341,49 @@ export default {
   </div><!-- mt search popup end here -->
 </template>
 
-<style >
+<style>
 #mt-header.style17 .mt-bottom-bar {
   padding: 10px 0 10px;
+}
+
+.account, .account a {
+  color: #a1a1a1;
+}
+
+.account a:hover {
+  color: #ff6060;
+}
+
+.signout {
+  cursor: pointer;
+}
+
+.signout:hover {
+  color: #ff6060;
+
+}
+
+#mt-header.style17 {
+  color: #a1a1a1;
+}
+
+.mt-top-bar {
+  padding: 10px 0;
+  background: #f2f2f2;
+}
+
+.mt-top-bar .tel {
+  color: #a1a1a1;
+  margin: 0 46px 0 0;
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.mt-top-bar .tel:hover {
+  color: #ff6060;
+}
+
+.mt-top-bar .tel .fa {
+  font-size: 12px;
+  margin: 0 3px 0 0;
 }
 </style>

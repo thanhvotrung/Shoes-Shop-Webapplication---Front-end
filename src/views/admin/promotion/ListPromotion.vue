@@ -44,20 +44,6 @@ export default {
 
 <template>
   <LayoutView>
-    <section role="main" class="content-body" id="main-content">
-      <header class="page-header">
-        <div class="right-wrapper text-right mr-5">
-          <ol class="breadcrumbs">
-            <li>
-              <router-link to="/admin">
-                <i class="bx bx-home-alt"></i>
-              </router-link>
-            </li>
-            <li><span>Danh sách khuyến mại</span></li>
-          </ol>
-        </div>
-      </header>
-
       <section class="card">
         <header class="card-header">
           <h2 class="card-title">Danh sách khuyến mại</h2>
@@ -70,8 +56,6 @@ export default {
                              style="border: 1px solid #cccc">
                   Thêm mới khuyến mại <i class="bi bi-plus-circle-dotted"></i>
                 </router-link>
-                <button id="btn-search" class="btn btn-primary mx-1 text-2">Tìm kiếm <i
-                    class="bi bi-search"></i></button>
               </div>
             </div>
           </div>
@@ -147,8 +131,6 @@ export default {
           <!--          </nav>-->
         </div>
       </section>
-
-    </section>
   </LayoutView>
 </template>
 

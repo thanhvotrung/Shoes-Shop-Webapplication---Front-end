@@ -402,7 +402,7 @@ var Intercooler = Intercooler || (function() {
   }
 
   /*
-    Evaluate a script snippet provided by the user.
+    Evaluate a script snippet provided by the order.
 
     script: A string. If this is an identifier, it is assumed to be a callable, retrieved from the
     global namespace, and called. If it is a compound statement, it is evaluated using eval.

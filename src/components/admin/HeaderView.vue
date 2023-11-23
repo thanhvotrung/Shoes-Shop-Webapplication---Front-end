@@ -9,8 +9,8 @@ export default {
 <template>
   <header class="header">
     <div class="logo-container">
-      <a href="/admin" class="logo"> <img src="https://cdn.printgo.vn/uploads/media/772948/thiet-ke-logo-shop-giay-19_1584095087.jpg" width="75" height="35" alt="Porto Admin"/>
-      </a>
+      <router-link to="/admin" class="logo"> <img src="@/assets/logo.png" style="width: 40px" alt="Logo sóp">
+      </router-link>
     </div>
 
     <div class="header-right">

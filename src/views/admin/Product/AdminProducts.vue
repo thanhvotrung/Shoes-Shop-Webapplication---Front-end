@@ -29,6 +29,11 @@ export default {
       products: null,
       totalPages: null,
       currentPage: null,
+
+      id: null,
+      name: null,
+      category: null,
+      brand: null,
     }
   },
 
@@ -95,7 +100,6 @@ export default {
     },
 
     async handleQueryChange(query) {
-      console.log(query)
       await axios.get(`http://localhost:3030/api/admin/products`, {params: query}).then(res => {
         const response = res.data
         this.products = response.content
@@ -124,10 +128,9 @@ export default {
         <div class="row">
           <div class="col-sm-6">
             <div class="mb-3">
-              <router-link style="border: 1px solid #5bc0de" class="btn btn-info mx-1 text-2" to="/admin/products/create">Thêm mới sản phẩm <i
+              <router-link style="border: 1px solid #cccc" class="btn btn-primary mx-1 text-2" to="/admin/products/create">Thêm mới sản phẩm <i
                   class="bi bi-plus-circle-dotted"></i>
               </router-link>
-              <button id="btn-search" class="btn btn-success mx-1 text-2">Tìm kiếm <i class="bi bi-search"></i></button>
             </div>
           </div>
         </div>
@@ -150,22 +153,22 @@ export default {
             <!--            <form method="GET" id="search-form">-->
             <!--                        <th></th>-->
             <th>
-              <input type="text" name="id" id="id" class="form-control search-input">
+              <input v-model="id" type="text" name="id" id="id" class="form-control search-input" @change="this.$router.push({query: {...this.$route.query, id: this.id}})">
             </th>
             <th>
-              <input type="text" name="name" id="name" class="form-control search-input">
+              <input v-model="name" type="text" name="name" id="name" class="form-control search-input" @change="this.$router.push({query: {...this.$route.query, name: this.name}})">
             </th>
             <th></th>
             <th>
-              <select name="brand" class="form-control search-select" id="brand">
+              <select v-model="brand" name="brand" class="form-control search-select" id="brand" @change="this.$router.push({query: {...this.$route.query, brand: this.brand}})">
                 <option value="">Tất cả</option>
-                <option v-for="brand in brands" :key="brand.id">{{ brand.name }}</option>
+                <option v-for="brand in brands" :key="brand.id" :value="brand.id" >{{ brand.name }}</option>
               </select>
             </th>
             <th>
-              <select name="category" class="form-control search-select" id="category">
+              <select v-model="category" name="category" class="form-control search-select" id="category" @change="this.$router.push({query: {...this.$route.query, category: this.category}})">
                 <option value="">Tất cả</option>
-                <option v-for="category in categories" :key="category.id">
+                <option v-for="category in categories" :key="category.id" :value="category.id">
                   {{ category.name }}
                 </option>
               </select>

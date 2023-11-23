@@ -20,7 +20,7 @@ import $ from "jquery";
 export default {
   name: "LayoutView",
   components: {HeaderView, FooterView},
-  props: ["cartList"],
+  props: ["countCartItem"],
   methods: {
     initNavOpener() {
       $(".side-close , .side-opener , .mt-side-over").on('click',function () {
@@ -66,15 +66,15 @@ export default {
   <div id="wrapper">
     <!--    <LoaderView/>-->
     <div class="w1">
-      <HeaderView :cartList="cartList"/>
-      <slot/>
+      <HeaderView :countCartItem="countCartItem" />
+      <slot @fetchCartData="$emit('fetchCartData')"/>
       <FooterView/>
     </div>
     <span ref="onTop" id="back-top" class="fa fa-arrow-up"></span>
   </div>
 </template>
+<!--@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900,900italic%7cMontserrat:400,700%7cOxygen:400,300,700');-->
 
-<style >
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900,900italic%7cMontserrat:400,700%7cOxygen:400,300,700');
+<style>
 
 </style>

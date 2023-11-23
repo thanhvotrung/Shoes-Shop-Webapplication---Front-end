@@ -1,7 +1,6 @@
 <script>
 import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
-import {Carousel, Slide} from 'vue3-carousel'
 import jwtDecode from "jwt-decode";
 import {Form, Field} from "vee-validate";
 import * as Yup from 'yup';
@@ -10,7 +9,8 @@ import Popper from "vue3-popper";
 
 export default {
   name: "CartView",
-  components: {LayoutView, Carousel, Slide, Form, Field, Popper},
+  props: [],
+  components: {LayoutView, Form, Field, Popper},
   setup() {
     const toast = useToast();
     return {toast}
@@ -38,9 +38,17 @@ export default {
       discountValue: null,
       maximumDiscountValue: null,
 
+      publicPromotionName: null,
+      publicDiscountType: null,
+      publicDiscountValue: null,
+      publicMaximumDiscountValue: null,
+
       subtotal: 0,
       total: 0,
       discount: 0,
+      publicDiscount: 0,
+
+      note: null,
     }
   },
   computed: {},
@@ -56,26 +64,26 @@ export default {
             let quantity = this.cartsLocal[i].quantity;
             couponCode = item.couponCode
             const item2 = {
+              id: item.id,
               name: item.name,
-              images: item.productImages || [],
+              images: item.productImages[0] || '',
               couponCode: item.couponCode,
               price: item.price,
               promotionPrice: item.promotionPrice,
               size: this.cartsLocal[i].size,
               quantity: quantity,
-              total: item.price * quantity
             }
             this.cartList.push(item2)
           }).catch(err => {
             console.log(err)
           })
         }
-        this.promotionName = couponCode
-        this.promotion = couponCode
-        await this.checkPromotion(couponCode)
+        // this.promotionName = couponCode
+        // this.promotion = couponCode
+        //  this.calculateTotal()
+        await this.checkPublicPromotion(couponCode)
 
       }
-      // console.log(this.cartList)
     },
 
     formattedPrice(price) {
@@ -85,11 +93,22 @@ export default {
       });
     },
 
-    deleteItem(index) {
-      this.cartsLocal.splice(index, 1)
-      this.cartList.splice(index, 1)
-      this.checkAfterDeleteItem(this.promotionName)
+    deleteItem(id) {
+      this.cartsLocal = this.cartsLocal.filter(item => item.product_id != id)
+      this.cartList = this.cartList.filter(item => item.id != id)
+      this.checkAfterHandleItem(this.promotionName)
       localStorage.setItem('cartList', JSON.stringify(this.cartsLocal));
+    },
+
+    handleUpdateQuantity(index, quantity) {
+      const indexToUpdate = this.cartList.findIndex((item, i) => i === index);
+      if (indexToUpdate !== -1) {
+        this.cartList[indexToUpdate].quantity = quantity;
+        this.cartsLocal[indexToUpdate].quantity = quantity;
+        this.checkAfterHandleItem(this.promotionName);
+        localStorage.setItem('cartList', JSON.stringify(this.cartsLocal));
+        this.$emit('fetchCartData')
+      }
     },
 
     // Giải mã JWT token sang object User
@@ -99,7 +118,6 @@ export default {
         try {
           const decodedToken = jwtDecode(token);
           this.email = decodedToken.sub;
-          console.log('Decoded JWT Claims:', decodedToken);
         } catch (error) {
           console.error('JWT Decoding Error:', error);
         }
@@ -110,14 +128,14 @@ export default {
       if (this.email) {
         await axios.get(`http://localhost:3030/user/${this.email}`).then(res => {
           this.user = res.data
-          console.log(this.user)
+          // console.log(this.order)
         }).catch(err => {
           console.log(err)
         })
       }
     },
 
-    async checkAfterDeleteItem(promotion) {
+    async checkAfterHandleItem(promotion) {
       if (!promotion) {
         // Handle the case where promotion is not provided
         this.calculateTotal();
@@ -162,6 +180,28 @@ export default {
       })
     },
 
+    async checkPublicPromotion(promotion) {
+      if (!promotion) {
+        // Handle the case where promotion is not provided
+        this.calculateTotal();
+        return;
+      }
+
+      await axios.get(`http://localhost:3030/api/check-hidden-promotion?code=${promotion}`).then(res => {
+        const response = res.data
+        this.publicPromotionName = this.promotion;
+        this.publicDiscountType = response.discountType;
+        this.publicDiscountValue = response.discountValue;
+        this.publicMaximumDiscountValue = response.maximumDiscountValue;
+
+        this.calculateDiscount(response);
+      }).catch(err => {
+        if (err.response.status === 400) {
+          this.handleInvalidPromotion(err);
+        }
+      })
+    },
+
     calculateDiscount(response) {
       let discount = 0;
       let subtotal = 0;
@@ -169,6 +209,19 @@ export default {
       for (let i = 0; i < this.cartList.length; i++) {
         subtotal += this.cartList[i].price * this.cartList[i].quantity;
         let tmp = response.discountValue;
+
+        if (response.discountType === 1) {
+          tmp = this.cartList[i].price * response.discountValue / 100;
+          if (tmp < response.maximumDiscountValue) {
+            discount += tmp * this.cartList[i].quantity;
+          } else {
+            discount += response.maximumDiscountValue * this.cartList[i].quantity;
+          }
+        }
+
+        if (response.discountType === 2) {
+          discount += tmp * this.cartList[i].quantity;
+        }
 
         if (response.discountType === 1) {
           tmp = this.cartList[i].price * response.discountValue / 100;
@@ -212,17 +265,50 @@ export default {
       this.total = subtotal - discount;
     },
 
-    handleOrder() {
-      console.log(1)
+    async handleOrder() {
+      let orderDetailsList = []
+      for (let i = 0; i < this.cartList.length; i++) {
+        let obj = {
+          product_id: this.cartList[i].id,
+          size: this.cartList[i].size,
+          quantity: this.cartList[i].quantity,
+          product_price: this.cartList[i].price
+        }
+        orderDetailsList.push(obj)
+      }
+      const obj = {
+        email: this.email,
+        receiver_name: this.user.fullName,
+        receiver_phone: this.user.phone,
+        receiver_address: this.user.address,
+        coupon_code: this.promotionName,
+        total_price: this.total,
+        subtotal_price: this.subtotal,
+        note: this.note,
+        products: orderDetailsList
+      }
+      await axios.post(`http://localhost:3030/api/orders`, obj)
+          .then(res => {
+            console.log(res.data)
+            this.toast.success("Đặt hàng thành công.")
+            setTimeout(() => {
+              this.$router.push({name: 'OrderDetails', params: {id: res.data}});
+            }, 1000);
+          }).catch(err => {
+            if (err.response.status === 400) {
+              this.toast.warning(err.response.data.message)
+            }
+            console.log(err)
+          })
     }
   },
 
   mounted() {
+    window.scrollTo({top: 0, behavior: 'smooth'})
     this.fetchData()
     this.token = this.$cookies.get("JWT_TOKEN")
     this.decodeJwt()
     this.getUser()
-
   }
 }
 </script>
@@ -243,34 +329,49 @@ export default {
             </tr>
             </thead>
             <tbody class="text-center">
-            <tr v-for="(item, index) in cartList" :key="index">
-              <td class="d-flex align-items-center">
-                <Carousel style="width: 120px" id="gallery" :items-to-show="1" :transition="1000" :wrap-around="true">
-                  <Slide v-for="slide in item.images" :key="slide">
-                    <div class="carousel__item">
-                      <img :src="slide" alt="Slide">
-                    </div>
-                  </Slide>
-                </Carousel>
-                <div class="text-start px-5">
-                  <div class="">
-                    <div class="font-weight-bold py-2 cart-name">{{ item.name }}</div>
-                    <div class="cart-description">Kích thước: <span class="font-weight-bold">{{ item.size }}</span>
-                      <div style="color: #999" class="pt-2"><i @click="deleteItem(index)"
-                                                               class="bi bi-trash btn-del-cart-item"></i>
+            <tr v-for="(item, index) in cartList" :key="index" class="">
+              <td class="align-items-center">
+                <div class="d-flex">
+                  <div style="width: 120px">
+                    <img :src="item.images" alt="Slide">
+                  </div>
+                  <div class="text-start px-5">
+                    <div class="">
+                      <div class="font-weight-bold py-2 cart-name">{{ item.name }}</div>
+                      <div class="cart-description">Kích thước: <span class="font-weight-bold">{{ item.size }}</span>
+                        <div style="color: #999" class="pt-2"><i @click="deleteItem(item.id)"
+                                                                 class="bi bi-trash btn-del-cart-item"></i>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </td>
               <td class="cart-price" style="position: relative">
-                <div class="text-row-center">{{ formattedPrice(item.price) }}</div>
+                <div v-if="item.promotionPrice > 0" class="text-row-center" style="width: 200px">
+                  <span style="text-decoration: line-through; color: #757575">{{ formattedPrice(item.price) }}</span>&ensp;
+                  <span>{{ formattedPrice(item.promotionPrice) }}</span>
+                </div>
+                <div v-else class="text-row-center">{{ formattedPrice(item.price) }}</div>
               </td>
               <td class="cart-quantity" style="position: relative">
-                <div class="text-row-center">{{ item.quantity }}</div>
+                <div class="text-row-center">
+                  <div class="item-quantity d-flex">
+                    <button v-if="item.quantity == 1" @click="deleteItem(item.id)"><i class="bi bi-trash text-2"></i>
+                    </button>
+                    <button v-if="item.quantity > 1" @click="handleUpdateQuantity(index, item.quantity - 1)"><i
+                        class="bi bi-dash"></i></button>
+                    <input type="number" v-model="item.quantity">
+                    <button @click="handleUpdateQuantity(index, item.quantity + 1)"><i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                </div>
               </td>
               <td class="cart-price" style="position: relative">
-                <div class="text-row-center">{{ formattedPrice(item.total) }}</div>
+                <div v-if="item.promotionPrice > 0" class="text-row-center">
+                  {{ formattedPrice(item.promotionPrice * item.quantity) }}
+                </div>
+                <div v-else class="text-row-center">{{ formattedPrice(item.price * item.quantity) }}</div>
               </td>
             </tr>
             </tbody>
@@ -319,7 +420,8 @@ export default {
                   </div>
                   <div class="form-group">
                     <label for="note" class="form-label">Ghi chú</label>
-                    <Field style="height: 100px" as="textarea" v-model="user.note" name="note" id="note" class="form-control text-3" rows="3"></Field>
+                    <Field style="height: 100px" as="textarea" v-model="note" name="note" id="note"
+                           class="form-control text-3" rows="3"></Field>
                   </div>
 
                 </div>
@@ -346,8 +448,8 @@ export default {
                       <strong class="title sub-title pull-left">Khuyến mãi </strong><i v-if="promotionName"
                                                                                        class="text-uppercase">:
                       {{ promotionName }} </i>
-                      <Popper v-if="discountType" placement="right">
-                        <button class="popper-promotion">i</button>
+                      <Popper v-if="discountType" placement="right" class="light">
+                        <div class="popper-promotion"><i class="bi bi-info-lg"></i></div>
                         <template #content>
                           <div>Mã khuyến mãi: {{ promotionName }}</div>
                           <div v-if="discountType == 1">
@@ -360,8 +462,15 @@ export default {
                           <div class="font-italic">Lưu ý: Giá trị khuyến mãi được áp dụng cho mỗi sản phẩm</div>
                         </template>
                       </Popper>
-                      <div class="txt pull-right">
+                      <div v-if="publicDiscount > 0" class="txt pull-right">
+                        <strong>{{ formattedPrice(publicDiscount) }}</strong>
+                        <br>
+                      </div>
+                      <div v-if="discount > 0" class="txt pull-right">
                         <strong>{{ formattedPrice(discount) }}</strong>
+                      </div>
+                      <div v-else class="txt pull-right">
+                        <strong>{{ formattedPrice(0) }}</strong>
                       </div>
                     </div>
                   </li>
@@ -374,7 +483,7 @@ export default {
                     </div>
                   </li>
                 </ul>
-                <button v-if="user" class="btn process-btn" @submit="handleOrder()">Đặt hàng<i class="fa fa-check"></i>
+                <button v-if="user" class="btn process-btn" @submit="handleOrder()">Đặt hàng
                 </button>
               </div>
             </div>
@@ -398,11 +507,15 @@ export default {
   </LayoutView>
 </template>
 
-<style>
+<style scoped>
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
 .popper-promotion {
   border: 1px solid #fff;
   border-radius: 50px;
-  padding: 0px 10px;
+  padding: 0px 6px;
   background-color: #fff;
   margin-left: 10px;
   font-size: x-small;
@@ -410,7 +523,7 @@ export default {
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 2px 6px 0 rgba(0, 0, 0, 0.19);
 }
 
-:root {
+.light {
   --popper-theme-background-color: #ffffff;
   --popper-theme-background-color-hover: #ffffff;
   --popper-theme-text-color: #333333;
@@ -460,6 +573,31 @@ export default {
 
 .account a:hover {
   color: #ff6060;
+}
+
+.item-quantity {
+  border: 1px solid #000000;
+  border-radius: 50px;
+  padding: 5px 10px;
+}
+
+.item-quantity input {
+  width: 30px;
+  text-align: center;
+  border: none;
+  outline: none;
+}
+
+.item-quantity input::-webkit-outer-spin-button,
+.item-quantity input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.item-quantity button {
+  outline: 0;
+  border: none;
+  background-color: #fff;
 }
 
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900,900italic%7cMontserrat:400,700%7cOxygen:400,300,700');

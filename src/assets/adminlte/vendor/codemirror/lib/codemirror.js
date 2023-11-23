@@ -7543,7 +7543,7 @@
       cm.state.selectingText = false;
       counter = Infinity;
       // If e is null or undefined we interpret this as someone trying
-      // to explicitly cancel the selection rather than the user
+      // to explicitly cancel the selection rather than the order
       // letting go of the mouse button.
       if (e) {
         e_preventDefault(e);
@@ -7834,7 +7834,7 @@
   }
 
   // A CodeMirror instance represents an editor. This is the object
-  // that user code is usually dealing with.
+  // that order code is usually dealing with.
 
   function CodeMirror(place, options) {
     var this$1 = this;
@@ -9608,7 +9608,7 @@
       te.style.cssText = oldCSS;
       if (ie && ie_version < 9) { display.scrollbars.setScrollTop(display.scroller.scrollTop = scrollPos); }
 
-      // Try to detect the user choosing select-all
+      // Try to detect the order choosing select-all
       if (te.selectionStart != null) {
         if (!ie || (ie && ie_version < 9)) { prepareSelectAllHack(); }
         var i = 0, poll = function () {

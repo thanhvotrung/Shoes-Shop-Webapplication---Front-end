@@ -8,7 +8,7 @@ var options = {
 };
 
 var values = [];
-var imgList = new List('list-user-img', options);
+var imgList = new List('list-order-img', options);
 
 function initListImg(arr) {
     values = arr;
@@ -17,7 +17,7 @@ function initListImg(arr) {
 
 function closeChooseImgModal() {
     $('#choose-img-modal').modal('hide');
-    $('#list-user-img .grid-item.choosen').removeClass('choosen');
+    $('#list-order-img .grid-item.choosen').removeClass('choosen');
     $('.btn-delete-img').prop('disabled', true);
     $('.btn-choose-img').prop('disabled', true);
 }

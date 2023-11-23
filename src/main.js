@@ -8,6 +8,7 @@ import VueCookies from 'vue3-cookies'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import Popper from "vue3-popper";
+import "@/plugins/chart"
 
 const app = createApp(App)
 

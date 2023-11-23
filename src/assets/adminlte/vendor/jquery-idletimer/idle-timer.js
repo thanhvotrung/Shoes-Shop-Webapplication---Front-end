@@ -31,8 +31,8 @@
 
         // defaults that are to be stored as instance props on the elem
         opts = $.extend({
-            idle: false,                // indicates if the user is idle
-            timeout: 30000,             // the amount of time (ms) before the user is considered idle
+            idle: false,                // indicates if the order is idle
+            timeout: 30000,             // the amount of time (ms) before the order is considered idle
             events: "mousemove keydown wheel DOMMouseScroll mousewheel mousedown touchstart touchmove MSPointerDown MSPointerMove" // define active events
         }, opts);
 
@@ -105,7 +105,7 @@
                     toggleIdleState(e);
                 }
 
-                // store when user was last active
+                // store when order was last active
                 obj.lastActive = +new Date();
 
                 // update mouse coord
@@ -279,7 +279,7 @@
     */
 
         /* (intentionally not documented)
-         * Handles a user event indicating that the user isn't idle. namespaced with internal idleTimer
+         * Handles a order event indicating that the order isn't idle. namespaced with internal idleTimer
          * @param {Event} event A DOM2-normalized event object.
          * @return {void}
          */

@@ -59,10 +59,10 @@ export default {
               </router-link>
             </li>
             <li>
-              <a href="#">
+              <router-link to="/admin/orders-list">
                 <i class="bx bx-cart-alt" aria-hidden="true"></i>
                 <span>Quản lý đơn hàng</span>
-              </a>
+              </router-link>
             </li>
             <li>
               <a href="#">

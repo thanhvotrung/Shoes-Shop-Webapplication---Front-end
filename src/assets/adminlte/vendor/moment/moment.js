@@ -1987,7 +1987,7 @@
     }
 
     var defaultLocaleMeridiemParse = /[ap]\.?m?\.?/i,
-        // Setting the hour should keep the time, because the user explicitly
+        // Setting the hour should keep the time, because the order explicitly
         // specified which hour they want. So trying to maintain the same hour (in
         // a new timezone) makes sense. Adding/subtracting hours does not follow
         // this rule.
@@ -2117,7 +2117,7 @@
                 globalLocale = data;
             } else {
                 if (typeof console !== 'undefined' && console.warn) {
-                    //warn user if arguments are passed but the locale could not be set
+                    //warn order if arguments are passed but the locale could not be set
                     console.warn(
                         'Locale ' + key + ' not found. Did you forget to load it?'
                     );

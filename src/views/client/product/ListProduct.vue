@@ -3,13 +3,16 @@ import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
 import Slider from '@vueform/slider'
 import "@vueform/slider/themes/default.css"
+import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 
 export default {
   name: "ListProduct",
-  components: {LayoutView, Slider},
+  components: {ModalAddToCart, LayoutView, Slider},
 
   data() {
     return {
+      productId: null,
+
       brands: [],
       categories: [],
       products: [],
@@ -65,6 +68,7 @@ export default {
       }
       await axios.post("http://localhost:3030/api/client/products", newQuery).then(res => {
         const response = res.data
+        console.log(res.data)
         this.products = response.items
         this.totalPages = response.totalPages
         this.currentPage = response.currentPage
@@ -101,14 +105,10 @@ export default {
         currency: 'VND',
       });
     },
-
-    scrollToTop() {
-      window.scrollTo({top: 0, behavior: 'smooth'});
-    },
-
   },
 
   mounted() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     this.fetchData()
   }
 }
@@ -222,11 +222,9 @@ export default {
                              alt="image description">
                         <img v-else src="http://placehold.it/276x286"
                              alt="image description">
-                        <!--                        <span class="caption">-->
-                        <!--														<span class="best-price">Best Price</span>-->
-                        <!--													</span>-->
                         <ul class="links add">
-                          <li><a href="#"><i class="icon-handbag"></i><span></span></a></li>
+                          <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
+                                 data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
                           <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
                           <li>
                             <router-link
@@ -301,6 +299,7 @@ export default {
         </div>
       </div>
     </main>
+    <div><ModalAddToCart :id="productId"/></div>
   </LayoutView>
 </template>
 

@@ -38,7 +38,8 @@
 															<span class="new">NEW</span>
 														</span>
                             <ul class="links add">
-                              <li><a href="#"><i class="icon-handbag"></i></a></li>
+                              <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
+                                     data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
                               <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
                               <li>
                                 <router-link
@@ -103,7 +104,8 @@
                             <span class="caption">
 														</span>
                             <ul class="links add">
-                              <li><a href="#"><i class="icon-handbag"></i></a></li>
+                              <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
+                                     data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
                               <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
                               <li>
                                 <router-link class=""
@@ -144,10 +146,11 @@
       <!-- mt top view end  -->
 
     </main>
+    <div><ModalAddToCart :id="productId"/></div>
   </LayoutView>
 </template>
 
-<style>
+<style scoped>
 .text-overflow {
   font-size: 100%;
   white-space: nowrap;
@@ -159,6 +162,7 @@
 <script>
 import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
+import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 
 import {Carousel, Navigation, Slide, Pagination} from 'vue3-carousel'
 import 'vue3-carousel/dist/carousel.css'
@@ -166,6 +170,7 @@ import 'vue3-carousel/dist/carousel.css'
 export default {
   name: 'HomeView',
   components: {
+    ModalAddToCart,
     LayoutView,
     Carousel,
     Slide,
@@ -177,7 +182,6 @@ export default {
     return {
       newProducts: null,
       topViewProducts: null,
-      topSaleProducts: null,
 
       imageSlideList: [
         {url: 'https://images.pexels.com/photos/457445/pexels-photo-457445.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'},
@@ -226,11 +230,14 @@ export default {
           itemsToShow: 3,
           snapAlign: 'start',
         },
-      }
+      },
+
+      productId: null,
     }
   },
 
   methods: {
+
     formattedPrice(price) {
       return price.toLocaleString('vi-VN', {
         style: 'currency',
@@ -240,6 +247,7 @@ export default {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/product/new-products`).then(res => {
         this.newProducts = res.data
+        console.log(res.data)
       }).catch(err => {
         console.log(err)
       })
@@ -249,16 +257,11 @@ export default {
       }).catch(err => {
         console.log(err)
       })
-
-      await axios.get(`http://localhost:3030/api/product/top-sale-products`).then(res => {
-        this.topSaleProducts = res.data
-      }).catch(err => {
-        console.log(err)
-      })
     }
   },
 
   mounted() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     this.fetchData()
   }
 }

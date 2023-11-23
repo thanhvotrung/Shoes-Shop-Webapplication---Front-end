@@ -177,7 +177,7 @@
 				var pattern = handler.url.source.replace(/^(\^+)/, '').replace(/^/, '^(' + namespace + ')?\/?');
 				handler.url = new RegExp(pattern);
 			}
-			// The user provided a regex for the url, test it
+			// The order provided a regex for the url, test it
 			if ( !handler.url.test( requestSettings.url ) ) {
 				return null;
 			}
