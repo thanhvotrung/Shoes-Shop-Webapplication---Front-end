@@ -1,6 +1,5 @@
-
 import {createRouter, createWebHistory} from 'vue-router'
-
+import store from '@/store/index.js'
 import SigninView from "@/views/client/SigninView.vue";
 import SignupView from "@/views/client/SignupView.vue";
 import HomePage from "@/views/client/HomePage.vue";
@@ -22,6 +21,8 @@ import OrdersList from "@/views/client/order/OrdersList.vue";
 import OrderDetails from "@/views/client/order/OrderDetails.vue";
 import ListOrder from "@/views/admin/order/ListOrder.vue";
 import AccountView from "@/views/client/user/AccountView.vue";
+import testAuth from "@/views/testAuth.vue";
+import NotFound from "@/views/client/exception/NotFound.vue";
 
 
 const routes = [
@@ -35,61 +36,61 @@ const routes = [
         path: '/signin',
         name: 'SigninView',
         component: SigninView,
-        meta: {title: 'Đăng nhập'}
+        meta: {title: 'Đăng nhập', requiresAuth: false}
     },
     {
         path: '/signup',
         name: 'SignupView',
         component: SignupView,
-        meta: {title: 'Đăng ký'}
+        meta: {title: 'Đăng ký', requiresAuth: false}
     },
     {
         path: '/admin/products',
         name: 'AdminProducts',
         component: AdminProducts,
-        meta: {title: 'Admin - Trang danh sách sản phẩm'}
+        meta: {title: 'Admin - Trang danh sách sản phẩm', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/admin',
         name: 'DashboardView',
         component: DashboardView,
-        meta: {title: 'Admin - Dashboard'}
+        meta: {title: 'Admin - Dashboard', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/admin/products/create',
         name: 'AddProduct',
         component: AddProduct,
-        meta: {title: 'Admin - Thêm sản phẩm'}
+        meta: {title: 'Admin - Thêm sản phẩm', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/admin/products/update/:id',
         name: 'EditProduct',
         component: EditProduct,
-        meta: {title: 'Admin - Sửa thông tin sản phẩm'}
+        meta: {title: 'Admin - Sửa thông tin sản phẩm', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/admin/categories',
         name: 'ListCategory',
         component: ListCategory,
-        meta: {title: 'Admin - Trang danh sách danh mục'}
+        meta: {title: 'Admin - Trang danh sách danh mục', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/admin/promotions',
         name: 'ListPromotion',
         component: ListPromotion,
-        meta: {title: 'Admin - Trang danh sách khuyến mãi'}
+        meta: {title: 'Admin - Trang danh sách khuyến mãi', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/admin/promotions/create',
         name: 'AddPromotion',
         component: AddPromotion,
-        meta: {title: 'Admin - Thêm khuyến mãi'}
+        meta: {title: 'Admin - Thêm khuyến mãi', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/admin/promotions/update/:id',
         name: 'EditPromotion',
         component: EditPromotion,
-        meta: {title: 'Admin - Sửa thông tin khuyến mãi'}
+        meta: {title: 'Admin - Sửa thông tin khuyến mãi', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/:slug/:id',
@@ -119,7 +120,7 @@ const routes = [
         path: '/admin/brands',
         name: 'AdminBrands',
         component: AdminBrands,
-        meta: {title: 'Admin - Trang danh sách thương hiệu'}
+        meta: {title: 'Admin - Trang danh sách thương hiệu', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/forgot-password',
@@ -131,26 +132,37 @@ const routes = [
         path: '/orders-list',
         name: 'OrdersList',
         component: OrdersList,
-        meta: {title: 'Đơn hàng'}
+        meta: {title: 'Đơn hàng', requiresAuth: true}
     },
     {
         path: '/orders-list/:id',
         name: 'OrderDetails',
         component: OrderDetails,
-        meta: {title: 'Chi tiết đơn hàng'}
+        meta: {title: 'Chi tiết đơn hàng', requiresAuth: true}
     },
     {
         path: '/admin/orders-list',
         name: 'ListOrder',
         component: ListOrder,
-        meta: {title: 'Admin - Trang danh sách đơn hàng'}
+        meta: {title: 'Admin - Trang danh sách đơn hàng', requiresAuth: true, requiresAdmin: true}
     },
     {
         path: '/account',
         name: 'AccountView',
         component: AccountView,
-        meta: {title: 'Tài khoản'}
-    }
+        meta: {title: 'Tài khoản', requiresAuth: true}
+    },
+    {
+        path: '/test',
+        name: 'TestAuth',
+        component: testAuth,
+    },
+    {
+        path: '/not-found',
+        name: 'NotFound',
+        component: NotFound,
+        meta: {title: 'Not Found'}
+    },
 ]
 
 
@@ -160,9 +172,27 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-    document.title = to.meta.title || 'Your Default Title'; // Set the document title based on the route's meta title
+    document.title = to.meta.title || 'Không có tiêu đề'; // Set the document title based on the route's meta title
 });
+router.beforeEach((to, from, next) => {
 
+    const isAuthenticated = store.state.isAuthenticated;
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
+
+    if (requiresAuth && !isAuthenticated) {
+        // Nếu trang yêu cầu xác thực và người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
+        next('/signin');
+    } else if (requiresAdmin && store.state.user.role !== 'ADMIN') {
+        // Nếu trang yêu cầu quyền Admin và người dùng không có quyền, chuyển hướng đến trang khác
+        next('/not-found'); // hoặc next('/unauthorized') tùy thuộc vào cấu hình của bạn
+    } else if (isAuthenticated && (to.path == '/signin' || to.path == '/signup' || to.path == '/forgot-password')) {
+                next('/');
+    }else{
+        // Nếu route không yêu cầu xác thực, cho phép truy cập
+        next();
+    }
+});
 
 
 export default router

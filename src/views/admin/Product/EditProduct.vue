@@ -105,17 +105,14 @@ export default {
         console.log(err)
       })
       await axios.get(`http://localhost:3030/api/admin/products/${this.id}`).then(res => {
-        console.log(res)
         this.product = res.data
         this.handleChangeTag(res.data.categories)
         this.images = res.data.images
         this.feedbackImages = res.data.imageFeedBack ? res.data.imageFeedBack : []
-        console.log(this.feedbackImages)
       }).catch(err => {
         console.log(err)
       })
       await axios.get(`http://localhost:3030/api/admin/products/sizes/${this.id}`).then(res => {
-        console.log(res)
         this.productSizes = res.data
       }).catch(err => {
         console.log(err)

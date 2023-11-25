@@ -10,8 +10,9 @@ export default {
   name: "AddPromotion",
   components: {LayoutView, Form, Field},
   setup() {
+    const currentDate = new Date().toISOString().split('T')[0];
     const toast = useToast();
-    return {toast}
+    return {toast, currentDate}
   },
   data() {
     const schema = Yup.object().shape({
@@ -32,6 +33,8 @@ export default {
       isPublic: true,
       active: true,
       expiredDate: null,
+
+      minDate: this.currentDate,
     }
   },
 
@@ -166,7 +169,7 @@ export default {
                         <label class="required-label" for="expired-date">Ngày hết hạn</label>
                         <span class="text-danger font-italic text-1 pl-1">{{ errors.expiredDate }}</span>
                       </div>
-                      <Field type="date" name="expiredDate" v-model="expiredDate" class="form-control text-4"
+                      <Field :min="minDate" type="date" name="expiredDate" v-model="expiredDate" class="form-control text-4"
                              id="expired-date"/>
                     </div>
                     <div class="form-group">

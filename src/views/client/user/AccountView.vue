@@ -241,7 +241,6 @@ export default {
           const decodedToken = jwtDecode(token);
           this.email = decodedToken.sub;
           // You can access the decoded claims in the `decodedToken` object
-          console.log('Decoded JWT Claims:', decodedToken);
         } catch (error) {
           // Handle any errors (e.g., invalid JWT format)
           console.error('JWT Decoding Error:', error);
@@ -252,7 +251,6 @@ export default {
       if (this.email) {
         await axios.get(`http://localhost:3030/user/${this.email}`).then(res => {
           this.user = res.data
-          console.log(this.user)
         }).catch(err => {
           console.log(err)
         })

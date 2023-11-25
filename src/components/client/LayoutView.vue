@@ -51,7 +51,8 @@ export default {
         $(this).parent().next().toggleClass("open");
         return false;
       });
-    }
+    },
+
   },
 
   mounted() {

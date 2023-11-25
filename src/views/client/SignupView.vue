@@ -4,6 +4,7 @@ import axios from "axios"
 import {Form, Field} from "vee-validate";
 import * as Yup from "yup";
 import {useToast} from "vue-toastification";
+import jwtDecode from "jwt-decode";
 
 export default {
   name: "SignupView",
@@ -47,6 +48,7 @@ export default {
       }).then(res => {
         this.toast.success("Đăng ký thành công.")
         const token = res.data
+        this.decodeJwt(token)
         try {
           this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
         } catch (err) {
@@ -57,7 +59,33 @@ export default {
         this.toast.error(err.response.data.message)
         console.log(err)
       })
-    }
+    },
+    // Giải mã JWT token sang object User
+    decodeJwt(token) {
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          let emailToken = decodedToken.sub;
+          this.getUser(emailToken)
+        } catch (error) {
+          console.error('JWT Decoding Error:', error);
+        }
+      }
+    },
+
+    async getUser(emailToken) {
+      if (emailToken) {
+        await axios.get(`http://localhost:3030/user/${emailToken}`).then(res => {
+          let user = res.data
+          let roles = res.data.roles
+          let role = roles.includes("ADMIN") ? "ADMIN" : "USER";
+          this.$store.dispatch('login', { username: user.fullName, role: role });
+          // this.$store.commit('setAuth', { isAuthenticated: true, name: user.fullName});
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    },
   }
 }
 </script>

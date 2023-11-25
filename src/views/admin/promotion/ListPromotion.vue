@@ -15,7 +15,6 @@ export default {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/admin/promotions`)
           .then(res => {
-            console.log(res)
             this.promotions = res.data.content
           }).catch(err => {
             console.log(err)

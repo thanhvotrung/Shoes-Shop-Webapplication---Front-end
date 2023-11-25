@@ -31,7 +31,7 @@
                       <div class="box">
                         <div class="b1">
                           <div class="b2">
-                              <img style="width: 95%" v-if="product.images" :src="product.images"
+                              <img style="width: 95%; min-height: 38rem" v-if="product.images" :src="product.images"
                                    alt="image description">
                               <img v-else src="http://placehold.it/275x285" alt="image description">
                             <span class="caption">
@@ -97,7 +97,7 @@
                         <div class="b1">
                           <div class="b2">
                             <a>
-                              <img style="width: 95%" v-if="product.images" :src="product.images"
+                              <img style="width: 95%; min-height: 38rem" v-if="product.images" :src="product.images"
                                    alt="image description">
                               <img v-else src="http://placehold.it/275x285" alt="image description">
                             </a>
@@ -163,6 +163,7 @@
 import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
 import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
+import { mapState } from 'vuex';
 
 import {Carousel, Navigation, Slide, Pagination} from 'vue3-carousel'
 import 'vue3-carousel/dist/carousel.css'
@@ -176,6 +177,12 @@ export default {
     Slide,
     Navigation,
     Pagination,
+  },
+
+  computed: {
+    ...mapState({
+      name: state => state.name,
+    }),
   },
 
   data() {
@@ -247,7 +254,6 @@ export default {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/product/new-products`).then(res => {
         this.newProducts = res.data
-        console.log(res.data)
       }).catch(err => {
         console.log(err)
       })

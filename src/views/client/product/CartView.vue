@@ -93,9 +93,9 @@ export default {
       });
     },
 
-    deleteItem(id) {
-      this.cartsLocal = this.cartsLocal.filter(item => item.product_id != id)
-      this.cartList = this.cartList.filter(item => item.id != id)
+    deleteItem(i) {
+      this.cartsLocal = this.cartsLocal.filter((item, index) => index != i)
+      this.cartList = this.cartList.filter((item, index) => index != i)
       this.checkAfterHandleItem(this.promotionName)
       localStorage.setItem('cartList', JSON.stringify(this.cartsLocal));
     },
@@ -205,23 +205,11 @@ export default {
     calculateDiscount(response) {
       let discount = 0;
       let subtotal = 0;
+      console.log(response)
 
       for (let i = 0; i < this.cartList.length; i++) {
         subtotal += this.cartList[i].price * this.cartList[i].quantity;
         let tmp = response.discountValue;
-
-        if (response.discountType === 1) {
-          tmp = this.cartList[i].price * response.discountValue / 100;
-          if (tmp < response.maximumDiscountValue) {
-            discount += tmp * this.cartList[i].quantity;
-          } else {
-            discount += response.maximumDiscountValue * this.cartList[i].quantity;
-          }
-        }
-
-        if (response.discountType === 2) {
-          discount += tmp * this.cartList[i].quantity;
-        }
 
         if (response.discountType === 1) {
           tmp = this.cartList[i].price * response.discountValue / 100;
@@ -339,7 +327,7 @@ export default {
                     <div class="">
                       <div class="font-weight-bold py-2 cart-name">{{ item.name }}</div>
                       <div class="cart-description">Kích thước: <span class="font-weight-bold">{{ item.size }}</span>
-                        <div style="color: #999" class="pt-2"><i @click="deleteItem(item.id)"
+                        <div style="color: #999" class="pt-2"><i @click="deleteItem(index)"
                                                                  class="bi bi-trash btn-del-cart-item"></i>
                         </div>
                       </div>
@@ -357,7 +345,7 @@ export default {
               <td class="cart-quantity" style="position: relative">
                 <div class="text-row-center">
                   <div class="item-quantity d-flex">
-                    <button v-if="item.quantity == 1" @click="deleteItem(item.id)"><i class="bi bi-trash text-2"></i>
+                    <button v-if="item.quantity == 1" @click="deleteItem(index)"><i class="bi bi-trash text-2"></i>
                     </button>
                     <button v-if="item.quantity > 1" @click="handleUpdateQuantity(index, item.quantity - 1)"><i
                         class="bi bi-dash"></i></button>

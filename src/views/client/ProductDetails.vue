@@ -120,7 +120,6 @@ export default {
 
       await axios.get(`http://localhost:3030/api/product/related-products/${this.id}`).then(res => {
         this.relatedProducts = res.data
-        console.log(res.data)
       }).catch(err => {
         console.log(err)
       })

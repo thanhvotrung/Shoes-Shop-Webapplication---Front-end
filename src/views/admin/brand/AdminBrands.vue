@@ -56,7 +56,6 @@ export default {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/admin/brands`).then(res => {
         this.brands = res.data.content
-        console.log(res)
       }).catch(err => {
         console.log(err)
       })

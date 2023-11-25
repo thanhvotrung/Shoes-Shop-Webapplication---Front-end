@@ -113,7 +113,7 @@ export default {
 </script>
 
 <template>
-  <div style="background-color: #fff; border-radius: 5px" class="px-2 py-2" v-if="data">
+  <div style="background-color: #fff; border-radius: 5px" class="px-2 py-2 mb-3" v-if="data">
     <div class="form-group d-flex" style="padding: 10px 1rem;">
       &ensp;<label class="form-label" for="toDate">Từ:&ensp; </label>
       <input :max="maxDate" v-model="toDate" id="toDate" type="date"  class="toDate form-control" @change="handleTest">
