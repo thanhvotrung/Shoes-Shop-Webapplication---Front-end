@@ -10,7 +10,10 @@ export default {
   components: {LayoutView, Form, Field},
   setup() {
     const toast = useToast();
-    return {toast}
+
+    const currentDate = new Date().toISOString().split('T')[0];
+    return {toast, currentDate}
+
   },
   data() {
     const schema = Yup.object().shape({
@@ -25,6 +28,9 @@ export default {
       schema,
       id: null,
       promotion: null,
+
+      minDate: this.currentDate,
+
     }
   },
   methods: {
@@ -46,10 +52,9 @@ export default {
 
     async fetchData() {
       await axios.get(`http://localhost:3030/api/admin/promotions/${this.id}`).then(res => {
-        console.log(res)
+
         this.promotion = res.data
         this.promotion.expiredAt = this.formatDate(this.promotion.expiredAt)
-        console.log(this.promotion.expiredAt)
       }).catch(err => {
         console.log(err)
       })
@@ -195,7 +200,8 @@ export default {
                     <label class="required-label" for="expired-date">Ngày hết hạn</label>
                     <span class="text-danger font-italic text-1 pl-1">{{ errors.expiredDate }}</span>
                   </div>
-                  <Field type="date" name="expiredDate" v-model="promotion.expiredAt" class="form-control text-4"
+
+                  <Field :min="minDate" type="date" name="expiredDate" v-model="promotion.expiredAt" class="form-control text-4"
                          id="expired-date"/>
                 </div>
                 <div class="form-group">

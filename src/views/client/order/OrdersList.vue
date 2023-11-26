@@ -17,7 +17,7 @@ export default {
   methods: {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/order-list`, {params: {status: this.status, email: this.email}}).then(res => {
-        console.log(res)
+
         this.orders = res.data
       }).catch(err => {
         console.log(err)
@@ -43,7 +43,7 @@ export default {
     },
     getOrderStatus(event){
       this.status = event.currentTarget.getAttribute('data-status')
-      console.log(this.status)
+
       this.fetchData()
     }
   },

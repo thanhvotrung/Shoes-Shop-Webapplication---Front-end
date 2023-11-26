@@ -11,7 +11,7 @@ export default {
     '$route.query': {
       immediate: true,
       handler(newQuery) {
-        console.log('Query parameters changed:', newQuery);
+
         this.handleQueryChange(newQuery);
       }
     },

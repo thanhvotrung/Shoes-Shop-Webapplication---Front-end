@@ -82,7 +82,7 @@ export default {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/admin/categories`).then(res => {
         this.categories = res.data.content
-        console.log(this.categories)
+
       }).catch(err => {
         try {
           if (err.response.status === 401) {

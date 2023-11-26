@@ -11,7 +11,7 @@ export default {
     '$route.query': {
       immediate: true,
       handler(newQuery) {
-        console.log('Query parameters changed:', newQuery);
+
         this.handleQueryChange(newQuery);
       }
     },
@@ -53,7 +53,7 @@ export default {
 
     async fetchData() {
       await axios.get(`http://localhost:3030/api/admin/products`, {params: this.$route.query}).then(res => {
-        console.log(res.data)
+
         const response = res.data
         this.products = response.content
         this.totalPages = response.totalPages

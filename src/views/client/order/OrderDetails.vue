@@ -27,7 +27,7 @@ export default {
           email: this.email
         }
       }).then(res => {
-        console.log(res)
+
         this.orderDetails = res.data
       }).catch(err => {
         console.log(err)
@@ -81,7 +81,11 @@ export default {
             <div class="left-sidebar">
               <div class="nav-sidebar">
                 <router-link to="/account" class="account nav-item">Quản lý tài khoản</router-link>
+<<<<<<< HEAD
                 <router-link to="orders-list" class="buying-order nav-item">Quản lý đơn hàng</router-link>
+=======
+                <router-link to="/orders-list" class="buying-order nav-item">Quản lý đơn hàng</router-link>
+>>>>>>> origin/master
 <!--                <a class="btn btn-primary red-btn sign-out-btn" href="/api/logout">Đăng xuất</a>-->
               </div>
             </div>
@@ -133,7 +137,10 @@ export default {
                 <button class="btn btn-primary red-btn cancel-btn " @click="handleCancelOrder(orderDetails[0].id)">Hủy
                   đơn hàng
                 </button>
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
               </div>
             </div>
           </div>

@@ -68,7 +68,7 @@ export default {
       }
       await axios.post("http://localhost:3030/api/client/products", newQuery).then(res => {
         const response = res.data
-        console.log(res.data)
+
         this.products = response.items
         this.totalPages = response.totalPages
         this.currentPage = response.currentPage
@@ -218,7 +218,8 @@ export default {
                   <div class="box">
                     <div class="b1">
                       <div class="b2">
-                        <img v-if="product.images" :src="product.images"
+
+                        <img style="min-height: 38rem" v-if="product.images" :src="product.images"
                              alt="image description">
                         <img v-else src="http://placehold.it/276x286"
                              alt="image description">

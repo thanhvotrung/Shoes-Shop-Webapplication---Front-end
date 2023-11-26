@@ -64,16 +64,14 @@ export default {
       }).then(async res => {
         this.toast.success("Đăng nhập thành công.")
         const token = res.data
-        this.token = token
-        this.emailToken = this.email
+
+        this.decodeJwt(token)
         try {
           this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
-          await this.getUser()
         } catch (err) {
           console.log(err)
         }
-        this.$router.push("/")
-        // this.$router.back()
+
         this.$refs.closeSidebar.click()
       }).catch(err => {
         this.toast.error(err.response.data.message)
@@ -94,16 +92,14 @@ export default {
       }).then(res => {
         this.toast.success("Đăng ký thành công.")
         const token = res.data
-        this.token = token
-        this.emailToken = this.emailSignup
+
+        this.decodeJwt(token)
         try {
-          this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
-          this.getUser()
+          this.$cookies.set("JWT_TOKEN", `${token}`)
         } catch (err) {
           console.log(err)
         }
-        // this.$router.back()
-        this.$router.push("/")
+
         this.$refs.closeSidebar.click()
       }).catch(err => {
         this.toast.error(err.response.data.message)
@@ -118,47 +114,51 @@ export default {
     },
 
     // Giải mã JWT token sang object User
-    decodeJwt() {
+
+    decodeJwt(token) {
       // JWT token to be decoded
-      const token = this.$cookies.get("JWT_TOKEN"); // Replace with your JWT token
       if (token) {
         try {
-          this.token = token
           // Decode the JWT
           const decodedToken = jwtDecode(token);
-          this.emailToken = decodedToken.sub;
-          this.getUser()
-          // You can access the decoded claims in the `decodedToken` object
-          // console.log('Decoded JWT Claims:', decodedToken);
+          let email = decodedToken.sub;
+          this.getUser(email)
         } catch (error) {
-          // Handle any errors (e.g., invalid JWT format)
+
           console.error('JWT Decoding Error:', error);
         }
       }
     },
 
-    signout() {
-      this.$cookies.remove('JWT_TOKEN')
-      this.token = null
-      this.user = null
-      this.emailToken = null
-      this.$router.push("/")
-    },
 
-    async getUser() {
-      if (this.emailToken) {
-        await axios.get(`http://localhost:3030/user/${this.emailToken}`).then(res => {
-          this.user = res.data
-          console.log(this.user)
+    async getUser(email) {
+      if (email) {
+        await axios.get(`http://localhost:3030/user/${email}`).then(res => {
+          const user = res.data
+          let roles = res.data.roles
+          let role = roles.includes("ADMIN") ? "ADMIN" : "USER";
+          this.$store.dispatch('login', { username: user.fullName, role: role });
+          // this.$store.commit('setAuth', { isAuthenticated: true, name: user.fullName});
+
         }).catch(err => {
           console.log(err)
         })
       }
     },
 
+
+    signout() {
+      // this.$store.commit('setAuth', { isAuthenticated: false, name: null});
+      this.$store.dispatch('logout');
+      this.$cookies.remove('JWT_TOKEN')
+      localStorage.removeItem('AUTH');
+      this.$router.push('/signin');
+    },
+
+
+
   },
   mounted() {
-    this.decodeJwt()
   }
 }
 </script>
@@ -172,11 +172,13 @@ export default {
           <a href="#" class="tel"> <i class="fa fa-envelope-o" aria-hidden="true"></i> giay.phake@donếtchotao</a>
         </div>
         <div class="col-xs-12 col-sm-6 text-right">
-          <span v-if="!user" class="account">
+
+          <span v-if="!this.$store.state.isAuthenticated" class="account">
             <router-link to="/signin">Đăng nhập</router-link> hoặc <router-link
               to="/signup">Đăng ký</router-link></span>
-          <span v-if="user" class="account">Xin chào, <router-link to="/account">{{
-              user.fullName
+          <span v-if="this.$store.state.isAuthenticated" class="account">Xin chào, <router-link to="/account">{{
+              this.$store.state.user.username
+
             }}</router-link> <span> | </span> <span class="signout"
                                                     @click="signout">Đăng xuất</span></span>
         </div>
@@ -215,7 +217,8 @@ export default {
                 </router-link>
               </li>
 
-              <li v-if="token">
+
+              <li v-if="this.$store.state.isAuthenticated">
                 <router-link to="/account" class=""><i class="bi bi-person text-4"></i>
                 </router-link>
               </li>
