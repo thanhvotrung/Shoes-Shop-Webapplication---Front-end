@@ -8,7 +8,6 @@ import Vue3TagsInput from 'vue3-tags-input';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CKEditor from "@ckeditor/ckeditor5-vue"
 import {useToast} from "vue-toastification";
-import FirebaseConfig from "@/utils/FirebaseConfig";
 
 export default {
   name: "EditProduct",
@@ -252,20 +251,6 @@ export default {
           })
     },
 
-    async deleteProduct(id) {
-      for (let i = 0; i < this.product.images.length; i++) {
-        FirebaseConfig.DeleteImage(this.product.images[i])
-      }
-      await axios.delete(`http://localhost:3030/api/admin/products/${id}`)
-          .then(res => {
-            this.toast.success(res.data)
-            this.fetchData()
-            console.log(res)
-          }).catch(err => {
-            console.log(err)
-            this.toast.warning(err.response.data.message)
-          })
-    },
   },
 
   watch: {
@@ -316,8 +301,6 @@ export default {
                     <button @click="refeshCategoryIds" type="submit" id="addToTable"
                             class="btn btn-primary text-3 mx-1">Cập nhật
                       sản phẩm <i class="bi bi-plus-circle-dotted"></i></button>
-                    <button @click="deleteProduct(this.id)" class="btn btn-primary text-3 mx-1">Xóa sản phẩm
-                    </button>
                   </div>
                 </div>
               </div>

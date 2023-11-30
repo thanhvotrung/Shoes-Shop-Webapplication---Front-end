@@ -254,12 +254,18 @@ export default {
                 <Form @submit="handleTest" class="product-form" :validation-schema="schemaQuantity" v-slot="{ errors }">
                   <fieldset>
                     <div class="row-val">
-                      <label for="qty">Số lượng</label>
-                      <Field :class="{'is-invalid': errors.quantity}" name="quantity" v-model="quantity" type="number"
-                             id="qty" placeholder="1"/>
+<!--                      <label for="qty">Số lượng</label>-->
+                        <div class="item-quantity d-flex">
+                          <button type="button" v-if="quantity < 1 ? quantity = 1: quantity" @click="quantity -= 1"><i
+                              class="bi bi-dash"></i></button>
+                          <Field :class="{'is-invalid': errors.quantity}" name="quantity" type="number" v-model="quantity"/>
+                          <button type="button" v-if="quantity > 10 ? quantity = 10: quantity" @click="quantity += 1"><i class="bi bi-plus"></i>
+                          </button>
+                        </div>
                     </div>
                     <div class="row-val">
-                      <button type="submit" style="width:100%">Thêm vào giỏ hàng</button>
+                      <button v-if="sizesProduct.length > 0" type="submit" style="width:100%">Thêm vào giỏ hàng</button>
+                      <button disabled style="background-color: rgb(120, 120, 120); width:100%" v-else>Hết hàng</button>
                     </div>
                   </fieldset>
                   <div class="text-danger font-italic text-1">{{ errors.quantity }}</div>
@@ -455,4 +461,31 @@ export default {
   margin: 0 0 15px;
   color: #000;
 }
+
+.item-quantity {
+  border: 1px solid #fff;
+  border-radius: 50px;
+  background-color: #fff;
+}
+
+.item-quantity button{
+  border-radius: 5px;
+  width: 4rem;
+}
+
+.item-quantity input {
+  text-align: center;
+  padding: 0;
+  width: 4rem;
+}
+
+
+
+.item-quantity input::-webkit-outer-spin-button,
+.item-quantity input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
 </style>

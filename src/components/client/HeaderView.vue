@@ -329,7 +329,7 @@ export default {
   </div><!-- mt search popup end here -->
 </template>
 
-<style>
+<style scoped>
 #mt-header.style17 .mt-bottom-bar {
   padding: 10px 0 10px;
 }

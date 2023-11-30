@@ -164,8 +164,7 @@ export default {
               <button id="addToTable" class="btn btn-primary mx-1 text-2" data-bs-toggle="modal"
                       data-bs-target="#modal-add-new-brand">Thêm mới nhãn hiệu <i
                   class="bi bi-plus-circle-dotted"></i></button>
-              <button id="btn-search" class="btn btn-primary mx-1 text-2">Tìm kiếm <i class="bi bi-search"></i>
-              </button>
+
             </div>
           </div>
         </div>
@@ -230,9 +229,9 @@ export default {
                       data-bs-target="#modal-update-brand"
                       class="btn text-4 btn-update edit-row edit-brand"><i
                   class="bi bi-pencil-square"></i></button>
-              <button @click="deleteBrand(brand.id)" class="btn text-4 btn-delete"><i
-                  class="bi bi-trash3"></i>
-              </button>
+<!--              <button @click="deleteBrand(brand.id)" class="btn text-4 btn-delete"><i-->
+<!--                  class="bi bi-trash3"></i>-->
+<!--              </button>-->
             </td>
           </tr>
           </tbody>
@@ -367,5 +366,12 @@ export default {
 </template>
 
 <style scoped>
+.actions {
+  display: flex;
+  border: none !important;
+}
 
+.btn-update:hover {
+  color: lightgreen;
+}
 </style>

@@ -164,7 +164,7 @@ export default {
           <tbody v-if="orders">
             <tr v-for="order in orders" :key="order.id">
               <td>
-                <a href="/admin/orders/update/{id}" >{{order.id}}</a>
+                <router-link :to="{name: 'EditOrder', params: {id: order.id}}" >{{order.id}}</router-link>
               </td>
               <td>{{order.receiverName}}</td>
               <td>{{order.receiverPhone}}</td>

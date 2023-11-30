@@ -172,7 +172,7 @@ export default {
   </LayoutView>
 </template>
 
-<style>
+<style scoped>
 .breadcrumbs ul li a:hover {
   color: #ff6060
 }

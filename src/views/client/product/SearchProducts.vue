@@ -1,11 +1,11 @@
 <script>
 import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
-
+import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 
 export default {
   name: "SearchProducts",
-  components: {LayoutView},
+  components: {LayoutView, ModalAddToCart},
 
   watch: {
     '$route.query': {
@@ -18,6 +18,8 @@ export default {
 
   data() {
     return {
+      productId: null,
+
       products: [],
       totalPages: null,
       currentPage: null,
@@ -56,7 +58,7 @@ export default {
   },
 
   mounted() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({top: 0, behavior: 'smooth'})
     this.fetchData()
   }
 }
@@ -67,8 +69,8 @@ export default {
     <main id="mt-main">
       <div class="container">
         <div class="row">
-          <div class="col-xs-12 mt-heading text-uppercase text-center py-5" >
-            <h2 class="heading">{{ totalItems }} Kết quả tìm kiếm cho: " {{this.$route.query.keyword}} "</h2>
+          <div class="col-xs-12 mt-heading text-uppercase text-center py-5">
+            <h2 class="heading">{{ totalItems }} Kết quả tìm kiếm cho: " {{ this.$route.query.keyword }} "</h2>
           </div>
         </div>
         <div class="row">
@@ -88,7 +90,8 @@ export default {
                         <img v-else src="http://placehold.it/276x286"
                              alt="image description">
                         <ul class="links add">
-                          <li><a href="#"><i class="icon-handbag"></i><span></span></a></li>
+                          <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
+                                 data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
                           <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
                           <li>
                             <router-link
@@ -159,7 +162,8 @@ export default {
                   </router-link>
                 </li>
                 <li class="mb-2" v-if="currentPage != totalPages">
-                  <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i class="bi bi-chevron-bar-right"></i>
+                  <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i
+                      class="bi bi-chevron-bar-right"></i>
                   </router-link>
                 </li>
 
@@ -169,6 +173,9 @@ export default {
         </div>
       </div>
     </main>
+    <div>
+      <ModalAddToCart :id="productId"/>
+    </div>
   </LayoutView>
 </template>
 

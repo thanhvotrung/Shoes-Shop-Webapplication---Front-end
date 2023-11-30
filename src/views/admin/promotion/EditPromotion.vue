@@ -135,8 +135,8 @@ export default {
               </router-link>
               <button type="submit" id="addToTable" class="btn btn-primary text-3 mx-1">Cập nhật khuyến mại <i
                   class="bi bi-plus-circle-dotted"></i></button>
-              <button @click="deletePromotion(promotion.id)" id="btn-delete" type="button" class="btn btn-danger text-3 mx-1">Xóa khuyến mại <i
-                  class="bi bi-trash"></i></button>
+<!--              <button @click="deletePromotion(promotion.id)" id="btn-delete" type="button" class="btn btn-danger text-3 mx-1">Xóa khuyến mại <i-->
+<!--                  class="bi bi-trash"></i></button>-->
             </div>
           </div>
         </div>

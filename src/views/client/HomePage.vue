@@ -18,7 +18,7 @@
         <div class="container">
           <div class="row">
             <div class="col-xs-12 mt-heading text-uppercase">
-              <h2 class="heading">Sản Phẩm mới</h2>
+              <h2 class="heading">Mua con cặc</h2>
               <p>Sản phẩm này mới ga đó ba</p>
             </div>
           </div>
@@ -157,6 +157,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 </style>
 
 <script>

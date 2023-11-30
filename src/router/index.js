@@ -11,15 +11,16 @@ import ListCategory from "@/views/admin/category/ListCategory.vue";
 import ListPromotion from "@/views/admin/promotion/ListPromotion.vue";
 import AddPromotion from "@/views/admin/promotion/AddPromotion.vue";
 import EditPromotion from "@/views/admin/promotion/EditPromotion.vue";
+import AdminBrands from "@/views/admin/brand/AdminBrands.vue";
+import ListOrder from "@/views/admin/order/ListOrder.vue";
+import EditOrder from "@/views/admin/order/EditOrder.vue";
 import ProductDetails from "@/views/client/ProductDetails.vue";
 import CartView from "@/views/client/product/CartView.vue";
 import ListProduct from "@/views/client/product/ListProduct.vue";
-import AdminBrands from "@/views/admin/brand/AdminBrands.vue";
 import SearchProducts from "@/views/client/product/SearchProducts.vue";
 import ForgotPassword from "@/views/client/user/ForgotPassword.vue";
 import OrdersList from "@/views/client/order/OrdersList.vue";
 import OrderDetails from "@/views/client/order/OrderDetails.vue";
-import ListOrder from "@/views/admin/order/ListOrder.vue";
 import AccountView from "@/views/client/user/AccountView.vue";
 import testAuth from "@/views/testAuth.vue";
 import NotFound from "@/views/client/exception/NotFound.vue";
@@ -147,22 +148,30 @@ const routes = [
         meta: {title: 'Admin - Trang danh sách đơn hàng', requiresAuth: true, requiresAdmin: true}
     },
     {
+        path: '/admin/orders-list/:id',
+        name: 'EditOrder',
+        component: EditOrder,
+        meta: {title: 'Admin - Thông tin đơn hàng', requiresAuth: true, requiresAdmin: true}
+    },
+    {
         path: '/account',
         name: 'AccountView',
         component: AccountView,
         meta: {title: 'Tài khoản', requiresAuth: true}
     },
     {
+        path: '/not-found',
+        name: 'NotFound',
+        component: NotFound,
+        meta: {title: 'Không tìm thấy'}
+    },
+    {
         path: '/test',
         name: 'TestAuth',
         component: testAuth,
     },
-    {
-        path: '/not-found',
-        name: 'NotFound',
-        component: NotFound,
-        meta: {title: 'Not Found'}
-    },
+    {path: '/:pathMatch(.*)*', component: NotFound, meta: {title: 'Không tìm thấy'}},
+
 ]
 
 
@@ -185,10 +194,10 @@ router.beforeEach((to, from, next) => {
         next('/signin');
     } else if (requiresAdmin && store.state.user.role !== 'ADMIN') {
         // Nếu trang yêu cầu quyền Admin và người dùng không có quyền, chuyển hướng đến trang khác
-        next('/not-found'); // hoặc next('/unauthorized') tùy thuộc vào cấu hình của bạn
+        next({path: '/not-found'}); // hoặc next('/unauthorized') tùy thuộc vào cấu hình của bạn
     } else if (isAuthenticated && (to.path == '/signin' || to.path == '/signup' || to.path == '/forgot-password')) {
-                next('/');
-    }else{
+        next('/');
+    } else {
         // Nếu route không yêu cầu xác thực, cho phép truy cập
         next();
     }

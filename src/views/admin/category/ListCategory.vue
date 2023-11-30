@@ -123,8 +123,6 @@ export default {
               <button id="addToTable" class="btn btn-primary mx-1 text-2" data-bs-toggle="modal"
                       data-bs-target="#modal-add-new-category">Thêm mới danh mục <i
                   class="bi bi-plus-circle-dotted"></i></button>
-              <button id="btn-search" class="btn btn-primary mx-1 text-2">Tìm kiếm <i class="bi bi-search"></i>
-              </button>
             </div>
           </div>
         </div>
@@ -186,9 +184,9 @@ export default {
                       data-bs-target="#modal-update-category"
                       class="btn text-4 btn-update edit-row edit-category"><i
                   class="bi bi-pencil-square"></i></button>
-              <button @click="deleteCategory(category.id)" class="btn text-4 btn-delete"><i
-                  class="bi bi-trash3"></i>
-              </button>
+<!--              <button @click="deleteCategory(category.id)" class="btn text-4 btn-delete"><i-->
+<!--                  class="bi bi-trash3"></i>-->
+<!--              </button>-->
             </td>
           </tr>
           </tbody>
@@ -274,118 +272,10 @@ export default {
   </LayoutView>
 </template>
 
-<style>
-.checkbox-wrapper-7 .tgl {
-  display: none;
-}
-
-.checkbox-wrapper-7 .tgl,
-.checkbox-wrapper-7 .tgl:after,
-.checkbox-wrapper-7 .tgl:before,
-.checkbox-wrapper-7 .tgl *,
-.checkbox-wrapper-7 .tgl *:after,
-.checkbox-wrapper-7 .tgl *:before,
-.checkbox-wrapper-7 .tgl + .tgl-btn {
-  box-sizing: border-box;
-}
-
-.checkbox-wrapper-7 .tgl::-moz-selection,
-.checkbox-wrapper-7 .tgl:after::-moz-selection,
-.checkbox-wrapper-7 .tgl:before::-moz-selection,
-.checkbox-wrapper-7 .tgl *::-moz-selection,
-.checkbox-wrapper-7 .tgl *:after::-moz-selection,
-.checkbox-wrapper-7 .tgl *:before::-moz-selection,
-.checkbox-wrapper-7 .tgl + .tgl-btn::-moz-selection,
-.checkbox-wrapper-7 .tgl::selection,
-.checkbox-wrapper-7 .tgl:after::selection,
-.checkbox-wrapper-7 .tgl:before::selection,
-.checkbox-wrapper-7 .tgl *::selection,
-.checkbox-wrapper-7 .tgl *:after::selection,
-.checkbox-wrapper-7 .tgl *:before::selection,
-.checkbox-wrapper-7 .tgl + .tgl-btn::selection {
-  background: none;
-}
-
-.checkbox-wrapper-7 .tgl + .tgl-btn {
-  outline: 0;
-  display: block;
-  width: 4em;
-  height: 2em;
-  position: relative;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.checkbox-wrapper-7 .tgl + .tgl-btn:after,
-.checkbox-wrapper-7 .tgl + .tgl-btn:before {
-  position: relative;
-  display: block;
-  content: "";
-  width: 50%;
-  height: 100%;
-}
-
-.checkbox-wrapper-7 .tgl + .tgl-btn:after {
-  left: 0;
-}
-
-.checkbox-wrapper-7 .tgl + .tgl-btn:before {
-  display: none;
-}
-
-.checkbox-wrapper-7 .tgl:checked + .tgl-btn:after {
-  left: 50%;
-}
-
-.checkbox-wrapper-7 .tgl-ios + .tgl-btn {
-  background: #fbfbfb;
-  border-radius: 2em;
-  padding: 2px;
-  transition: all 0.4s ease;
-  border: 1px solid #e8eae9;
-}
-
-.checkbox-wrapper-7 .tgl-ios + .tgl-btn:after {
-  border-radius: 2em;
-  background: #fbfbfb;
-  transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), padding 0.3s ease, margin 0.3s ease;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0 rgba(0, 0, 0, 0.08);
-}
-
-.checkbox-wrapper-7 .tgl-ios + .tgl-btn:hover:after {
-  will-change: padding;
-}
-
-.checkbox-wrapper-7 .tgl-ios + .tgl-btn:active {
-  box-shadow: inset 0 0 0 2em #e8eae9;
-}
-
-.checkbox-wrapper-7 .tgl-ios + .tgl-btn:active:after {
-  padding-right: 0.8em;
-}
-
-.checkbox-wrapper-7 .tgl-ios:checked + .tgl-btn {
-  background: #86d993;
-}
-
-.checkbox-wrapper-7 .tgl-ios:checked + .tgl-btn:active {
-  box-shadow: none;
-}
-
-.checkbox-wrapper-7 .tgl-ios:checked + .tgl-btn:active:after {
-  margin-left: -0.8em;
-}
-
+<style scoped>
 .actions {
   display: flex;
   border: none !important;
-}
-
-.btn-delete:hover {
-  color: orangered;
 }
 
 .btn-update:hover {

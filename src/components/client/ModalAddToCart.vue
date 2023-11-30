@@ -119,7 +119,7 @@ export default {
   <div class="modal fade" id="modal-add-to-cart" tabindex="-1" role="dialog"
        aria-labelledby="modalAddNewCategory" aria-hidden="true">
     <div style="transition: transform .3s ease-out; translate: 0 50px;" class="modal-dialog modal-sm" role="document">
-      <div class="modal-content" style="border: 0px solid rgba(0,0,0,.2);
+      <div class="modal-content" style="width: 350px; border: 0px solid rgba(0,0,0,.2);
     border-radius: 10px;">
         <div class="modal-body" v-if="productSmallCart">
           <div>

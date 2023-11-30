@@ -203,7 +203,6 @@ export default {
                   <i class="btn-update bi bi-pencil-square"></i>
                 </router-link>
               </button>
-<!--              <button @click="deleteProduct(product.id)" class="btn text-4 btn-delete"><i class="bi bi-trash3"></i></button>-->
             </td>
           </tr>
           </tbody>
@@ -246,17 +245,14 @@ export default {
   </LayoutView>
 </template>
 
-<style>
-@import 'bootstrap-icons/font/bootstrap-icons.css';
+<style scoped>
+
 
 .actions {
   display: flex;
   border: none !important;
 }
 
-.btn-delete:hover {
-  color: orangered;
-}
 
 .btn-update:hover {
   color: lightgreen;

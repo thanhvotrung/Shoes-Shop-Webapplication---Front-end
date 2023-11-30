@@ -12,7 +12,8 @@ export default {
   data() {
     return {
       productId: null,
-
+      sortingOption: '',
+      name: "",
       brands: [],
       categories: [],
       products: [],
@@ -42,30 +43,46 @@ export default {
     'sizesCheck': {
       immediate: true,
       handler(val) {
-        this.$router.push({query: {...this.$route.query, page:1, sizes_filter: val}})
+        this.$router.push({query: {...this.$route.query, page: 1, sizes_filter: val}})
       }
     },
+    name(val) {
+      this.$router.push({query: {...this.$route.query, page: 1, name_filter: val}})
+    },
+    sortingOption(val) {
+      this.$router.push({query: {...this.$route.query, page: 1, sorting_option: val}})
+    },
     brandsCheck(val) {
-      this.$router.push({query: {...this.$route.query, page:1, brands_filter: val}})
+      this.$router.push({query: {...this.$route.query, page: 1, brands_filter: val}})
     },
     categoriesCheck(val) {
-      this.$router.push({query: {...this.$route.query, page:1, categories_filter: val}})
+      this.$router.push({query: {...this.$route.query, page: 1, categories_filter: val}})
     },
     rangePriceValue(val) {
-      this.$router.push({query: {...this.$route.query, page:1, min_price: Math.round(val[0] * 100000), max_price: Math.round(val[1] * 100000)}})
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          page: 1,
+          min_price: Math.round(val[0] * 100000),
+          max_price: Math.round(val[1] * 100000)
+        }
+      })
     },
   },
 
   methods: {
     async handleQueryChange() {
       const newQuery = {
+        name: this.name,
         brands: this.brandsCheck,
         categories: this.categoriesCheck,
         sizes: this.sizesCheck,
-        min_price: this.rangePriceValue[0]*100000 || 0 ,
-        max_price: this.rangePriceValue[1]*100000 || 10000000,
-        page: this.$route.query.page || 1
+        min_price: this.rangePriceValue[0] * 100000 || 0,
+        max_price: this.rangePriceValue[1] * 100000 || 10000000,
+        page: this.$route.query.page || 1,
+        sorting_option: this.sortingOption
       }
+      // await new Promise(resolve => setTimeout(resolve, 500)); // 1000 milliseconds = 1 giây
       await axios.post("http://localhost:3030/api/client/products", newQuery).then(res => {
         const response = res.data
         this.products = response.items
@@ -83,12 +100,14 @@ export default {
       })
 
       const newQuery = {
+        name: this.name,
         brands: this.brandsCheck,
         categories: this.categoriesCheck,
         sizes: this.sizesCheck,
-        min_price: this.rangePriceValue[0]*100000 || 0,
-        max_price: this.rangePriceValue[1]*100000 || 10000000,
-        page: this.$route.query.page || 1
+        min_price: this.rangePriceValue[0] * 100000 || 0,
+        max_price: this.rangePriceValue[1] * 100000 || 10000000,
+        page: this.$route.query.page || 1,
+        sorting_option: this.sortingOption
       }
       await axios.post("http://localhost:3030/api/client/products", newQuery).then(res => {
         const response = res.data
@@ -107,7 +126,7 @@ export default {
   },
 
   mounted() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({top: 0, behavior: 'smooth'})
     this.fetchData()
   }
 }
@@ -131,86 +150,115 @@ export default {
             <!-- shop-widget filter-widget of the Page start here -->
             <section class="shop-widget filter-widget bg-grey">
               <h2 class="text-5">Bộ lọc sản phẩm</h2>
-              <span class="sub-title">Lọc theo thương hiệu</span>
-              <!-- nice-form start here -->
-              <ul v-if="brands" class="list-unstyled nice-form">
-                <li v-for="(brand) in brands" :key="brand.id">
-                  <label :for="brand.name">
-                    <input v-model="brandsCheck" :value="brand.id" :id="brand.name"
-                           type="checkbox">
-                    <span class="fake-input"></span>
-                    <span class="fake-label">{{ brand.name }}</span>
-                  </label>
-                </li>
-              </ul><!-- nice-form end here -->
+<!--              <div class="nice-form search-title">-->
+<!--                <button @click="this.$router.replace({'query': null});">Hủy lọc</button>-->
+<!--              </div>-->
+              <div>
+                <span class="sub-title">Lọc theo tên</span>
+                <div class="nice-form search-title">
+                  <input v-model="name" class="search-title-item" type="text" placeholder="Tìm kiếm theo tên">
+                </div>
+                <!-- nice-form end here -->
+              </div>
 
-              <span class="sub-title">Lọc theo loại giày</span>
-              <!-- nice-form start here -->
-              <ul v-if="categories" class="list-unstyled nice-form">
-                <li v-for="(category) in categories" :key="category.id">
-                  <label :for="category.name">
-                    <input v-model="categoriesCheck" :id="category.name" :value="category.id"
-                           type="checkbox">
-                    <span class="fake-input"></span>
-                    <span class="fake-label">{{ category.name }}</span>
-                  </label>
-                </li>
-              </ul><!-- nice-form end here -->
+              <div>
+                <span class="sub-title">Lọc theo thương hiệu</span>
+                <!-- nice-form start here -->
+                <ul v-if="brands" class="list-unstyled nice-form">
+                  <li v-for="(brand) in brands" :key="brand.id">
+                    <label :for="brand.name">
+                      <input v-model="brandsCheck" :value="brand.id" :id="brand.name"
+                             type="checkbox">
+                      <span class="fake-input"></span>
+                      <span class="fake-label">{{ brand.name }}</span>
+                    </label>
+                  </li>
+                </ul><!-- nice-form end here -->
+              </div>
 
-              <span class="sub-title">Lọc theo kích thước</span>
-              <div class="nice-form d-flex flex-wrap">
-                <div v-for="(size2) in sizes" :key="size2" class="mr-2 mb-2 rounded">
-                  <input v-model="sizesCheck" type="checkbox" class="btn-check" name="options-size"
-                         :id="size2" :value="size2">
-                  <label style="width:100%" class="btn btn-outline-secondary text-5" :for="size2">{{
-                      size2
-                    }}</label>
+              <div>
+                <span class="sub-title">Lọc theo loại giày</span>
+                <!-- nice-form start here -->
+                <ul v-if="categories" class="list-unstyled nice-form">
+                  <li v-for="(category) in categories" :key="category.id">
+                    <label :for="category.name">
+                      <input v-model="categoriesCheck" :id="category.name" :value="category.id"
+                             type="checkbox">
+                      <span class="fake-input"></span>
+                      <span class="fake-label">{{ category.name }}</span>
+                    </label>
+                  </li>
+                </ul><!-- nice-form end here -->
+              </div>
+
+              <div>
+                <span class="sub-title">Lọc theo kích thước</span>
+                <div class="nice-form d-flex flex-wrap">
+                  <div v-for="(size2) in sizes" :key="size2" class="mr-2 mb-2 rounded">
+                    <input v-model="sizesCheck" type="checkbox" class="btn-check" name="options-size"
+                           :id="size2" :value="size2">
+                    <label style="width:100%" class="btn btn-outline-secondary text-5" :for="size2">{{
+                        size2
+                      }}</label>
+                  </div>
                 </div>
               </div>
 
-              <span class="sub-title" style="margin-bottom: 40px">Lọc theo giá tiền</span>
-              <div class="mt-3">
-                <Slider v-model="rangePriceValue" :format="format"/>
+              <div>
+                <span class="sub-title" style="margin-bottom: 40px">Lọc theo giá tiền</span>
+                <div class="mt-3">
+                  <Slider v-model="rangePriceValue" :format="format"/>
+                </div>
+                <div class="price-range mt-3">
+                <span class="price">Giá tiền &nbsp;   {{ formattedPrice(rangePriceValue[0] * 100000) }}  &nbsp;  -  &nbsp;   {{
+                    formattedPrice(rangePriceValue[1] * 100000)
+                  }}</span>
+                </div>
               </div>
-              <div class="price-range mt-3">
-                <span class="price">Giá tiền &nbsp;   {{ formattedPrice(rangePriceValue[0] * 100000) }}  &nbsp;  -  &nbsp;   {{ formattedPrice(rangePriceValue[1] * 100000) }}</span>
-                <!--                <a href="#" class="filter-btn">Filter</a>-->
-                <!--                <a class="filter-btn">Filter</a>-->
-              </div>
+
             </section><!-- shop-widget filter-widget of the Page end here -->
           </aside><!-- sidebar of the Page end here -->
           <div class="col-xs-12 col-sm-8 col-md-9 wow fadeInRight" data-wow-delay="0.4s">
             <!-- mt shoplist header start here -->
-            <header class="mt-shoplist-header" style="padding: 26.5px 0">
-              <!-- btn-box start here -->
-<!--              <div class="btn-box">-->
-<!--                <ul class="list-inline">-->
-<!--                  <li>-->
-<!--                    <a href="#" class="drop-link">-->
-<!--                      Default Sorting <i aria-hidden="true" class="fa fa-angle-down"></i>-->
-<!--                    </a>-->
-<!--                    <div class="drop">-->
-<!--                      <ul class="list-unstyled">-->
-<!--                        <li><a href="#">ASC</a></li>-->
-<!--                        <li><a href="#">DSC</a></li>-->
-<!--                        <li><a href="#">Price</a></li>-->
-<!--                        <li><a href="#">Relevance</a></li>-->
-<!--                      </ul>-->
-<!--                    </div>-->
-<!--                  </li>-->
-<!--                  <li><a class="mt-viewswitcher" href="#"><i class="fa fa-th-large" aria-hidden="true"></i></a></li>-->
-<!--                  <li><a class="mt-viewswitcher" href="#"><i class="fa fa-th-list" aria-hidden="true"></i></a></li>-->
-<!--                </ul>-->
-<!--              </div>-->
-              <!-- btn-box end here -->
-              <!-- mt-textbox start here -->
-<!--              <div class="mt-textbox">-->
-<!--                <p>Showing <strong>1–9</strong> of <strong>65</strong> results</p>-->
-<!--              </div>-->
-              <!-- mt-textbox end here -->
-            </header><!-- mt shoplist header end here -->
+            <header class="mt-shoplist-header">
+              <!--               btn-box start here -->
+              <div class="btn-box">
+                <ul class="list-inline">
+                  <li>
+                    <a style="width: 18rem; text-align: center" href="#" class="drop-link">
+                      <span v-if="sortingOption == ''">Mặc định</span>
+                      <span v-else-if="sortingOption == 'asc'">Giá từ thấp đến cao</span>
+                      <span v-else>Giá từ cao đến thấp</span>
+                      &ensp;<i aria-hidden="true" class="fa fa-angle-down"></i>
+                    </a>
+                    <div class="drop">
+                      <ul class="list-unstyled">
+                        <li><a @click="sortingOption = ''" href="#">Mặc định</a></li>
+                        <li><a @click="sortingOption = 'asc'" href="#">Giá từ thấp đến cao</a></li>
+                        <li><a @click="sortingOption = 'desc'" href="#">Giá từ cao đến thấp</a></li>
+
+                      </ul>
+                    </div>
+                  </li>
+                </ul>
+                <!--                <select v-model="sortingOption">-->
+                <!--                  <option value="">Mặc định</option>-->
+                <!--                  <option value="asc">Giá từ thấp đến cao</option>-->
+                <!--                  <option value="desc">Giá từ cao đến thấp</option>-->
+                <!--                </select>-->
+
+              </div>
+              <!--               btn-box end here -->
+              <!--               mt-textbox start here -->
+              <!--                            <div class="mt-textbox">-->
+              <!--                              <p>Showing <strong>1–9</strong> of <strong>65</strong> results</p>-->
+              <!--                            </div>-->
+              <!--               mt-textbox end here -->
+            </header>
+            <!-- mt shoplist header end here -->
             <!-- mt productlisthold start here -->
-            <ul v-if="products" class="mt-productlisthold list-inline d-flex flex-wrap justify-content-start">
+
+            <ul class="mt-productlisthold list-inline d-flex flex-wrap justify-content-start">
               <li v-for="product in products" :key="product.id">
                 <!-- mt product1 large start here -->
                 <div class="mt-product1">
@@ -252,8 +300,9 @@ export default {
                   <br>
                 </div><!-- mt product1 center end here -->
               </li>
+            </ul>
+            <!-- mt productlisthold end here -->
 
-            </ul><!-- mt productlisthold end here -->
             <section v-if="products <= 0" class="mt-error-sec dark vh-100">
               <div class="container">
                 <div class="row">
@@ -263,8 +312,9 @@ export default {
                 </div>
               </div>
             </section>
+
             <!-- mt pagination start here -->
-            <nav class="mt-pagination">
+            <nav v-else class="mt-pagination">
               <ul v-if="totalPages" class="list-inline">
                 <li class="mb-2" v-if="currentPage != 1">
                   <router-link :to="{query: {...this.$route.query, page: 1}}"><i class="bi bi-chevron-bar-left"></i>
@@ -288,7 +338,8 @@ export default {
                   </router-link>
                 </li>
                 <li class="mb-2" v-if="currentPage != totalPages">
-                  <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i class="bi bi-chevron-bar-right"></i>
+                  <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i
+                      class="bi bi-chevron-bar-right"></i>
                   </router-link>
                 </li>
 
@@ -298,7 +349,9 @@ export default {
         </div>
       </div>
     </main>
-    <div><ModalAddToCart :id="productId"/></div>
+    <div>
+      <ModalAddToCart :id="productId"/>
+    </div>
   </LayoutView>
 </template>
 
@@ -310,10 +363,18 @@ export default {
 .btn-check:checked + .btn {
   background-color: #f4f2f2;
   color: #000000;
-  border: 1px solid #000000;
+  border: 1px solid #4b4b4b;
 }
 
 .mt-pagination ul a {
   padding: 5px 15px;
 }
+
+.search-title input {
+  padding: 3px 9px;
+  border: 2px solid #777676;
+  border-radius: 5px;
+  outline: none;
+}
+
 </style>

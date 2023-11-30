@@ -128,7 +128,6 @@ export default {
       if (this.email) {
         await axios.get(`http://localhost:3030/user/${this.email}`).then(res => {
           this.user = res.data
-          // console.log(this.order)
         }).catch(err => {
           console.log(err)
         })
@@ -205,7 +204,6 @@ export default {
     calculateDiscount(response) {
       let discount = 0;
       let subtotal = 0;
-      console.log(response)
 
       for (let i = 0; i < this.cartList.length; i++) {
         subtotal += this.cartList[i].price * this.cartList[i].quantity;
@@ -269,7 +267,7 @@ export default {
         receiver_name: this.user.fullName,
         receiver_phone: this.user.phone,
         receiver_address: this.user.address,
-        coupon_code: this.promotionName,
+        coupon_code: this.promotionName.replace(/\s/g,''),
         total_price: this.total,
         subtotal_price: this.subtotal,
         note: this.note,
@@ -277,7 +275,6 @@ export default {
       }
       await axios.post(`http://localhost:3030/api/orders`, obj)
           .then(res => {
-            console.log(res.data)
             this.toast.success("Đặt hàng thành công.")
             setTimeout(() => {
               this.$router.push({name: 'OrderDetails', params: {id: res.data}});
@@ -297,6 +294,9 @@ export default {
     this.token = this.$cookies.get("JWT_TOKEN")
     this.decodeJwt()
     this.getUser()
+  },
+  watch(){
+
   }
 }
 </script>
@@ -349,7 +349,7 @@ export default {
                     </button>
                     <button v-if="item.quantity > 1" @click="handleUpdateQuantity(index, item.quantity - 1)"><i
                         class="bi bi-dash"></i></button>
-                    <input type="number" v-model="item.quantity">
+                    <input disabled type="number" v-model="item.quantity" >
                     <button @click="handleUpdateQuantity(index, item.quantity + 1)"><i class="bi bi-plus"></i>
                     </button>
                   </div>
@@ -588,6 +588,5 @@ export default {
   background-color: #fff;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900,900italic%7cMontserrat:400,700%7cOxygen:400,300,700');
 
 </style>
