@@ -13,6 +13,15 @@ export default {
     return {toast}
   },
 
+  watch: {
+    '$route.query': {
+      immediate: true,
+      handler(newQuery) {
+        this.handleQueryChange(newQuery);
+      }
+    },
+  },
+
   data() {
     const schema = Yup.object().shape({
       name: Yup.string().required("Tên không được trống."),
@@ -25,10 +34,27 @@ export default {
 
       idUpdate: null,
       categoryUpdate: null,
+
+      idSearch: null,
+      nameSearch: null,
+      statusSearch: "",
+      totalPages: null,
+      currentPage: null,
     }
   },
 
   methods: {
+    async handleQueryChange(query) {
+      await axios.get(`http://localhost:3030/api/admin/categories`, {params: query}).then(res => {
+        const response = res.data
+        this.categories = response.content
+        this.totalPages = response.totalPages
+        this.currentPage = response.number +1
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+
     async addCategory() {
       const newCategory = {
         name: this.name,
@@ -81,7 +107,10 @@ export default {
 
     async fetchData() {
       await axios.get(`http://localhost:3030/api/admin/categories`).then(res => {
-        this.categories = res.data.content
+        const response = res.data
+        this.categories = response.content
+        this.totalPages = response.totalPages
+        this.currentPage = response.number +1
       }).catch(err => {
         try {
           if (err.response.status === 401) {
@@ -105,6 +134,7 @@ export default {
     }
   },
   mounted() {
+    this.$router.push({query: {}})
     this.fetchData()
   }
 }
@@ -140,13 +170,13 @@ export default {
           <tr>
             <!-- <form method="GET" id="search-form"> -->
             <th>
-              <input type="text" name="id" id="id" class="form-control search-input">
+              <input v-model="idSearch" @change="this.$router.push({query: {...this.$route.query, id: this.idSearch}})" type="text" name="id" id="id" class="form-control search-input">
             </th>
             <th>
-              <input type="text" name="name" id="name" class="form-control search-input">
+              <input v-model="nameSearch" @change="this.$router.push({query: {...this.$route.query, name: this.nameSearch}})" type="text" name="name" id="name" class="form-control search-input">
             </th>
             <th>
-              <select name="status" class="form-control search-select" id="status">
+              <select v-model="statusSearch" @change="this.$router.push({query: {...this.$route.query, status: this.statusSearch}})" name="status" class="form-control search-select" id="status">
                 <option value="">Tất cả</option>
                 <option value="0">Ẩn</option>
                 <option value="1">Hiển thị</option>
@@ -192,10 +222,38 @@ export default {
           </tbody>
         </table>
         <br>
-        <!-- Pagination -->
-        <nav aria-label="Page navigation">
-          <ul class="pagination" id="pagination"></ul>
+        <!-- mt pagination start here -->
+        <nav class="mt-pagination">
+          <ul v-if="totalPages" class="list-inline">
+            <li v-if="currentPage != 1">
+              <router-link :to="{query: {...this.$route.query, page: 1}}"><i class="bi bi-chevron-bar-left"></i>
+              </router-link>
+            </li>
+            <li v-if="currentPage != 1">
+              <router-link :to="{query: {...this.$route.query, page: currentPage - 1}}">
+                <i class="bi bi-chevron-left"></i>
+              </router-link>
+            </li>
+            <li v-for="page in totalPages" :key="page">
+              <router-link v-if="page == currentPage" style="background-color: #ff6060; color: #fff"
+                           :to="{query: {...this.$route.query, page: page}}">{{ page }}
+              </router-link>
+              <router-link v-else :to="{query: {...this.$route.query, page: page}}">{{ page }}
+              </router-link>
+            </li>
+            <li v-if="currentPage != totalPages">
+              <router-link :to="{query: {...this.$route.query, page: currentPage + 1}}">
+                <i class="bi bi-chevron-right"></i>
+              </router-link>
+            </li>
+            <li v-if="currentPage != totalPages">
+              <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i class="bi bi-chevron-bar-right"></i>
+              </router-link>
+            </li>
+
+          </ul>
         </nav>
+        <!-- mt pagination end here -->
       </div>
 
       <!-- Modal add new category-->

@@ -23,7 +23,7 @@ export default {
         plugins: {
           title: {
             display: true,
-            text: 'Thống kê doanh số',
+            text: 'Tổng sản phẩm bán được theo nhãn hiệu',
             padding: {
               top: 10,
               bottom: 30

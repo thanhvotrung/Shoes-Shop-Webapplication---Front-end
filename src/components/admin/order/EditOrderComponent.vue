@@ -12,7 +12,7 @@ export default {
     const order = ref(null)
     const orderDetails = ref(null)
 
-    await new Promise(resolve => setTimeout(resolve, 1000)); // 1000 milliseconds = 1 giây
+    // await new Promise(resolve => setTimeout(resolve, 1000)); // 1000 milliseconds = 1 giây
 
     await axios(`http://localhost:3030/api/admin/orders/info/${id}`)
         .then(res => {
@@ -90,8 +90,8 @@ export default {
                            style="border: 1px solid #cccc"><i
                   class="bi bi-chevron-left"></i> Trở về
               </router-link>
-              <button type="button" id="addToTable" class="btn btn-primary mx-1 text-3 btn-update-order">Cập nhật <i
-                  class="bi bi-plus-circle-dotted"></i></button>
+<!--              <button type="button" id="addToTable" class="btn btn-primary mx-1 text-3 btn-update-order">Cập nhật <i-->
+<!--                  class="bi bi-plus-circle-dotted"></i></button>-->
             </div>
           </div>
         </div>
@@ -152,8 +152,8 @@ export default {
                             <div class="input-group-prepend">
                               <span class="input-group-text text-4"><i class="bi bi-person"></i></span>
                             </div>
-                            <div v-if="order.status != 1" id="receiver-name" class="form-control text-4" v-text="order.receiverName"></div>
-                            <input v-else id="receiver-name" type="text" class="form-control text-4" v-model="order.receiverName">
+                            <div id="receiver-name" class="form-control text-4" v-text="order.receiverName"></div>
+<!--                            <input v-else id="receiver-name" type="text" class="form-control text-4" v-model="order.receiverName">-->
                             <span class="invalid-feedback" id="invalid-feedback-name">Họ tên trống</span>
                           </div>
                         </div>
@@ -162,9 +162,9 @@ export default {
                             <div class="input-group-prepend">
                               <span class="input-group-text text-4"><i class="bi bi-telephone"></i></span>
                             </div>
-                            <div v-if="order.status != 1" id="receiver-phone" class="form-control text-4" v-text="order.receiverPhone"></div>
-                            <input v-else id="receiver-phone" type="text" class="form-control text-4"
-                                   v-model="order.receiverPhone">
+                            <div id="receiver-phone" class="form-control text-4" v-text="order.receiverPhone"></div>
+<!--                            <input v-else id="receiver-phone" type="text" class="form-control text-4"-->
+<!--                                   v-model="order.receiverPhone">-->
                             <span class="invalid-feedback" id="invalid-feedback-phone">Điện thoại trống</span>
                           </div>
                         </div>
@@ -172,65 +172,16 @@ export default {
                       <div class="row mt-2">
                         <div class="col-md-12">
                           <div class="input-group">
-                            <textarea disabled v-if="order.status != 1" class="pl-2 text-4" name="receiver-address" id="receiver-address" cols="100" rows="5"
+                            <textarea disabled class="pl-2 text-4" name="receiver-address" id="receiver-address" cols="100" rows="5"
                                       v-model="order.receiverAddress"></textarea>
-                            <textarea v-else class="pl-2 text-4" name="receiver-address" id="receiver-address" cols="100" rows="5"
-                                      v-model="order.receiverAddress"></textarea>
+<!--                            <textarea v-else class="pl-2 text-4" name="receiver-address" id="receiver-address" cols="100" rows="5"-->
+<!--                                      v-model="order.receiverAddress"></textarea>-->
                             <span class="invalid-feedback" id="invalid-feedback-address">Địa chỉ trống</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="info-div pt-5">
-                      <label>Chi tiết đơn hàng</label>
-                      <div class="table-responsive">
-                        <table class="table table-bordered">
-                          <thead>
-                          <tr>
-                            <th>Sản phẩm</th>
-                            <th>Kích cỡ</th>
-                            <th>Số lượng</th>
-                            <th>Giá tiền</th>
-                            <th>Khuyến mãi</th>
-                            <th>Mức giảm</th>
-                            <th>Thành tiền</th>
-                          </tr>
-                          </thead>
-                          <tbody v-if="orderDetails">
-                          <tr v-for="orderDetail in orderDetails" :key="orderDetail.id">
-                            <td>
-                              <span target="_blank" href="#">{{orderDetail.product.name}}</span>
-                            </td>
-                            <td>
-                              <span>{{orderDetail.size}}</span>
-                            </td>
-                            <td>
-                              <span class="text-quantity">{{ orderDetail.quantity }}</span>
-                            </td>
-                            <td>
-                              <span class="text-price">{{ formattedPrice(orderDetail.price) }}</span>
-                            </td>
-                            <td>
-                              <span v-if="order.promotion != null" v-text="order.promotion.couponCode"></span>
-                            </td>
-                            <td>
-                              <div v-if="order.promotion != null">
-                                <div v-if="order.promotion.discountType == 1">
-                                  <span v-text="order.promotion.discountValue"></span> %
-                                </div>
-                                <div v-if="order.promotion.discountType == 2">
-                                  <span class="text-price" v-text="formattedPrice(order.promotion.discountValue)"></span>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <span class="text-price" v-text="formattedPrice(order.totalPrice)"></span>
-                            </td>
-                          </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+
                   </div>
                   <div class="col-md-4">
                     <div class="edit-order-div">
@@ -244,14 +195,65 @@ export default {
                       <div class="mb-3">
                         <label>Ghi chú</label>
                         <div>
-                          <textarea disabled v-if="order.status != 1" class="pl-2" name="note" id="note" cols="40" rows="5" placeholder="Ghi chú" v-text="order.note"></textarea>
-                          <textarea v-else class="pl-2" name="note" id="note" cols="40" rows="5" placeholder="Ghi chú" v-text="order.note"></textarea>
+                          <textarea style="width: 100%" disabled class="pl-2" name="note" id="note"  rows="5" placeholder="Ghi chú" v-text="order.note"></textarea>
+<!--                          <textarea v-else class="pl-2" name="note" id="note" cols="40" rows="5" placeholder="Ghi chú" v-text="order.note"></textarea>-->
                         </div>
                       </div>
                       <i v-if="order.modifiedAt">Chỉnh sửa lần cuối lúc <span
                           v-text="formattedDate(order.modifiedAt)"></span> bởi <span
                           v-text="order.modifiedBy.fullName"></span></i>
                     </div>
+                  </div>
+                </div>
+                <div class="info-div pt-5">
+                  <label>Chi tiết đơn hàng</label>
+                  <div class="table-responsive">
+                    <table class="table table-bordered">
+                      <thead>
+                      <tr>
+                        <th>Sản phẩm</th>
+                        <th>Kích cỡ</th>
+                        <th>Số lượng</th>
+                        <th>Giá tiền</th>
+                        <th>Khuyến mãi</th>
+                        <th>Mức giảm</th>
+                      </tr>
+                      </thead>
+                      <tbody v-if="orderDetails">
+                      <tr v-for="orderDetail in orderDetails" :key="orderDetail.id">
+                        <td>
+                          <span target="_blank" href="#">{{orderDetail.product.name}}</span>
+                        </td>
+                        <td>
+                          <span>{{orderDetail.size}}</span>
+                        </td>
+                        <td>
+                          <span class="text-quantity">{{ orderDetail.quantity }}</span>
+                        </td>
+                        <td>
+                          <span class="text-price">{{ formattedPrice(orderDetail.price) }}</span>
+                        </td>
+                        <td>
+                          <span v-if="order.promotion != null" v-text="order.promotion.couponCode"></span>
+                        </td>
+                        <td>
+                          <div v-if="order.promotion != null">
+                            <div v-if="order.promotion.discountType == 1">
+                              <span v-text="order.promotion.discountValue"></span> %
+                            </div>
+                            <div v-if="order.promotion.discountType == 2">
+                              <span class="text-price" v-text="formattedPrice(order.promotion.discountValue * orderDetail.quantity)"></span>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-weight-bold"><span class="font-weight-bold text-success">Tổng phụ:&ensp;</span>{{ formattedPrice(order.subtotalPrice) }}</div>
+                    <div class="font-weight-bold"><span class="font-weight-bold text-danger">Giảm giá:&ensp;</span>{{ formattedPrice(order.subtotalPrice - order.totalPrice) }}</div>
+                    <div class="font-weight-bold"><span class="font-weight-bold text-success">Tổng tiền:&ensp;</span>{{ formattedPrice(order.totalPrice) }}</div>
                   </div>
                 </div>
               </div>

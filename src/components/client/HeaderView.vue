@@ -233,6 +233,7 @@ export default {
                     </ul>
                   </div>
                 </li>
+                <li v-if="this.$store.state.isAuthenticated && this.$store.state.user.role == 'ADMIN'"><router-link to="/admin">ADMIN</router-link></li>
               </ul>
             </nav>
             <!-- mt icon list end here -->

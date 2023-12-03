@@ -14,7 +14,7 @@ export default {
         plugins: {
           title: {
             display: true,
-            text: 'Thống kê doanh số',
+            text: 'Tổng sản phẩm bán được theo loại',
             padding: {
               top: 10,
               bottom: 30

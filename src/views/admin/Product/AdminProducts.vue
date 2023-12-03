@@ -31,8 +31,8 @@ export default {
 
       id: null,
       name: null,
-      category: null,
-      brand: null,
+      category: "",
+      brand: "",
     }
   },
 
@@ -110,6 +110,7 @@ export default {
   },
 
   mounted() {
+    this.$router.push({query: {}})
     this.fetchData()
   }
 }
@@ -212,33 +213,34 @@ export default {
         <nav class="mt-pagination">
           <ul v-if="totalPages" class="list-inline">
             <li v-if="currentPage != 1">
-              <router-link :to="{query: {page: 1}}"><i class="bi bi-chevron-bar-left"></i>
+              <router-link :to="{query: {...this.$route.query, page: 1}}"><i class="bi bi-chevron-bar-left"></i>
               </router-link>
             </li>
             <li v-if="currentPage != 1">
-              <router-link :to="{query: {page: currentPage - 1}}">
+              <router-link :to="{query: {...this.$route.query, page: currentPage - 1}}">
                 <i class="bi bi-chevron-left"></i>
               </router-link>
             </li>
             <li v-for="page in totalPages" :key="page">
               <router-link v-if="page == currentPage" style="background-color: #ff6060; color: #fff"
-                           :to="{query: {page: page}}">{{ page }}
+                           :to="{query: {...this.$route.query, page: page}}">{{ page }}
               </router-link>
-              <router-link v-else :to="{query: {page: page}}">{{ page }}
+              <router-link v-else :to="{query: {...this.$route.query, page: page}}">{{ page }}
               </router-link>
             </li>
             <li v-if="currentPage != totalPages">
-              <router-link :to="{query: {page: currentPage + 1}}">
+              <router-link :to="{query: {...this.$route.query, page: currentPage + 1}}">
                 <i class="bi bi-chevron-right"></i>
               </router-link>
             </li>
             <li v-if="currentPage != totalPages">
-              <router-link :to="{query: {page: totalPages}}"><i class="bi bi-chevron-bar-right"></i>
+              <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i class="bi bi-chevron-bar-right"></i>
               </router-link>
             </li>
 
           </ul>
-        </nav><!-- mt pagination end here -->
+        </nav>
+        <!-- mt pagination end here -->
       </div>
     </section>
     <!--    </section>-->
