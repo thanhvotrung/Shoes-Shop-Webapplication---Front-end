@@ -467,6 +467,7 @@ export default {
                       </div>
                     </div>
                   </li>
+<!--                  khuyến mãi-->
                   <li class="py-4">
                     <div class="txt-holder">
                       <strong class="title sub-title pull-left">Khuyến mãi </strong><i v-if="promotionName"
@@ -498,6 +499,7 @@ export default {
                       </div>
                     </div>
                   </li>
+
                   <li style="border-bottom: none;">
                     <div class="txt-holder">
                       <strong class="title sub-title pull-left">Tổng tiền</strong>
@@ -507,13 +509,8 @@ export default {
                     </div>
                   </li>
                 </ul>
-                <button v-if="user" class="btn process-btn" @submit="handleOrder()">Đặt hàng
+                <button  class="btn process-btn" @click="handleTest">THỦ TỤC THANH TOÁN
                 </button>
-<<<<<<< HEAD
-<!--                <router-link to="/checkout" class="full-details">thanh toán</router-link>-->
-                <button @click="handleTest" class="full-details">thanh toán</button>
-=======
->>>>>>> origin/master
               </div>
             </div>
           </Form>

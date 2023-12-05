@@ -11,7 +11,6 @@ export default {
     '$route.query': {
       immediate: true,
       handler(newQuery) {
-
         this.handleQueryChange(newQuery);
       }
     },
@@ -53,7 +52,6 @@ export default {
 
     async fetchData() {
       await axios.get(`http://localhost:3030/api/admin/products`, {params: this.$route.query}).then(res => {
-
         const response = res.data
         this.products = response.content
         this.totalPages = response.totalPages
@@ -150,8 +148,6 @@ export default {
             <th>Thao tác</th>
           </tr>
           <tr>
-            <!--            <form method="GET" id="search-form">-->
-            <!--                        <th></th>-->
             <th>
               <input v-model="id" type="text" name="id" id="id" class="form-control search-input" @change="this.$router.push({query: {...this.$route.query, id: this.id}})">
             </th>

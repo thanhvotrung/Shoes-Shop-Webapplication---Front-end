@@ -18,11 +18,24 @@ export default {
     // Validate form
     const schema = Yup.object().shape({
       email: Yup.string().required("Email khônng được trống.")
-          .email("Sai định dạng email.")
+          .email("Sai định dạng email."),
+
+    });
+    const schema2 = Yup.object().shape({
+      password2: Yup.string().required("Password khônng được trống.")
     })
     return {
       schema,
+      schema2,
       email: null,
+      password2: null,
+      code: null,
+      showCodeInput: false,
+      showNewPass: false,
+      newPassword: null,
+      hideConfirm: true,
+      codeOld: '',
+      confirmnewPassword: ''
     }
   },
 
@@ -30,29 +43,52 @@ export default {
     generateRandomString() {
       return uuidv4().replace(/-/g, '').substring(0, 6);
     },
+
     async forgotPassword() {
-      const randomString = this.generateRandomString()
+      const randomCode = this.generateRandomString();
+      this.code = randomCode;
       const details = {
         to: this.email,
-        message: `Mật khẩu mới của bạn là: ${randomString}\n Xin thay đổi mật khẩu mới sau khi đăng nhập`,
+        message: `Mã xác nhận là: ${randomCode}\n`,
         subject: "THAY ĐỔI MẬT KHẨU - PHAKESHOES"
       }
       await axios.post(`http://localhost:3030/api/sendemail`, details)
           .then(res => {
             console.log(res)
-            this.toast.success("Đã gửi tin nhắn xác nhận về email.")
+            this.showCodeInput = true;
+            this.hideConfirm = false;
+            this.toast.success("Đã gửi mã xác nhận về email.")
           }).catch(err => {
             console.log(err)
           })
-      const repon = {
-        email: this.email,
-        new_password: randomString
+    },
+
+    async confirmOTP() {
+      if (this.code === this.codeOld) {
+        this.toast.success("Đã xác nhận mã OTP!")
+        this.showCodeInput = false
+        this.showNewPass = true;
+      } else {
+        this.toast.error("Mã OTP không chính xác!")
       }
-      await axios.post(`http://localhost:3030/api/forgot/change-password`, repon).then(res => {
-        console.log(res)
-      }).catch(err => {
-        console.log(err)
-      })
+    },
+
+    async sendNewPassword() {
+      if (this.newPassword === this.confirmnewPassword) {
+        const repon = {
+          email: this.email,
+          new_password: this.newPassword
+        }
+        await axios.post(`http://localhost:3030/api/forgot/change-password`, repon).then(res => {
+          console.log(res)
+          this.toast.success("Đã thay đổi mật khẩu!")
+          window.location.href = '/signin';
+        }).catch(err => {
+          console.log(err)
+        })
+      } else {
+        this.toast.error("Mật khẩu không trung khớp!")
+      }
     }
   },
 }
@@ -95,23 +131,49 @@ export default {
                   <Form @submit="forgotPassword" :validation-schema="schema" v-slot="{ errors }">
                     <fieldset>
                       <Field v-model="email" name="email" type="text" placeholder="Email"
-                             :class="{ 'is-invalid': errors.email }"
-                             class="input"/>
+                             :class="{ 'is-invalid': errors.email }" class="input"/>
                       <div class="text-danger font-italic text-1 text-end">{{ errors.email }}</div>
                       <div class="box">
-                        <button type="submit" class="btn-type1">Xác nhận</button>
-                        <!--                        <span class="left"><input class="checkbox" type="checkbox" id="check1"><label for="check1">Remember Me</label></span>-->
+                        <button v-if="hideConfirm" type="submit" class="btn-type1">Gửi mã tới gmail</button>
                       </div>
-
                     </fieldset>
                   </Form>
+                  <!--                  Xác nhận OTP-->
+                  <input v-if="showCodeInput" v-model="codeOld" name="code" type="text" placeholder="Nhập mã OTP"
+                         class="input"/>
+                  <button v-if="showCodeInput" type="submit" class="btn-type1" @click="confirmOTP">Xác nhận OTP</button>
+                  <!--                  Nhập mật khẩu mới-->
+<!--                  <input v-if="showNewPass" v-model="newPassword" name="code" type="text" placeholder="Mật khẩu mới"-->
+<!--                         class="input"/>-->
+<!--                  <input v-if="showNewPass" v-model="confirmnewPassword" name="code" type="text"-->
+<!--                         placeholder="Xác nhận mật khẩu"-->
+<!--                         class="input"/>-->
+<!--                  <button v-if="showNewPass" type="submit" class="btn-type1" @click="sendNewPassword">Đổi mật khẩu-->
+<!--                  </button>-->
+
+                  <Form v-if="showNewPass"  >
+                    <fieldset>
+
+                      <input  v-model="newPassword"  type="text" placeholder="Xác nhận mật khẩu"
+                             class="input"/>
+
+                      <input  v-model="confirmnewPassword"  type="text" placeholder="Xác nhận mật khẩu"
+                            class="input"/>
+
+                      <div class="box">
+                        <button  type="button" @click="sendNewPassword" class="btn-type1">Đổi mật khẩu</button>
+                      </div>
+                    </fieldset>
+                  </Form>
+
+
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <!-- Mt Detail Section of the Page end -->
+
     </main>
   </LayoutView>
 

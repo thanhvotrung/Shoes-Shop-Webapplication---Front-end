@@ -1,20 +1,21 @@
 <template>
   <LayoutView>
-    <main >
+    <main style="background-color: #f2f2f2" id="mt-main" class="  ">
       <div class="container">
         <div class="row">
-          <div class="col-lg-3">
-            <div class="left-sidebar">
-              <div class="nav-sidebar">
-                <router-link to="/account" class="account nav-item">Quản lý tài khoản</router-link>
-                <router-link to="/orders-list" class="buying-order nav-item">Quản lý đơn hàng</router-link>
-                <!--              <a class="btn btn-primary red-btn sign-out-btn" href="/api/logout">Đăng xuất</a>-->
-              </div>
+          <div class="col-lg-3"
+               style="background-color: #fff;margin-top: 20px;border-radius: 20px 0px 0px 20px; padding-top: 65px">
+            <div class="image" style="width: 250px">
+              <img src="https://cdn.printgo.vn/uploads/media/772948/thiet-ke-logo-shop-giay-19_1584095087.jpg">
+            </div>
+            <div class="text-router">
+              <router-link to="/user">Quản lý tài khoản</router-link>
+              <router-link to="/don-hang">Quản lý đơn hàng</router-link>
             </div>
           </div>
-          <div class="col-lg-9 ">
+          <div class="col-lg-9 " style="background-color: #fff;margin-top: 20px; border-radius: 0px 20px 20px 0px">
             <div class="main-content">
-              <h2 class="account-title font">Thông tin tài khoản</h2>
+              <h1 class="account-title font">Thông tin tài khoản</h1>
               <div class="tab-pane fade show active" id="profile-setting" role="tabpanel"
                    aria-labelledby="profile-setting-tab">
                 <Form class="setting-box" v-if="user" @submit="updateProfile" :validation-schema="schemaProfile"
@@ -36,10 +37,11 @@
                   <div class="password item-row col-md-10">
                     <div class="text required-label font">Mật khẩu</div>
                     <div class="password-wrapper d-flex">
-                      <input style="width: 540px" class="form-control" type="password" disabled="disabled" autocomplete="autocomplete"
+                      <input class="form-control" type="password" style="width: 540px;
+    margin-right: 20px;" disabled="disabled" autocomplete="autocomplete"
                              value="******"/>
-                      <div id="addToTable" class=" mx-1 text-3"
-                           style=" padding: 10px 0 0 11px" data-bs-toggle="modal"
+                      <div id="addToTable" class=" mx-1 text-4"
+                           style=" padding-top: 11px" data-bs-toggle="modal"
                            data-bs-target="#modal-changepass">Đổi mật khẩu
                       </div>
                     </div>
@@ -60,7 +62,8 @@
                     </div>
                   </div>
                   <div class=" item-row col-md-10 modal-footer">
-                    <button class=" red-btn update-btn font btn-type1">Cập nhật
+                    <button class=" red-btn update-btn font btn-type1" style="width: 100px;  margin: 10px 0px 10px 0px ; padding-top: 20px;
+    padding-bottom: 20px; font-size: 12px">Cập nhật
                     </button>
                   </div>
                 </Form>
@@ -115,20 +118,13 @@
                           class="text-danger font-italic text-1 float-end">{{ errors.confirmPassword }}</span>
                     </div>
                     <Field v-model="confirmPassword" name="confirmPassword" type="password"
-                           class="input"
+                           placeholder="Xác nhận mật khẩu" class="input"
                            :class="{ 'is-invalid': errors.confirmPassword }"/>
                     <div class="modal-footer">
                       <button type="submit"  class=" btn-type1">Lưu mật khẩu</button>
                       <button type="button" class=" btn-secondary btn-type1"  data-bs-dismiss="modal" ref="closeModal_1">Hủy
                       </button>
                     </div>
-
-                    <!--                    <div class="modal-footer" style="display: none">-->
-                    <!--                      <button type="button" class="btn btn-secondary btn-type1"  data-bs-dismiss="modal" ref="closeModal_1">Hủy-->
-                    <!--                      </button>-->
-                    <!--                      <button type="submit"  class="btn btn-primary btn-style btn-type1">Lưu mật khẩu</button>-->
-                    <!--                    </div>-->
-
                   </fieldset>
                 </Form>
               </div>
@@ -149,7 +145,7 @@ import * as Yup from "yup";
 import {useToast} from "vue-toastification";
 
 export default {
-  name: 'AccountView',
+  name: 'UserView',
   components: {LayoutView, Form, Field},
   data() {
     const schema = Yup.object().shape({
@@ -215,6 +211,7 @@ export default {
         full_name: this.user.fullName,
         address: this.user.address,
         email: this.email,
+        roles: this.roles
       }
       await axios.put(`http://localhost:3030/api/update-profile`, obj).then(res => {
         console.log(res)
@@ -241,7 +238,7 @@ export default {
           const decodedToken = jwtDecode(token);
           this.email = decodedToken.sub;
           // You can access the decoded claims in the `decodedToken` object
-
+          console.log('Decoded JWT Claims:', decodedToken);
         } catch (error) {
           // Handle any errors (e.g., invalid JWT format)
           console.error('JWT Decoding Error:', error);
@@ -252,6 +249,7 @@ export default {
       if (this.email) {
         await axios.get(`http://localhost:3030/user/${this.email}`).then(res => {
           this.user = res.data
+          console.log(this.user)
         }).catch(err => {
           console.log(err)
         })
@@ -267,37 +265,7 @@ export default {
 }
 </script>
 
-<style scoped>
-*{
-  font-family: "Montserrat", sans-serif;
-}
-
-.left-sidebar {
-  border-radius: 0.25rem;
-  margin-top: 40px;
-  padding: 10px;
-  background-color: #fff;
-}
-.left-sidebar .nav-sidebar {
-  margin: 1.25rem;
-}
-.nav-sidebar {
-  display: grid;
-  grid-row-gap: 0.9375rem;
-}
-
-.main-content{
-  margin-top: 41px;
-  margin-bottom: 50px;
-  padding: 15px 0;
-
-}
-
-.main-content {
-  border-radius: 0.5rem;
-  background-color: #fff;
-}
-
+<style>
 .setting-box {
   display: flex;
   flex-direction: column;
@@ -305,14 +273,25 @@ export default {
 }
 
 .account-title {
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .form-control {
   height: 45px;
-  font-size: 14px !important;
+  font-size: 20px !important;
   margin-bottom: 20px;
+  border: none;
   border-radius: 10px;
+}
+
+
+.font {
+  font-family: "Montserrat", sans-serif;
+}
+
+.text {
+  font-size: 14px !important;
 }
 
 #addToTable {
@@ -324,8 +303,27 @@ export default {
   color: #ff6060;
 }
 
+.text-router {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 20px;
+  padding-left: 20px;
+  padding-top: 15px;
+  line-height: 2;
+}
+
+.text-router > a {
+  color: #6f6c6c;
+  text-decoration: none;
+}
+
+.text-router > a:hover {
+  color: #ff6060;
+}
+
 .modal-dialog {
-  //margin-top: 20vh;
+  margin-top: 20vh;
 
 }
 
@@ -333,4 +331,7 @@ export default {
   text-align: center;
 }
 
+.btn-style:hover {
+  background-color: #60c7ff;
+}
 </style>

@@ -25,9 +25,13 @@ import AccountView from "@/views/client/user/AccountView.vue";
 
 import CheckoutOrder from "@/views/client/checkout/CheckoutOrder.vue";
 import SuccessPay from "@/views/client/checkout/SuccessPay.vue";
+import UserView from "@/views/client/UserView.vue";
+import AdminUsers from "@/views/admin/Users/AdminUsers.vue";
+import AddPost from "@/views/admin/post/AddPost.vue";
+import AdminPosts from "@/views/admin/post/AdminPosts.vue";
+import EditPost from "@/views/admin/post/EditPost.vue";
 
-import testAuth from "@/views/testAuth.vue";
-import NotFound from "@/views/client/exception/NotFound.vue";
+
 
 
 
@@ -196,7 +200,38 @@ const routes = [
         name: 'SuccessTransaction',
         component: SuccessPay,
         meta: {title: 'Thanh toán thành công'}
-    }
+    },
+    // thêm
+    {
+        path: '/user',
+        name: 'UserView',
+        component: UserView,
+        meta: {title: 'User View'}
+    },
+    {
+        path: '/admin/users',
+        name: 'AdminUsers',
+        component: AdminUsers,
+        meta: {title: 'Trang danh sách người dùng'}
+    },
+    {
+        path: '/admin/posts',
+        name: 'AdminPosts',
+        component: AdminPosts,
+        meta: {title: 'Trang danh sách tin tức'}
+    },
+    {
+        path: '/admin/posts/create',
+        name: 'AddPost',
+        component: AddPost,
+        meta: {title: 'Trang thêm tin tức'}
+    },
+    {
+        path: '/admin/posts/update/:id',
+        name: 'EditPost',
+        component: EditPost,
+        meta: {title: 'Trang sửa tin tức'}
+    },
 ]
 
 

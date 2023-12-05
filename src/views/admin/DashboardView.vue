@@ -59,7 +59,7 @@ export default {
 </script>
 
 <template>
-<<<<<<< HEAD
+
 <LayoutView>
   <section style="background-color:#f1f1f1" role="main" class="content-body" id="main-content">
 

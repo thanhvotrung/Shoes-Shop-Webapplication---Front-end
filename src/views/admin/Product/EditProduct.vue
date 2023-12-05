@@ -255,19 +255,23 @@ export default {
     },
 
     async deleteProduct(id) {
-      for (let i = 0; i < this.product.images.length; i++) {
-        FirebaseConfig.DeleteImage(this.product.images[i])
+      const imagePaths = this.product.images;
+
+      // Sử dụng vòng lặp for thay vì vòng lặp for (let i = 0; i <= imagePaths.length; i++)
+      for (let i = 0; i < imagePaths.length; i++) {
+        await FirebaseConfig.DeleteImage(imagePaths[i]);
       }
-      await axios.delete(`http://localhost:3030/api/admin/products/${id}`)
-          .then(res => {
-            this.toast.success(res.data)
-            this.fetchData()
-            console.log(res)
-          }).catch(err => {
-            console.log(err)
-            this.toast.warning(err.response.data.message)
-          })
+
+      try {
+        await axios.delete(`http://localhost:3030/api/admin/products/${id}`);
+        this.toast.success("Sản phẩm đã được xóa thành công");
+        this.fetchData();
+      } catch (error) {
+        console.error(error);
+        this.toast.warning(error.response ? error.response.data.message : "Có lỗi xảy ra khi xóa sản phẩm");
+      }
     },
+
   },
 
   watch: {

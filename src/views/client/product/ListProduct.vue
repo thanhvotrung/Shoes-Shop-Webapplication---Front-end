@@ -12,7 +12,7 @@ export default {
   data() {
     return {
       productId: null,
-
+      searchQuery: '',
       brands: [],
       categories: [],
       products: [],
@@ -20,9 +20,11 @@ export default {
       brandsCheck: [],
       categoriesCheck: [],
       sizesCheck: [],
+
+      totalItems: null,
+
       totalPages: null,
       currentPage: null,
-
       rangePriceValue: [0, 100],
       format: function (rangePriceValue) {
         return `${Math.round(rangePriceValue * 100000)} VND`
@@ -35,44 +37,64 @@ export default {
       immediate: true,
       handler() {
         this.handleQueryChange();
-        // window.scrollTo({ top: 0, behavior: 'smooth' })
-        // this.scrollToTop()
       }
     },
     'sizesCheck': {
       immediate: true,
       handler(val) {
-        this.$router.push({query: {...this.$route.query, page:1, sizes_filter: val}})
+        this.$router.push({query: {...this.$route.query, page: 1, sizes_filter: val}})
       }
     },
     brandsCheck(val) {
-      this.$router.push({query: {...this.$route.query, page:1, brands_filter: val}})
+      this.$router.push({query: {...this.$route.query, page: 1, brands_filter: val}})
     },
     categoriesCheck(val) {
-      this.$router.push({query: {...this.$route.query, page:1, categories_filter: val}})
+      this.$router.push({query: {...this.$route.query, page: 1, categories_filter: val}})
     },
     rangePriceValue(val) {
-      this.$router.push({query: {...this.$route.query, page:1, min_price: Math.round(val[0] * 100000), max_price: Math.round(val[1] * 100000)}})
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          page: 1,
+          min_price: Math.round(val[0] * 100000),
+          max_price: Math.round(val[1] * 100000)
+        }
+      })
     },
   },
 
   methods: {
     async handleQueryChange() {
+
       const newQuery = {
         brands: this.brandsCheck,
         categories: this.categoriesCheck,
         sizes: this.sizesCheck,
-        min_price: this.rangePriceValue[0]*100000 || 0 ,
-        max_price: this.rangePriceValue[1]*100000 || 10000000,
-        page: this.$route.query.page || 1
+        min_price: this.rangePriceValue[0] * 100000 || 0,
+        max_price: this.rangePriceValue[1] * 100000 || 10000000,
+        page: this.$route.query.page || 1,
       }
       await axios.post("http://localhost:3030/api/client/products", newQuery).then(res => {
         const response = res.data
-
         this.products = response.items
         this.totalPages = response.totalPages
         this.currentPage = response.currentPage
       })
+    },
+
+
+    async searchData(query) {
+      await axios.get(`http://localhost:3030/api/client/find?keywords=${query}&page=${this.$route.query.page || 1}`).then(res => {
+        const response = res.data
+        this.products = response.items
+        this.totalItems = response.totalItems
+        this.totalPages = response.totalPages
+        this.currentPage = response.currentPage
+      })
+    },
+    handleInputChange() {
+      // Gọi hàm searchData khi giá trị của input thay đổi
+      this.searchData(this.searchQuery);
     },
 
     async fetchData() {
@@ -87,11 +109,11 @@ export default {
         brands: this.brandsCheck,
         categories: this.categoriesCheck,
         sizes: this.sizesCheck,
-        min_price: this.rangePriceValue[0]*100000 || 0,
-        max_price: this.rangePriceValue[1]*100000 || 10000000,
+        min_price: this.rangePriceValue[0] * 100000 || 0,
+        max_price: this.rangePriceValue[1] * 100000 || 10000000,
         page: this.$route.query.page || 1
       }
-      await axios.post("http://localhost:3030/api/client/products", newQuery).then(res => {
+      await axios.get("http://localhost:3030/api/client/products", newQuery).then(res => {
         const response = res.data
         this.products = response.items
         this.totalPages = response.totalPages
@@ -108,7 +130,7 @@ export default {
   },
 
   mounted() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({top: 0, behavior: 'smooth'})
     this.fetchData()
   }
 }
@@ -132,6 +154,10 @@ export default {
             <!-- shop-widget filter-widget of the Page start here -->
             <section class="shop-widget filter-widget bg-grey">
               <h2 class="text-5">Bộ lọc sản phẩm</h2>
+
+              <input v-model="searchQuery" type="text" @input="handleInputChange" placeholder="Tìm kiếm..."
+                     data-v-0ed4acb0="" class="form-control" id="in-user-fullname" name="fullName">
+
               <span class="sub-title">Lọc theo thương hiệu</span>
               <!-- nice-form start here -->
               <ul v-if="brands" class="list-unstyled nice-form">
@@ -174,7 +200,9 @@ export default {
                 <Slider v-model="rangePriceValue" :format="format"/>
               </div>
               <div class="price-range mt-3">
-                <span class="price">Giá tiền &nbsp;   {{ formattedPrice(rangePriceValue[0] * 100000) }}  &nbsp;  -  &nbsp;   {{ formattedPrice(rangePriceValue[1] * 100000) }}</span>
+                <span class="price">Giá tiền &nbsp;   {{ formattedPrice(rangePriceValue[0] * 100000) }}  &nbsp;  -  &nbsp;   {{
+                    formattedPrice(rangePriceValue[1] * 100000)
+                  }}</span>
                 <!--                <a href="#" class="filter-btn">Filter</a>-->
                 <!--                <a class="filter-btn">Filter</a>-->
               </div>
@@ -182,35 +210,8 @@ export default {
           </aside><!-- sidebar of the Page end here -->
           <div class="col-xs-12 col-sm-8 col-md-9 wow fadeInRight" data-wow-delay="0.4s">
             <!-- mt shoplist header start here -->
-            <header class="mt-shoplist-header" style="padding: 26.5px 0">
-              <!-- btn-box start here -->
-<!--              <div class="btn-box">-->
-<!--                <ul class="list-inline">-->
-<!--                  <li>-->
-<!--                    <a href="#" class="drop-link">-->
-<!--                      Default Sorting <i aria-hidden="true" class="fa fa-angle-down"></i>-->
-<!--                    </a>-->
-<!--                    <div class="drop">-->
-<!--                      <ul class="list-unstyled">-->
-<!--                        <li><a href="#">ASC</a></li>-->
-<!--                        <li><a href="#">DSC</a></li>-->
-<!--                        <li><a href="#">Price</a></li>-->
-<!--                        <li><a href="#">Relevance</a></li>-->
-<!--                      </ul>-->
-<!--                    </div>-->
-<!--                  </li>-->
-<!--                  <li><a class="mt-viewswitcher" href="#"><i class="fa fa-th-large" aria-hidden="true"></i></a></li>-->
-<!--                  <li><a class="mt-viewswitcher" href="#"><i class="fa fa-th-list" aria-hidden="true"></i></a></li>-->
-<!--                </ul>-->
-<!--              </div>-->
-              <!-- btn-box end here -->
-              <!-- mt-textbox start here -->
-<!--              <div class="mt-textbox">-->
-<!--                <p>Showing <strong>1–9</strong> of <strong>65</strong> results</p>-->
-<!--              </div>-->
-              <!-- mt-textbox end here -->
-            </header><!-- mt shoplist header end here -->
-            <!-- mt productlisthold start here -->
+            <header class="mt-shoplist-header" style="padding: 26.5px 0"></header>
+
             <ul v-if="products" class="mt-productlisthold list-inline d-flex flex-wrap justify-content-start">
               <li v-for="product in products" :key="product.id">
                 <!-- mt product1 large start here -->
@@ -218,7 +219,6 @@ export default {
                   <div class="box">
                     <div class="b1">
                       <div class="b2">
-
                         <img style="min-height: 38rem" v-if="product.images" :src="product.images"
                              alt="image description">
                         <img v-else src="http://placehold.it/276x286"
@@ -254,8 +254,8 @@ export default {
                   <br>
                 </div><!-- mt product1 center end here -->
               </li>
+            </ul>
 
-            </ul><!-- mt productlisthold end here -->
             <section v-if="products <= 0" class="mt-error-sec dark vh-100">
               <div class="container">
                 <div class="row">
@@ -290,7 +290,8 @@ export default {
                   </router-link>
                 </li>
                 <li class="mb-2" v-if="currentPage != totalPages">
-                  <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i class="bi bi-chevron-bar-right"></i>
+                  <router-link :to="{query: {...this.$route.query, page: totalPages}}"><i
+                      class="bi bi-chevron-bar-right"></i>
                   </router-link>
                 </li>
 
@@ -300,7 +301,9 @@ export default {
         </div>
       </div>
     </main>
-    <div><ModalAddToCart :id="productId"/></div>
+    <div>
+      <ModalAddToCart :id="productId"/>
+    </div>
   </LayoutView>
 </template>
 
