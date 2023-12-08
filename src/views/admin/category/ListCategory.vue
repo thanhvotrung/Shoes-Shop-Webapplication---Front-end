@@ -111,6 +111,7 @@ export default {
         this.categories = response.content
         this.totalPages = response.totalPages
         this.currentPage = response.number +1
+
       }).catch(err => {
         try {
           if (err.response.status === 401) {

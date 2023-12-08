@@ -2,6 +2,7 @@
 import LayoutView from "@/components/admin/LayoutView.vue";
 import axios from "axios";
 import ChartBar from "@/components/admin/statistic/ChartBar.vue";
+
 import StatisticOrderCategories from "@/components/admin/statistic/StatisticOrderCategories.vue";
 import StatisticOrderBrands from "@/components/admin/statistic/StatisticOrderBrands.vue";
 import ChartProductOrderTopInMonth from "@/components/admin/statistic/ChartProductOrderTopInMonth.vue";
@@ -18,13 +19,16 @@ export default {
       countOrder: 0,
       countUser: 0,
 
+
       totalSales: 0,
       totalProfit: 0,
       totalQuantity: 0,
+
     }
   },
 
   methods: {
+
     formattedPrice(price) {
       return price.toLocaleString('vi-VN', {
         style: 'currency',
@@ -45,6 +49,7 @@ export default {
       await axios.get(`http://localhost:3030/api/admin/statistics/total-quantity`).then(res => this.totalQuantity = res.data)
 
     }
+
   },
 
   mounted() {
@@ -52,8 +57,8 @@ export default {
   }
 }
 </script>
-
 <template>
+
   <LayoutView>
     <section style="background-color:#f1f1f1" role="main" class="content-body" id="main-content">
 
@@ -235,6 +240,7 @@ export default {
       </div>
     </section>
   </LayoutView>
+
 </template>
 
 <style scoped>

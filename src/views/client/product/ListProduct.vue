@@ -20,6 +20,7 @@ export default {
 
 <template>
   <LayoutView>
+
     <div v-if="error">Parent: {{error}}</div>
     <Suspense>
       <template #default>

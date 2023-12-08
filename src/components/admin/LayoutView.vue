@@ -8,7 +8,6 @@ import "@/assets/adminlte/js/theme.js"
 import HeaderView from "@/components/admin/HeaderView.vue";
 import SidebarView from "@/components/admin/SidebarView.vue";
 
-
 export default {
   name: "LayoutView",
 
@@ -28,8 +27,10 @@ export default {
   <section class="body">
     <HeaderView/>
     <div class="inner-wrapper">
+
       <SidebarView/>
       <slot/>
+
     </div>
   </section>
 </template>

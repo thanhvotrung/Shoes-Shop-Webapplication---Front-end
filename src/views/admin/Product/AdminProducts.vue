@@ -149,8 +149,6 @@ export default {
             <th>Thao tác</th>
           </tr>
           <tr>
-            <!--            <form method="GET" id="search-form">-->
-            <!--                        <th></th>-->
             <th>
               <input v-model="id" type="text" name="id" id="id" class="form-control search-input" @change="this.$router.push({query: {...this.$route.query, id: this.id}})">
             </th>

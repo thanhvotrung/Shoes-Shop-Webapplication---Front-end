@@ -47,10 +47,10 @@ export default {
               </router-link>
             </li>
             <li>
-              <a href="#">
-                <i class="bx bx-cube" aria-hidden="true"></i>
+              <router-link to="/admin/posts">
+                <i class="bx bx-cart-alt" aria-hidden="true"></i>
                 <span>Quản lý bài viết</span>
-              </a>
+              </router-link>
             </li>
             <li>
               <router-link to="/admin/promotions">
@@ -65,10 +65,10 @@ export default {
               </router-link>
             </li>
             <li>
-              <a href="#">
-                <i class="fas fa-user-injured"></i>
+              <router-link to="/admin/users">
+                <i class="bx bx-cart-alt" aria-hidden="true"></i>
                 <span>Quản lý tài khoản</span>
-              </a>
+              </router-link>
             </li>
           </ul>
         </nav>

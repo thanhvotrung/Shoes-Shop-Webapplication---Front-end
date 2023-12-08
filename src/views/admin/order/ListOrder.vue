@@ -5,7 +5,9 @@ import ListOrderComponent from "@/components/admin/order/ListOrderComponent.vue"
 
 export default {
   name: "ListOrder",
+
   components: {LayoutView, ListOrderComponent},
+
   setup() {
     const error = ref(null)
     onErrorCaptured(e => {

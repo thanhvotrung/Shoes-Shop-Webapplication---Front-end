@@ -4,7 +4,9 @@ import axios from "axios";
 import {Form, Field} from 'vee-validate';
 import * as Yup from 'yup';
 import {useToast} from "vue-toastification";
+
 import jwtDecode from "jwt-decode";
+
 export default {
   name: "SigninView",
 
@@ -35,6 +37,7 @@ export default {
         email: this.email,
         password: this.password
       }
+
       await axios({
         method: "POST",
         url: 'http://localhost:3030/api/login',
@@ -42,6 +45,7 @@ export default {
       }).then(async res => {
         this.toast.success("Đăng nhập thành công.")
         const token = res.data
+
         this.decodeJwt(token)
         // this.$store.commit('setAuth', { isAuthenticated: true});
         try {
@@ -54,6 +58,7 @@ export default {
         this.toast.error(err.response.data.message)
         console.log(err)
       })
+
     },
     // Giải mã JWT token sang object User
     decodeJwt(token) {
@@ -81,6 +86,7 @@ export default {
         })
       }
     },
+
   }
 }
 </script>

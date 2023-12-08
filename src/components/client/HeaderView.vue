@@ -33,6 +33,9 @@ export default {
     return {
       schemaLogin,
       schemaSignup,
+      emailToken: null,
+      token: null,
+      user: null,
 
       email: null,
       password: null,
@@ -61,12 +64,14 @@ export default {
       }).then(async res => {
         this.toast.success("Đăng nhập thành công.")
         const token = res.data
+
         this.decodeJwt(token)
         try {
           this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
         } catch (err) {
           console.log(err)
         }
+
         this.$refs.closeSidebar.click()
       }).catch(err => {
         this.toast.error(err.response.data.message)
@@ -87,12 +92,14 @@ export default {
       }).then(res => {
         this.toast.success("Đăng ký thành công.")
         const token = res.data
+
         this.decodeJwt(token)
         try {
           this.$cookies.set("JWT_TOKEN", `${token}`)
         } catch (err) {
           console.log(err)
         }
+
         this.$refs.closeSidebar.click()
       }).catch(err => {
         this.toast.error(err.response.data.message)
@@ -107,6 +114,7 @@ export default {
     },
 
     // Giải mã JWT token sang object User
+
     decodeJwt(token) {
       // JWT token to be decoded
       if (token) {
@@ -116,10 +124,12 @@ export default {
           let email = decodedToken.sub;
           this.getUser(email)
         } catch (error) {
+
           console.error('JWT Decoding Error:', error);
         }
       }
     },
+
 
     async getUser(email) {
       if (email) {
@@ -129,11 +139,13 @@ export default {
           let role = roles.includes("ADMIN") ? "ADMIN" : "USER";
           this.$store.dispatch('login', { username: user.fullName, role: role });
           // this.$store.commit('setAuth', { isAuthenticated: true, name: user.fullName});
+
         }).catch(err => {
           console.log(err)
         })
       }
     },
+
 
     signout() {
       // this.$store.commit('setAuth', { isAuthenticated: false, name: null});
@@ -160,11 +172,13 @@ export default {
           <a href="#" class="tel"> <i class="fa fa-envelope-o" aria-hidden="true"></i> giay.phake@donếtchotao</a>
         </div>
         <div class="col-xs-12 col-sm-6 text-right">
+
           <span v-if="!this.$store.state.isAuthenticated" class="account">
             <router-link to="/signin">Đăng nhập</router-link> hoặc <router-link
               to="/signup">Đăng ký</router-link></span>
           <span v-if="this.$store.state.isAuthenticated" class="account">Xin chào, <router-link to="/account">{{
               this.$store.state.user.username
+
             }}</router-link> <span> | </span> <span class="signout"
                                                     @click="signout">Đăng xuất</span></span>
         </div>
@@ -202,6 +216,7 @@ export default {
                                     <span class="num">{{countCartItem}}</span>
                 </router-link>
               </li>
+
 
               <li v-if="this.$store.state.isAuthenticated">
                 <router-link to="/account" class=""><i class="bi bi-person text-4"></i>

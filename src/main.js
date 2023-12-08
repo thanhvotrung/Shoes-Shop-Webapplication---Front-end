@@ -9,6 +9,7 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import Popper from "vue3-popper";
 import "@/plugins/chart"
+
 import store from "./store";
 
 const app = createApp(App)
@@ -22,11 +23,11 @@ app.use(router).mount('#app')
 app.use(store)
 app.use(VueCookies, {
     expireTimes: '7d', // Default expiration time for cookies
+
     path: '/', // Default path for cookies
     domain: '', // Default domain for cookies
     secure: false // Default secure setting for cookies
 })
-
 
 app.component("Popper", Popper);
 app.use(Toast,

@@ -104,10 +104,12 @@ export default {
         console.log(err)
       })
       await axios.get(`http://localhost:3030/api/admin/products/${this.id}`).then(res => {
+
         this.product = res.data
         this.handleChangeTag(res.data.categories)
         this.images = res.data.images
         this.feedbackImages = res.data.imageFeedBack ? res.data.imageFeedBack : []
+
       }).catch(err => {
         console.log(err)
       })
@@ -250,6 +252,25 @@ export default {
             console.log(err)
           })
     },
+
+
+    // async deleteProduct(id) {
+    //   const imagePaths = this.product.images;
+    //
+    //   // Sử dụng vòng lặp for thay vì vòng lặp for (let i = 0; i <= imagePaths.length; i++)
+    //   for (let i = 0; i < imagePaths.length; i++) {
+    //     await FirebaseConfig.DeleteImage(imagePaths[i]);
+    //   }
+    //
+    //   try {
+    //     await axios.delete(`http://localhost:3030/api/admin/products/${id}`);
+    //     this.toast.success("Sản phẩm đã được xóa thành công");
+    //     this.fetchData();
+    //   } catch (error) {
+    //     console.error(error);
+    //     this.toast.warning(error.response ? error.response.data.message : "Có lỗi xảy ra khi xóa sản phẩm");
+    //   }
+    // },
 
   },
 
