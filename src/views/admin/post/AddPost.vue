@@ -147,7 +147,7 @@ console.log(newPost)
             <div class="row">
               <div class="col-sm-6">
                 <div class="mb-3">
-                  <router-link style="border: 1px solid #cccc" class="btn btn-primary mx-1 text-2" to="/admin/posts">
+                  <router-link style="border: 1px solid #cccc" class="btn btn-primary mx-1 text-2" to="/admin/news">
                     <i class="bi bi-chevron-left"></i> Trở về
                   </router-link>
                   <button  type="submit" class="btn btn-primary mx-1 text-2">Thêm tin tức mới <i

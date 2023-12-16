@@ -12,20 +12,17 @@ export default {
     return {toast}
   },
   data() {
-    return {
-    }
+    return {}
   },
-  computed: {},
 
   mounted() {
-
     this.handleOrder()
   },
 
   methods: {
     async handleOrder() {
-    const dataCheckout = this.$cookies.get("checkout_data")
-      if(dataCheckout){
+      const dataCheckout = this.$cookies.get("checkout_data")
+      if (dataCheckout) {
         let orderDetailsList = []
         for (let i = 0; i < dataCheckout.items.length; i++) {
           let obj = {
@@ -49,8 +46,8 @@ export default {
         }
         await axios.post(`http://localhost:3030/api/orders`, obj)
             .then(res => {
-              console.log(res.data)
               this.toast.success("Đặt hàng thành công.")
+              this.sendMailSuccess(obj)
               this.$router.push({name: 'OrderDetails', params: {id: res.data}});
             }).catch(err => {
               if (err.response.status === 400) {
@@ -62,6 +59,35 @@ export default {
         this.$cookies.remove("checkout_data")
       }
     },
+
+    async sendMailSuccess( data) {
+        const details = {
+          to: data.email,
+          message: `ĐƠN HÀNG CỦA QUÝ KHÁCH ĐÃ ĐƯỢC THANH TOÁN. \n
+                CHI TIẾT ĐƠN HÀNG: \n
+                Tên người nhận: ${data.receiver_name} \n
+                Địa chỉ: ${data.receiver_address} \n
+                Số điện thoại: ${data.receiver_phone} \n
+                Tổng hóa đơn: ${this.formattedPrice(data.total_price)} \n
+CẢM ƠN QUÝ KHÁCH ĐÃ MUA HÀNG TẠI FAKESHOES!!!`,
+          subject: "THÔNG TIN CHI TIẾT ĐƠN HÀNG! FAKESHOES!!!"
+        };
+
+        try {
+          const response = await axios.post(`http://localhost:3030/api/sendemailsuccess`, details);
+          console.log(response);
+          this.toast.success("Đã gửi thư xác nhận về email.");
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    formattedPrice(price) {
+      return price.toLocaleString('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+      });
+    },
+
   }
 }
 </script>

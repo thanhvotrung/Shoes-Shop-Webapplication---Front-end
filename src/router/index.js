@@ -31,6 +31,9 @@ import AddPost from "@/views/admin/post/AddPost.vue";
 import AdminPosts from "@/views/admin/post/AdminPosts.vue";
 import EditPost from "@/views/admin/post/EditPost.vue";
 
+import NewsPage from "@/views/client/NewsPage.vue";
+import NewsDetails from "@/views/client/NewsDetails.vue";
+
 
 
 
@@ -120,7 +123,7 @@ const routes = [
 
     },
     {
-        path: '/:slug/:id',
+        path: '/product/:slug/:id',
         name: 'ProductDetails',
         component: ProductDetails,
         meta: {title: 'Chi tiết sản phẩm'}
@@ -215,7 +218,7 @@ const routes = [
         meta: {title: 'Trang danh sách người dùng'}
     },
     {
-        path: '/admin/posts',
+        path: '/admin/news',
         name: 'AdminPosts',
         component: AdminPosts,
         meta: {title: 'Trang danh sách tin tức'}
@@ -231,6 +234,19 @@ const routes = [
         name: 'EditPost',
         component: EditPost,
         meta: {title: 'Trang sửa tin tức'}
+    },
+    {
+        path: '/news',
+        name: 'NewsPage',
+        component: NewsPage,
+        meta: {title: 'Tin Tức'}
+    },
+
+    {
+        path: '/news/:slug/:id',
+        name: 'NewsDetails',
+        component: NewsDetails,
+        meta: {title: 'Chi tiết tin tức'}
     },
 ]
 

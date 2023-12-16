@@ -4,6 +4,7 @@ import axios from "axios";
 import LayoutView from "@/components/admin/LayoutView.vue";
 
 import {useToast} from "vue-toastification";
+import moment from "moment/moment";
 
 export default {
   name: 'AdminPosts',
@@ -69,8 +70,11 @@ export default {
         console.log(err)
       })
     },
+    formattedDate(date) {
+      const formatted = moment(date).format('DD/MM/YYYY HH:mm:ss');
+      return formatted;
+    },
   },
-
 
   mounted() {
     this.getPosts()
@@ -101,6 +105,9 @@ export default {
             <th style="width:8%">Tên tin tức</th>
             <th>Trạng thái</th>
             <th>Ảnh</th>
+            <th>Người đăng</th>
+            <th>Thời gian đăng</th>
+            <th>Thời gian sửa</th>
             <th>Chức năng</th>
           </tr>
           <tr>
@@ -112,25 +119,21 @@ export default {
                 <option value="">Tất cả</option>
                 <option value="0">Nháp</option>
                 <option value="1">Công khai</option>
-
               </select>
             </th>
-
-
-
           </tr>
           </thead>
           <tbody>
           <tr v-for="post in posts" :key="post.id" data-item-id="1">
-
             <td>{{ post.title }}</td>
             <td>
               <span v-if="post.status == 0 ">Nháp</span>
               <span v-if="post.status == 1 ">Công khai</span>
             </td>
-
             <td><img style="width: 100px" :src="post.thumbnail" alt="alt"></td>
-
+            <td>{{post.createdBy.fullName}}</td>
+            <td>{{this.formattedDate(post.publishedAt)}}</td>
+            <td>{{this.formattedDate(post.modifiedAt)}}</td>
             <td>
               <button @click="deletePost(post.id)" class="btn text-4 "><i class="btn-update bi bi-trash"></i>
               </button>
@@ -140,7 +143,6 @@ export default {
                 </router-link>
               </button>
             </td>
-
           </tr>
           </tbody>
         </table>
