@@ -236,7 +236,7 @@ export default {
                 <li>
                   <router-link to="/products">SẢN PHẨM</router-link>
                 </li>
-                <li><a href="/news">TIN TỨC</a></li>
+                <li><router-link to="/news">TIN TỨC</router-link></li>
                 <li><a href="#">CHÍNH SÁCH</a></li>
                 <li>
                   <a class="drop-link" href="">LIÊN HỆ<i class="fa fa-angle-down hidden-lg hidden-md"

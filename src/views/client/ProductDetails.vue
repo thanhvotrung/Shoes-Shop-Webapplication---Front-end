@@ -102,7 +102,7 @@ export default {
     },
     async fetchData() {
       let temp;
-      await axios.get(`http://localhost:3030/api/product/${this.slug}/${this.id}`).then(res => {
+      await axios.get(`http://localhost:3030/api/${this.slug}/${this.id}`).then(res => {
         const product = res.data
         this.product = product
         document.title = product.name

@@ -124,7 +124,7 @@ const routes = [
 
     },
     {
-        path: '/product/:slug/:id',
+        path: '/:slug/:id',
         name: 'ProductDetails',
         component: ProductDetails,
         meta: {title: 'Chi tiết sản phẩm'}
