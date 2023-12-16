@@ -169,7 +169,7 @@ export default {
       <div class="row">
         <div class="col-xs-12 col-sm-6 hidden-xs">
           <span class="tel"> <i class="fa fa-phone" aria-hidden="true"></i> +84 113 113 113</span>
-          <a href="#" class="tel"> <i class="fa fa-envelope-o" aria-hidden="true"></i> giay.phake@donếtchotao</a>
+          <a href="#" class="tel"> <i class="fa fa-envelope-o" aria-hidden="true"></i> giay.phake@gmail.com</a>
         </div>
         <div class="col-xs-12 col-sm-6 text-right">
 
@@ -208,7 +208,7 @@ export default {
               </li>
               <li><a href="#" class="icon-magnifier"></a></li>
               <li class="">
-                <a href="#" class="icon-heart cart-opener"><span style="margin-bottom: -3px;" class="num">3</span></a>
+                <router-link to="/wishlist" class="icon-heart cart-opener"><span style="margin-bottom: -3px;" class="num">0</span></router-link>
               </li>
               <li class="">
                 <router-link to="/cart" class="cart-opener">

@@ -18,33 +18,41 @@
         <div class="container">
           <div class="row">
             <div class="col-xs-12 mt-heading text-uppercase">
-              <h2 class="heading">Mua con cặc</h2>
-              <p>Sản phẩm này mới ga đó ba</p>
+              <h2 class="heading">Sản phẩm mới</h2>
+              <!--              <p>Sản phẩm này mới ga đó ba</p>-->
             </div>
           </div>
           <div class="row" v-if="newProducts">
             <div class="col-xs-12">
               <div class="">
                 <Carousel v-bind="settings" :breakpoints="breakpoints">
-                  <Slide v-for="(product) in newProducts" :key="product.id" class="slide">
+                  <Slide v-for="(product) in fetchNewProductAndWishlist" :key="product.id" class="slide">
                     <div class="mt-product1 large">
                       <div class="box">
                         <div class="b1">
                           <div class="b2">
 
-                              <img style="width: 95%; min-height: 38rem" v-if="product.images" :src="product.images"
-                                   alt="image description">
-                              <img v-else src="http://placehold.it/275x285" alt="image description">
+                            <img style="width: 95%; min-height: 38rem" v-if="product.images" :src="product.images"
+                                 alt="image description">
+                            <img v-else src="http://placehold.it/275x285" alt="image description">
                             <span class="caption">
 															<span class="new">NEW</span>
 														</span>
                             <ul class="links add">
                               <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
                                      data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
-                              <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
+                              <li v-if="product.wishlist == false"><a href="#"
+                                                                      @click.prevent="handleAddToWishlist(product.id)"><i
+                                  class="icomoon icon-heart-empty"></i></a>
+                              </li>
+                              <li v-else>
+                                <router-link to="/wishlist"><i
+                                    style="color: red"
+                                    class="icomoon icon-heart-empty"></i></router-link>
+                              </li>
                               <li>
                                 <router-link
-                                             :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
+                                    :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
                                   <i class="icomoon fa fa-eye"></i></router-link>
                               </li>
                             </ul>
@@ -54,7 +62,7 @@
                       <div class="txt">
                         <strong class="title text-overflow" style="width:100%">
                           <router-link
-                                       :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
+                              :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
                             {{
                               product.name
                             }}
@@ -92,7 +100,7 @@
             <div class="col-xs-12">
               <div class="">
                 <Carousel v-bind="settingsTopView" :breakpoints="breakpointsTopView">
-                  <Slide v-for="(product) in topViewProducts" :key="product.id" class="slide">
+                  <Slide v-for="(product) in fetchTopProductAndWishlist" :key="product.id" class="slide">
                     <div class="mt-product1 large">
                       <div class="box">
                         <div class="b1">
@@ -108,7 +116,15 @@
                             <ul class="links add">
                               <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
                                      data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
-                              <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
+                              <li v-if="product.wishlist == false"><a href="#"
+                                                                      @click.prevent="handleAddToWishlist(product.id)"><i
+                                  class="icomoon icon-heart-empty"></i></a>
+                              </li>
+                              <li v-else>
+                                <router-link to="/wishlist"><i
+                                    style="color: red"
+                                    class="icomoon icon-heart-empty"></i></router-link>
+                              </li>
                               <li>
                                 <router-link class=""
                                              :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
@@ -148,7 +164,9 @@
       <!-- mt top view end  -->
 
     </main>
-    <div><ModalAddToCart :id="productId"/></div>
+    <div>
+      <ModalAddToCart :id="productId"/>
+    </div>
   </LayoutView>
 </template>
 
@@ -167,7 +185,7 @@ import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
 import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 
-import { mapState } from 'vuex';
+import {mapState} from 'vuex';
 
 
 import {Carousel, Navigation, Slide, Pagination} from 'vue3-carousel'
@@ -188,6 +206,24 @@ export default {
     ...mapState({
       name: state => state.name,
     }),
+
+    fetchNewProductAndWishlist() {
+      const products = this.newProducts.map(product => ({
+        ...product,
+        wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
+      }));
+
+      return products;
+    },
+
+    fetchTopProductAndWishlist() {
+      const products = this.topViewProducts.map(product => ({
+        ...product,
+        wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
+      }));
+
+      return products;
+    }
   },
 
   data() {
@@ -249,7 +285,6 @@ export default {
   },
 
   methods: {
-
     formattedPrice(price) {
       return price.toLocaleString('vi-VN', {
         style: 'currency',
@@ -259,7 +294,6 @@ export default {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/product/new-products`).then(res => {
         this.newProducts = res.data
-
       }).catch(err => {
         console.log(err)
       })
@@ -269,11 +303,31 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+
+    handleAddToWishlist(id) {
+      const wishlist = JSON.parse(localStorage.getItem('w_ls')) || [];
+      if (!wishlist.includes(id)) {
+        wishlist.push(id);
+        localStorage.setItem('w_ls', JSON.stringify(wishlist));
+        this.newProducts = this.newProducts.slice();
+        this.topViewProducts = this.topViewProducts.slice();
+        // const updateWishlist = products => {
+        //   const index = products.findIndex(item => item.id === id);
+        //   if (index !== -1) {
+        //     products[index].wishlist = true;
+        //   }
+        // };
+        //
+        // updateWishlist(this.fetchNewProductAndWishlist);
+        // updateWishlist(this.fetchTopProductAndWishlist);
+      }
     }
   },
 
+
   mounted() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({top: 0, behavior: 'smooth'})
     this.fetchData()
   }
 }

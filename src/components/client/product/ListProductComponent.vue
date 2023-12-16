@@ -53,7 +53,7 @@ export default {
       totalPages.value = response.totalPages
       currentPage.value = response.currentPage
     })
-    await new Promise(resolve => setTimeout(resolve, 500)); // 1000 milliseconds = 1 giây
+    // await new Promise(resolve => setTimeout(resolve, 500)); // 1000 milliseconds = 1 giây
 
     return {
       products, categories, brands,
@@ -77,6 +77,7 @@ export default {
       }
     }
   },
+
 
   watch: {
     '$route.query': {
@@ -143,6 +144,26 @@ export default {
         style: 'currency',
         currency: 'VND',
       });
+    },
+
+    handleAddToWishlist(id) {
+      const wishlist = JSON.parse(localStorage.getItem('w_ls')) || [];
+      if (!wishlist.includes(id)) {
+        wishlist.push(id);
+        localStorage.setItem('w_ls', JSON.stringify(wishlist));
+        this.products = this.products.slice();
+
+      }
+    }
+  },
+
+  computed: {
+    fetchProductsOfWishlist() {
+      const products = this.products.map(product => ({
+        ...product,
+        wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
+      }));
+      return products;
     },
   },
 
@@ -261,25 +282,11 @@ export default {
                   </div>
                 </li>
               </ul>
-              <!--                <select v-model="sortingOption">-->
-              <!--                  <option value="">Mặc định</option>-->
-              <!--                  <option value="asc">Giá từ thấp đến cao</option>-->
-              <!--                  <option value="desc">Giá từ cao đến thấp</option>-->
-              <!--                </select>-->
-
             </div>
-            <!--               btn-box end here -->
-            <!--               mt-textbox start here -->
-            <!--                            <div class="mt-textbox">-->
-            <!--                              <p>Showing <strong>1–9</strong> of <strong>65</strong> results</p>-->
-            <!--                            </div>-->
-            <!--               mt-textbox end here -->
           </header>
-          <!-- mt shoplist header end here -->
-          <!-- mt productlisthold start here -->
 
           <ul class="mt-productlisthold list-inline d-flex flex-wrap justify-content-start">
-            <li v-for="product in products" :key="product.id">
+            <li v-for="product in fetchProductsOfWishlist" :key="product.id">
               <!-- mt product1 large start here -->
               <div class="mt-product1">
                 <div class="box">
@@ -292,7 +299,15 @@ export default {
                       <ul class="links add">
                         <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
                                data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
-                        <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
+                        <li v-if="product.wishlist == false"><a href="#"
+                                                                @click.prevent="handleAddToWishlist(product.id)"><i
+                            class="icomoon icon-heart-empty"></i></a>
+                        </li>
+                        <li v-if="product.wishlist == true">
+                          <router-link to="/wishlist"><i
+                              style="color: red"
+                              class="icomoon icon-heart-empty"></i></router-link>
+                        </li>
                         <li>
                           <router-link
                               :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">

@@ -3,6 +3,7 @@ import LayoutView from "@/components/admin/LayoutView.vue";
 import {onErrorCaptured, ref} from 'vue'
 import ListOrderComponent from "@/components/admin/order/ListOrderComponent.vue";
 
+
 export default {
   name: "ListOrder",
 

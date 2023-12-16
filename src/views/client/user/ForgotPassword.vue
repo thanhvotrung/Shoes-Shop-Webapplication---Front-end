@@ -132,16 +132,18 @@ export default {
                   <header>
                     <h2 style="margin: 0 0 5px;">Quên mật khẩu</h2>
                   </header>
-                  <Form @submit="forgotPassword" :validation-schema="schema" v-slot="{ errors }">
-                    <fieldset>
-                      <Field v-model="email" name="email" type="text" placeholder="Email"
-                             :class="{ 'is-invalid': errors.email }" class="input"/>
-                      <div class="text-danger font-italic text-1 text-end">{{ errors.email }}</div>
-                      <div class="box">
-                        <button v-if="hideConfirm" type="submit" class="btn-type1">Gửi mã tới gmail</button>
-                      </div>
-                    </fieldset>
-                  </Form>
+                  <div v-if="hideConfirm">
+                    <Form @submit="forgotPassword" :validation-schema="schema" v-slot="{ errors }">
+                      <fieldset>
+                        <Field v-model="email" name="email" type="text" placeholder="Email"
+                               :class="{ 'is-invalid': errors.email }" class="input"/>
+                        <div class="text-danger font-italic text-1 text-end">{{ errors.email }}</div>
+                        <div class="box">
+                          <button type="submit" class="btn-type1">Gửi mã tới gmail</button>
+                        </div>
+                      </fieldset>
+                    </Form>
+                  </div>
                   <!--                  Xác nhận OTP-->
                   <input v-if="showCodeInput" v-model="codeOld" name="code" type="text" placeholder="Nhập mã OTP"
                          class="input"/>

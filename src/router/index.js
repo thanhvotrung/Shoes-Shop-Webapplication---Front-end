@@ -31,6 +31,7 @@ import AdminPosts from "@/views/admin/post/AdminPosts.vue";
 import EditPost from "@/views/admin/post/EditPost.vue";
 import NotFound from "@/views/client/exception/NotFound.vue";
 import testAuth from "@/views/testAuth.vue";
+import Wishlist from "@/views/client/wishlist/Wishlist.vue";
 
 
 
@@ -218,7 +219,7 @@ const routes = [
         path: '/success',
         name: 'SuccessTransaction',
         component: SuccessPay,
-        meta: {title: 'Thanh toán thành công'}
+        meta: {title: 'Thanh toán thành công', requiresAuth: true}
     },
     // thêm
     {
@@ -244,6 +245,12 @@ const routes = [
         name: 'EditPost',
         component: EditPost,
         meta: {title: 'Trang sửa tin tức', requiresAuth: true, requiresAdmin: true}
+    },
+    {
+        path: '/wishlist',
+        name: 'Wishlist',
+        component: Wishlist,
+        meta: {title: 'Sản phẩm yêu thích'}
     },
 ]
 

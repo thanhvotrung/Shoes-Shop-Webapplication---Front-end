@@ -4,10 +4,12 @@ import axios from "axios"
 import * as Yup from 'yup'
 import {Form, Field} from "vee-validate"
 import {useToast} from "vue-toastification";
+import testComponent from "@/components/TestComponent.vue";
+
 
 export default {
   name: "ListCategory",
-  components: {LayoutView, Form, Field},
+  components: {LayoutView, Form, Field, testComponent},
   setup() {
     const toast = useToast();
     return {toast}
@@ -40,6 +42,9 @@ export default {
       statusSearch: "",
       totalPages: null,
       currentPage: null,
+
+      isPopupOpen: false,
+      deleteId: null,
     }
   },
 
@@ -132,7 +137,21 @@ export default {
       }).catch(err => {
         console.log(err)
       })
-    }
+    },
+
+    openPopup(id) {
+      this.isPopupOpen = true;
+      this.deleteId = id
+    },
+    handleYes() {
+      this.deleteCategory(this.deleteId)
+      this.isPopupOpen = false;
+      this.deleteId = null
+    },
+    handleNo() {
+      this.isPopupOpen = false;
+      this.deleteId = null
+    },
   },
   mounted() {
     this.$router.push({query: {}})
@@ -215,9 +234,9 @@ export default {
                       data-bs-target="#modal-update-category"
                       class="btn text-4 btn-update edit-row edit-category"><i
                   class="bi bi-pencil-square"></i></button>
-<!--              <button @click="deleteCategory(category.id)" class="btn text-4 btn-delete"><i-->
-<!--                  class="bi bi-trash3"></i>-->
-<!--              </button>-->
+              <button @click="openPopup(category.id)" class="btn text-4 btn-delete"><i
+                  class="bi bi-trash3"></i>
+              </button>
             </td>
           </tr>
           </tbody>
@@ -329,6 +348,16 @@ export default {
       </div>
     </section>
   </LayoutView>
+
+  <div>
+    <testComponent
+        v-if="isPopupOpen"
+        :show="isPopupOpen"
+        message="Xác nhận xóa loại?"
+        @yes="handleYes"
+        @no="handleNo"
+    ></testComponent>
+  </div>
 </template>
 
 <style scoped>
@@ -339,5 +368,8 @@ export default {
 
 .btn-update:hover {
   color: lightgreen;
+}
+.btn-delete:hover {
+  color: orangered;
 }
 </style>

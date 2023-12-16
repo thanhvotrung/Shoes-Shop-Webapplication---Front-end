@@ -2,10 +2,11 @@
 import axios from "axios";
 import {useToast} from "vue-toastification";
 import jwtDecode from "jwt-decode";
+import testComponent from "@/components/TestComponent.vue";
 
 export default {
-name: "ListOrderComponent",
-  components: {},
+  name: "ListOrderComponent",
+  components: {testComponent},
   watch: {
     '$route.query': {
       immediate: true,
@@ -34,6 +35,9 @@ name: "ListOrderComponent",
       email: null,
       token: null,
 
+      isPopupOpen: false,
+      idOrder: null,
+      statusOrder: null,
     }
   },
 
@@ -55,7 +59,7 @@ name: "ListOrderComponent",
         const response = res.data
         this.orders = response.content
         this.totalPages = response.totalPages
-        this.currentPage = response.number +1
+        this.currentPage = response.number + 1
       }).catch(err => {
         console.log(err)
       })
@@ -71,8 +75,8 @@ name: "ListOrderComponent",
       })
     },
 
-    async handleUpdateDelivery(id){
-      await axios.put(`http://localhost:3030/api/admin/orders/update-delivery/${id}`,  this.email)
+    async handleUpdateDelivery(id) {
+      await axios.put(`http://localhost:3030/api/admin/orders/update-delivery/${id}`, this.email)
           .then(res => {
             console.log(res)
             this.toast.success("Cập nhật trạng thái thành công!")
@@ -83,7 +87,7 @@ name: "ListOrderComponent",
 
     },
 
-    async handleUpdateCompleted(id){
+    async handleUpdateCompleted(id) {
       await axios.put(`http://localhost:3030/api/admin/orders/update-completed/${id}`, this.email).then(res => {
         console.log(res)
         this.toast.success("Cập nhật trạng thái thành công!")
@@ -97,6 +101,32 @@ name: "ListOrderComponent",
       const date = new Date(timestamp);
       const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
       return date.toLocaleString('vi-VN', options);
+    },
+
+    openPopup(id, status) {
+      this.isPopupOpen = true
+      this.idOrder = id
+      this.statusOrder = status
+    },
+    handleYes() {
+      if(this.statusOrder == 1){
+        this.handleUpdateDelivery(this.idOrder)
+      }
+      if(this.statusOrder == 2){
+        this.handleUpdateCompleted(this.idOrder)
+      }
+      // Handle 'Yes' button click
+      console.log("User clicked Yes");
+      this.isPopupOpen = false;
+      this.idOrder = null
+      this.statusOrder = null
+    },
+    handleNo() {
+      // Handle 'No' button click
+      console.log("User clicked No");
+      this.isPopupOpen = false;
+      this.idOrder = null
+      this.statusOrder = null
     },
   },
 
@@ -129,16 +159,20 @@ name: "ListOrderComponent",
         <tr class="heading-search">
           <!--              <form method="GET" id="search-form">-->
           <th>
-            <input v-model="id" type="text" name="id" id="id" class="form-control search-input" @change="this.$router.push({query: {...this.$route.query, id: this.id}})">
+            <input v-model="id" type="text" name="id" id="id" class="form-control search-input"
+                   @change="this.$router.push({query: {...this.$route.query, id: this.id}})">
           </th>
           <th>
-            <input v-model="name" type="text" name="name" id="name" class="form-control search-input" @change="this.$router.push({query: {...this.$route.query, name: this.name}})">
+            <input v-model="name" type="text" name="name" id="name" class="form-control search-input"
+                   @change="this.$router.push({query: {...this.$route.query, name: this.name}})">
           </th>
           <th>
-            <input v-model="phone" type="text" name="phone" id="phone" class="form-control search-input" @change="this.$router.push({query: {...this.$route.query, phone: this.phone}})">
+            <input v-model="phone" type="text" name="phone" id="phone" class="form-control search-input"
+                   @change="this.$router.push({query: {...this.$route.query, phone: this.phone}})">
           </th>
           <th>
-            <select v-model="status" name="status" class="form-control search-select" id="status" @change="this.$router.push({query: {...this.$route.query, status: this.status}})">
+            <select v-model="status" name="status" class="form-control search-select" id="status"
+                    @change="this.$router.push({query: {...this.$route.query, status: this.status}})">
               <option value="">Tất cả</option>
               <option value="1">Chờ lấy hàng</option>
               <option value="2">Đang giao hàng</option>
@@ -156,10 +190,10 @@ name: "ListOrderComponent",
         <tbody v-if="orders">
         <tr v-for="order in orders" :key="order.id">
           <td>
-            <router-link :to="{name: 'EditOrder', params: {id: order.id}}" >{{order.id}}</router-link>
+            <router-link :to="{name: 'EditOrder', params: {id: order.id}}">{{ order.id }}</router-link>
           </td>
-          <td>{{order.receiverName}}</td>
-          <td>{{order.receiverPhone}}</td>
+          <td>{{ order.receiverName }}</td>
+          <td>{{ order.receiverPhone }}</td>
           <td>
             <span v-if="order.status == 1" class="badge badge-warning">Chờ lấy hàng</span>
             <span v-if="order.status == 2" class="badge badge-primary">Đang giao hàng</span>
@@ -168,14 +202,21 @@ name: "ListOrderComponent",
             <span v-if="order.status == 5" class="badge badge-light">Đơn hàng bị hủy</span>
           </td>
           <td>
-            <span>{{formattedDate(order.createdAt)}}</span>
+            <span>{{ formattedDate(order.createdAt) }}</span>
           </td>
           <td>
-            <span v-if="order.modifiedAt">{{formattedDate(order.modifiedAt)}}</span>
+            <span v-if="order.modifiedAt">{{ formattedDate(order.modifiedAt) }}</span>
           </td>
           <td>
-            <button v-if="order.status == 1" class="btn btn-warning updateButton"  @click="handleUpdateDelivery(order.id)">Đã giao cho đơn vị vận chuyển</button>
-            <button v-if="order.status == 2" class="btn btn-secondary updateButton"  @click="handleUpdateCompleted(order.id)">Đã giao cho khách hàng</button>
+            <button v-if="order.status == 1" class="btn btn-warning updateButton"
+                    @click="openPopup(order.id, order.status)">Đã giao cho đơn vị vận chuyển
+            </button>
+            <button v-if="order.status == 2" class="btn btn-secondary updateButton"
+                    @click="openPopup(order.id, order.status)">Đã giao cho khách hàng
+            </button>
+
+            <!--            <button v-if="order.status == 1" class="btn btn-warning updateButton"  @click="handleUpdateDelivery(order.id)">Đã giao cho đơn vị vận chuyển</button>-->
+            <!--            <button v-if="order.status == 2" class="btn btn-secondary updateButton"  @click="handleUpdateCompleted(order.id)">Đã giao cho khách hàng</button>-->
           </td>
         </tr>
         </tbody>
@@ -216,23 +257,20 @@ name: "ListOrderComponent",
     </div>
   </section>
 
-<!--  <div class="modal fade" id="modal-add-new-category" tabindex="-1" role="dialog"-->
-<!--       aria-labelledby="modalAddNewCategory" aria-hidden="true">-->
-<!--    <div class="modal-dialog" role="document">-->
-<!--      <div class="modal-content">-->
-<!--        <div class="modal-body">-->
-<!--          <div class="d-flex flex-column justify-content-center align-items-center">-->
-<!--            <div><h3>Xác nhận cập nhật đơn hàng</h3></div>-->
-<!--            <div>-->
-<!--              <button type="button" class="btn-confirm" data-bs-dismiss="modal" ref="closeModal_1">Hủy-->
-<!--              </button>-->
-<!--              <button class="btn-confirm">Xác nhận</button>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
+  <div>
+    <!-- Other content of your component -->
+
+    <!--    <button @click="openPopup(id)">Open Popup</button>-->
+
+    <!-- Include the PopupYesNo component -->
+    <testComponent
+        v-if="isPopupOpen"
+        :show="isPopupOpen"
+        message="Xác nhận cập nhật đơn hàng?"
+        @yes="handleYes"
+        @no="handleNo"
+    ></testComponent>
+  </div>
 </template>
 
 <style scoped>

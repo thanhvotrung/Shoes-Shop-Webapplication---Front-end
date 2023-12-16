@@ -1,26 +1,48 @@
 <script>
-import axios from "axios";
+import testComponent from "@/components/TestComponent.vue";
 
 export default {
   name: "testAuth",
-  async created() {
-    await axios({
-      method: "GET",
-      url: 'http://localhost:3030/api/test',
-      header: {
-        Authorization: 'Bearer ' + this.$cookies.get("JWT_TOKEN")
-      },
-    }).then(res => console.log(res))
-        .catch(err => {
-          console.log(err)
-        })
-  }
+  components: {testComponent},
+  data() {
+    return {
+      isPopupOpen: false,
+    };
+  },
+  methods: {
+    openPopup() {
+      this.isPopupOpen = true;
+    },
+    handleYes() {
+      // Handle 'Yes' button click
+      console.log("User clicked Yes");
+      this.isPopupOpen = false;
+    },
+    handleNo() {
+      // Handle 'No' button click
+      console.log("User clicked No");
+      this.isPopupOpen = false;
+    },
+  },
+
 }
 </script>
 
 <template>
+  <div>
+    <!-- Other content of your component -->
 
-  <button @click="handleTest">test</button>
+    <button @click="openPopup">Open Popup</button>
+
+    <!-- Include the PopupYesNo component -->
+    <testComponent
+        v-if="isPopupOpen"
+        :show="isPopupOpen"
+        message="Do you want to proceed?"
+        @yes="handleYes"
+        @no="handleNo"
+    ></testComponent>
+  </div>
 </template>
 
 <style scoped>

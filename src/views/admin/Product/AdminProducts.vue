@@ -2,10 +2,10 @@
 import LayoutView from "@/components/admin/LayoutView.vue";
 import axios from "axios";
 import {useToast} from "vue-toastification";
-
+import testComponent from "@/components/TestComponent.vue";
 export default {
   name: "AdminProducts",
-  components: {LayoutView},
+  components: {LayoutView, testComponent},
 
   watch: {
     '$route.query': {
@@ -33,6 +33,9 @@ export default {
       name: null,
       category: "",
       brand: "",
+
+      isPopupOpen: false,
+      deleteId: null,
     }
   },
 
@@ -106,6 +109,20 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+
+    openPopup(id) {
+      this.isPopupOpen = true;
+      this.deleteId = id
+    },
+    handleYes() {
+      this.deleteProduct(this.deleteId)
+      this.isPopupOpen = false;
+      this.deleteId = null
+    },
+    handleNo() {
+      this.isPopupOpen = false;
+      this.deleteId = null
     },
   },
 
@@ -202,6 +219,9 @@ export default {
                   <i class="btn-update bi bi-pencil-square"></i>
                 </router-link>
               </button>
+              <button @click="openPopup(product.id)" class="btn text-4 btn-delete"><i
+                  class="bi bi-trash3"></i>
+              </button>
             </td>
           </tr>
           </tbody>
@@ -243,6 +263,16 @@ export default {
     </section>
     <!--    </section>-->
   </LayoutView>
+
+  <div>
+    <testComponent
+        v-if="isPopupOpen"
+        :show="isPopupOpen"
+        message="Xác nhận xóa xản phẩm?"
+        @yes="handleYes"
+        @no="handleNo"
+    ></testComponent>
+  </div>
 </template>
 
 <style scoped>
@@ -256,5 +286,9 @@ export default {
 
 .btn-update:hover {
   color: lightgreen;
+}
+
+.btn-delete:hover {
+  color: orangered;
 }
 </style>

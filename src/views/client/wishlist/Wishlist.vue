@@ -1,10 +1,12 @@
 <script>
 import LayoutView from "@/components/client/LayoutView.vue";
+import LoaderView from "@/components/client/LoaderView.vue";
 import {onErrorCaptured, ref} from 'vue'
-import ListProductComponent from "@/components/client/product/ListProductComponent.vue";
+import WishlistComponent from "@/components/client/wishlist/WishlistComponent.vue";
+
 export default {
-  name: "ListProduct",
-  components: {LayoutView, ListProductComponent},
+  name: "WishList",
+  components: { LayoutView, WishlistComponent, LoaderView},
   setup() {
     const error = ref(null)
     onErrorCaptured(e => {
@@ -23,15 +25,15 @@ export default {
     <div v-if="error">Parent: {{error}}</div>
     <Suspense>
       <template #default>
-        <ListProductComponent/>
+        <WishlistComponent/>
       </template>
       <template #fallback>
-        <div  class="loader-container">
-          <div class="loader">
-            <img src="@/assets/client/images/svg/rings.svg" alt="loader">
-          </div>
-        </div>
+        <LoaderView/>
       </template>
     </Suspense>
   </LayoutView>
 </template>
+
+<style scoped>
+
+</style>

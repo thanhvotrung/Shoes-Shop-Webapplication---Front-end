@@ -5,10 +5,11 @@ import * as Yup from 'yup'
 import {Form, Field} from "vee-validate"
 import {useToast} from "vue-toastification";
 import FirebaseConfig from "@/utils/FirebaseConfig";
+import testComponent from "@/components/TestComponent.vue";
 
 export default {
   name: "AdminBrands",
-  components: {LayoutView, Form, Field},
+  components: {testComponent, LayoutView, Form, Field},
   setup() {
     const toast = useToast();
     return {toast}
@@ -44,6 +45,8 @@ export default {
       totalPages: null,
       currentPage: null,
 
+      isPopupOpen: false,
+      deleteId: null,
     }
   },
 
@@ -163,15 +166,29 @@ export default {
 
     async deleteBrand(id) {
         await this.findBrand(id)
-        FirebaseConfig.DeleteImage(this.logoUpdate)
       await axios.delete(`http://localhost:3030/api/admin/brands/${id}`).then((res) => {
         console.log(res)
         this.fetchData()
+        FirebaseConfig.DeleteImage(this.logoUpdate)
         this.toast.success("Xóa danh mục thành công!")
       }).catch((err) => {
         console.log(err)
         this.toast.warning(err.response.data.message)
       })
+    },
+
+    openPopup(id) {
+      this.isPopupOpen = true;
+      this.deleteId = id
+    },
+    handleYes() {
+      this.deleteBrand(this.deleteId)
+      this.isPopupOpen = false;
+      this.deleteId = null
+    },
+    handleNo() {
+      this.isPopupOpen = false;
+      this.deleteId = null
     },
   },
   mounted() {
@@ -260,9 +277,9 @@ export default {
                       data-bs-target="#modal-update-brand"
                       class="btn text-4 btn-update edit-row edit-brand"><i
                   class="bi bi-pencil-square"></i></button>
-<!--              <button @click="deleteBrand(brand.id)" class="btn text-4 btn-delete"><i-->
-<!--                  class="bi bi-trash3"></i>-->
-<!--              </button>-->
+              <button @click="openPopup(brand.id)" class="btn text-4 btn-delete"><i
+                  class="bi bi-trash3"></i>
+              </button>
             </td>
           </tr>
           </tbody>
@@ -422,6 +439,16 @@ export default {
       </div>
     </div>
   </LayoutView>
+
+  <div>
+    <testComponent
+        v-if="isPopupOpen"
+        :show="isPopupOpen"
+        message="Xác nhận xóa nhãn hiệu?"
+        @yes="handleYes"
+        @no="handleNo"
+    ></testComponent>
+  </div>
 </template>
 
 <style scoped>
@@ -432,5 +459,8 @@ export default {
 
 .btn-update:hover {
   color: lightgreen;
+}
+.btn-delete:hover {
+  color: orangered;
 }
 </style>
