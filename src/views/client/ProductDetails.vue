@@ -102,7 +102,7 @@ export default {
     },
     async fetchData() {
       let temp;
-      await axios.get(`http://localhost:3030/api/${this.slug}/${this.id}`).then(res => {
+      await axios.get(`http://localhost:3030/api/product/${this.slug}/${this.id}`).then(res => {
         const product = res.data
         this.product = product
         document.title = product.name
@@ -305,7 +305,6 @@ export default {
               <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                   <div ref="utextDesc">
-
                   </div>
                 </div>
                 <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">

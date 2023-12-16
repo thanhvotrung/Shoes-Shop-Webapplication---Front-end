@@ -4,6 +4,7 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import {useToast} from "vue-toastification";
 
+
 export default {
   name: "OrderDetails",
   components: {LayoutView},
@@ -27,8 +28,8 @@ export default {
           email: this.email
         }
       }).then(res => {
-
         this.orderDetails = res.data
+        console.log("data",res.data)
       }).catch(err => {
         console.log(err)
       })
@@ -45,12 +46,14 @@ export default {
         }
       }
     },
+
     formattedPrice(price) {
       return price.toLocaleString('vi-VN', {
         style: 'currency',
         currency: 'VND',
       });
     },
+
     async handleCancelOrder(id) {
       console.log(id)
       await axios.post(`http://localhost:3030/api/cancel-order?id=${id}&email=${this.email}`)
@@ -60,7 +63,8 @@ export default {
           }).catch(err => {
             console.log(err)
           })
-    }
+    },
+
   },
   mounted() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -68,6 +72,7 @@ export default {
     this.token = this.$cookies.get("JWT_TOKEN")
     this.decodeJwt()
     this.fetchData()
+
   }
 }
 </script>
@@ -109,8 +114,8 @@ export default {
                   </div>
                 </div>
                 <div class="price asks-price"><span class="text-price">{{ formattedPrice(order.price) }}</span></div>
-
               </div>
+
               <div class="shipping-and-price-wrapper">
                 <div class="shipping-wrapper">
                   <div class="title">Địa chỉ giao hàng</div>

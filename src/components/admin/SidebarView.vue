@@ -47,7 +47,7 @@ export default {
               </router-link>
             </li>
             <li>
-              <router-link to="/admin/posts">
+              <router-link to="/admin/news">
                 <i class="bx bx-cart-alt" aria-hidden="true"></i>
                 <span>Quản lý bài viết</span>
               </router-link>

@@ -17,8 +17,8 @@ export default {
   methods: {
     async fetchData() {
       await axios.get(`http://localhost:3030/api/order-list`, {params: {status: this.status, email: this.email}}).then(res => {
-
         this.orders = res.data
+        console.log("data 2,", res.data)
       }).catch(err => {
         console.log(err)
       })
@@ -35,6 +35,7 @@ export default {
         }
       }
     },
+
     formattedPrice(price) {
       return price.toLocaleString('vi-VN', {
         style: 'currency',
@@ -43,7 +44,6 @@ export default {
     },
     getOrderStatus(event){
       this.status = event.currentTarget.getAttribute('data-status')
-
       this.fetchData()
     }
   },
@@ -52,7 +52,6 @@ export default {
     this.token = this.$cookies.get("JWT_TOKEN")
     this.decodeJwt()
     this.fetchData()
-
   }
 }
 </script>

@@ -61,7 +61,7 @@ export default {
           .then((res) => {
             console.log(res)
             this.toast.success(res.data)
-            this.$router.push("/admin/posts")
+            this.$router.push("/admin/news")
           }).catch((err) => {
             if (err.response.data.status === "BAD_REQUEST") {
               this.toast.error(err.response.data.message)
