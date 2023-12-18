@@ -1,21 +1,24 @@
 <script>
 import axios from "axios";
 import {useToast} from "vue-toastification";
-import LoaderView from "@/components/client/LoaderView.vue";
 
 
 export default {
   name: "SuccessTransaction",
-  components: {LoaderView,},
+  components: {},
   setup() {
     const toast = useToast();
     return {toast}
   },
   data() {
-    return {}
+    return {
+      idOrder: null,
+      responseCode: null,
+    }
   },
 
   mounted() {
+    this.responseCode = this.$route.query.vnp_ResponseCode
     this.handleOrder()
   },
 
@@ -45,12 +48,13 @@ export default {
           products: orderDetailsList
         }
         await axios.post(`http://localhost:3030/api/orders`, obj)
-            .then(res => {
+            .then((res) => {
               this.toast.success("Đặt hàng thành công.")
               localStorage.removeItem('cartList');
               this.$cookies.remove("checkout_data")
               this.sendMailSuccess(obj)
-              this.$router.push({name: 'OrderDetails', params: {id: res.data}});
+              this.idOrder = res.data
+              // this.$router.push({name: 'OrderDetails', params: {id: res.data}});
             }).catch(err => {
               if (err.response.status === 400) {
                 this.toast.warning(err.response.data.message)
@@ -59,29 +63,34 @@ export default {
             })
 
       }
+      if (this.responseCode == '00') {
+        // this.$router.push({name: 'OrderDetails', params: {id: this.idOrder}});
+      }
     },
 
-    async sendMailSuccess( data) {
-        const details = {
-          to: data.email,
-          message: `ĐƠN HÀNG CỦA QUÝ KHÁCH ĐÃ ĐƯỢC THANH TOÁN. \n
+    async sendMailSuccess(data) {
+      const details = {
+        to: data.email,
+        message: `ĐƠN HÀNG CỦA QUÝ KHÁCH ĐÃ ĐƯỢC THANH TOÁN. \n
                 CHI TIẾT ĐƠN HÀNG: \n
                 Tên người nhận: ${data.receiver_name} \n
                 Địa chỉ: ${data.receiver_address} \n
                 Số điện thoại: ${data.receiver_phone} \n
+                Ghi chú: ${data.note || ''} \n
+                Giảm giá: ${this.formattedPrice(data.subtotal_price - data.total_price)} \n
                 Tổng hóa đơn: ${this.formattedPrice(data.total_price)} \n
-CẢM ƠN QUÝ KHÁCH ĐÃ MUA HÀNG TẠI FAKESHOES!!!`,
-          subject: "THÔNG TIN CHI TIẾT ĐƠN HÀNG! FAKESHOES!!!"
-        };
+                CẢM ƠN QUÝ KHÁCH ĐÃ MUA HÀNG TẠI FAKESHOES!!!`,
+        subject: "ĐẶT HÀNG THÀNH CÔNG! FAKESHOES!!!"
+      };
 
-        try {
-          const response = await axios.post(`http://localhost:3030/api/sendemailsuccess`, details);
-          console.log(response);
-          this.toast.success("Đã gửi thư xác nhận về email.");
-        } catch (error) {
-          console.error(error);
-        }
-      },
+      try {
+        const response = await axios.post(`http://localhost:3030/api/sendemailsuccess`, details);
+        console.log(response);
+        this.toast.success("Đã gửi thư xác nhận về email.");
+      } catch (error) {
+        console.error(error);
+      }
+    },
     formattedPrice(price) {
       return price.toLocaleString('vi-VN', {
         style: 'currency',
@@ -94,29 +103,61 @@ CẢM ƠN QUÝ KHÁCH ĐÃ MUA HÀNG TẠI FAKESHOES!!!`,
 </script>
 
 <template>
-  <LoaderView/>
-<!--  <LayoutView>-->
-<!--    <section class="mt-error-sec dark">-->
-<!--      <div class="container">-->
-<!--        <div class="row">-->
-<!--          <div class="col-xs-12 text-center">-->
-<!--            <h1 class="text-uppercase montserrat">404</h1>-->
-<!--            <h3 class="text-uppercase montserrat">Trang không tồn tại</h3>-->
-<!--            <section class="mt-detail-sec" style="padding: 0 0 40px 0">-->
-<!--              <div class="container" style="border-radius: 7px;background-color: #fff">-->
-<!--                <form class="bill-detail">-->
-<!--                  <div class="row py-5" style="display: flex; justify-content: center;">-->
-<!--                    <router-link to="/" class="btn process-btn">Quay lại-->
-<!--                    </router-link>-->
-<!--                  </div>-->
-<!--                </form>-->
-<!--              </div>-->
-<!--            </section>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </section>-->
-<!--  </LayoutView>-->
+  <section class="mt-error-sec dark">
+    <div class="container">
+      <div class="row">
+
+        <div v-if="responseCode == '00'" class="col-xs-12 text-center">
+          <div class="d-flex justify-content-center my-5">
+            <img style="width: 10rem;" src="https://www.freeiconspng.com/thumbs/success-icon/success-icon-10.png"
+                 alt="SUCCESS">
+          </div>
+          <h1 class="text-uppercase montserrat">Thanh toán thành công</h1>
+          <section class="mt-detail-sec" style="padding: 0 0 40px 0">
+            <div class="container">
+              <form class="">
+                <div class=" py-5 d-flex justify-content-center">
+                  <div v-if="idOrder" class="mx-2">
+                    <router-link :to="{name: 'OrderDetails', params: {id: this.idOrder}}"
+                                 class="btn process-btn">Đơn hàng
+                    </router-link>
+                  </div>
+                  <div class="mx-2">
+                    <router-link to="/" class="btn process-btn">Trang chủ
+                    </router-link>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <div v-else class="col-xs-12 text-center">
+          <div class="d-flex justify-content-center my-5">
+            <img style="width: 10rem;" src="https://storage.needpix.com/thumbs/false-2061132_1280.png" alt="ERROR">
+          </div>
+          <h1 class="text-uppercase montserrat">Thanh toán thất bại</h1>
+          <section class="mt-detail-sec" style="padding: 0 0 40px 0">
+            <div class="container">
+              <form class="">
+                <div class="py-5 d-flex justify-content-center">
+                  <div class="mx-2">
+                    <router-link to="/cart" class="btn process-btn">Thử lại
+                    </router-link>
+                  </div>
+                  <div class="mx-2">
+                    <router-link to="/" class="btn process-btn">Trang chủ
+                    </router-link>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+  </section>
 </template>
 
 <style scoped>
@@ -124,32 +165,6 @@ CẢM ƠN QUÝ KHÁCH ĐÃ MUA HÀNG TẠI FAKESHOES!!!`,
   font-family: "Montserrat", sans-serif;
 }
 
-.table-cart thead {
-  font-size: 15px;
-}
-
-.account a:hover {
-  color: #ff6060;
-}
-
-.item-quantity input {
-  width: 30px;
-  text-align: center;
-  border: none;
-  outline: none;
-}
-
-.item-quantity input::-webkit-outer-spin-button,
-.item-quantity input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.item-quantity button {
-  outline: 0;
-  border: none;
-  background-color: #fff;
-}
 
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,200italic,300,300italic,400italic,600,600italic,700,700italic,900,900italic%7cMontserrat:400,700%7cOxygen:400,300,700');
 

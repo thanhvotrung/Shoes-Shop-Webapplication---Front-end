@@ -1,7 +1,6 @@
 <script>
 import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
-import jwtDecode from "jwt-decode";
 import {Field, Form} from "vee-validate";
 
 import {useToast} from "vue-toastification";
@@ -27,25 +26,7 @@ export default {
     })
     return {
       schemaProfile,
-      user: null,
-      token: null,
-      email: null,
-
       dataCheckout: null,
-
-      cartList: [],
-
-      promotionName: null,
-      discountType: null,
-      discountValue: null,
-      maximumDiscountValue: null,
-
-      subtotal: 0,
-      total: 0,
-      discount: 0,
-      publicDiscount: 0,
-
-      note: null,
     }
   },
   computed: {},
@@ -53,29 +34,13 @@ export default {
   methods: {
     async fetchData() {
       const data = this.$cookies.get("checkout_data")
-      if(data){
+      if (data) {
         this.dataCheckout = data
-        this.cartList = data.items || []
-        this.total = data.total
-        this.subtotal = data.subtotal
-        this.discount = data.discount
-        this.user = data.user
-        this.note = data.note
-        this.promotionName = data.promotionName
-      }else{
-        this.$router.push("/")
+      } else {
+        this.$router.push("/cart")
       }
     },
 
-    async getUser() {
-      if (this.email) {
-        await axios.get(`http://localhost:3030/user/${this.email}`).then(res => {
-          this.user = res.data
-        }).catch(err => {
-          console.log(err)
-        })
-      }
-    },
 
     async checkout(price) {
       this.$cookies.set("checkout_data", this.dataCheckout, '30min')
@@ -99,25 +64,9 @@ export default {
       });
     },
 
-    // Giải mã JWT token sang object User
-    decodeJwt() {
-      const token = this.token;
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          this.email = decodedToken.sub;
-        } catch (error) {
-          console.error('JWT Decoding Error:', error);
-        }
-      }
-    },
   },
 
   mounted() {
-    this.token = this.$cookies.get("JWT_TOKEN")
-    this.decodeJwt()
-    this.getUser()
-
     window.scrollTo({top: 0, behavior: 'smooth'})
     this.fetchData()
     console.log((this.dataCheckout))
@@ -130,20 +79,7 @@ export default {
   <LayoutView>
     <div v-if="dataCheckout" id="wrapper">
       <div class="w1">
-        <div class="mt-search-popup">
-          <div class="mt-holder">
-            <a href="#" class="search-close"><span></span><span></span></a>
-            <div class="mt-frame">
-              <form action="#">
-                <fieldset>
-                  <input type="text" placeholder="Search...">
-                  <span class="icon-microphone"></span>
-                  <button class="icon-magnifier" type="submit"></button>
-                </fieldset>
-              </form>
-            </div>
-          </div>
-        </div><!-- mt search popup end here -->
+
         <!-- Main of the Page -->
         <main id="mt-main">
 
@@ -164,38 +100,39 @@ export default {
                           <div>
                             <h5 class="font-size-16 mb-3">Thông tin thanh toán</h5>
                             <div class="mb-3">
-                              <Form v-if="user" :validation-schema="schemaProfile">
+                              <Form v-if="dataCheckout.user" :validation-schema="schemaProfile">
                                 <div>
                                   <div class="row">
-                                    <div class="col-lg-4">
+                                    <div class="col-lg-6">
                                       <div class="mb-3">
                                         <label class="form-label" for="billing-name">Tên</label>
-                                        <Field class="form-control" id="in-user-fullname" v-model=" user.fullName "
+                                        <Field class="form-control" id="billing-name"
+                                               v-model=" dataCheckout.user.fullName "
                                                name="fullName"/>
                                       </div>
                                     </div>
-                                    <div class="col-lg-4">
-                                      <div class="mb-3">
-                                        <label class="form-label" for="billing-email-address">Email</label>
-                                        <Field class="form-control" id="in-user-mail" v-model=" user.email "
-                                               name="mail"/>
-                                      </div>
-                                    </div>
-                                    <div class="col-lg-4">
+                                    <Field hidden class="form-control" id="billing-mail"
+                                           v-model=" dataCheckout.user.email"
+                                           name="mail"/>
+                                    <div class="col-lg-6">
                                       <div class="mb-3">
                                         <label class="form-label" for="billing-phone">Số điện thoại</label>
-                                        <Field class="form-control" id="in-user-phone" v-model=" user.phone "
+                                        <Field class="form-control" id="billing-phone"
+                                               v-model=" dataCheckout.user.phone "
                                                name="phone"/>
                                       </div>
                                     </div>
                                   </div>
-
                                   <div class="mb-3">
                                     <label class="form-label" for="billing-address">Địa chỉ nhận hàng</label>
-                                    <textarea class="form-control" rows="2" id="in-user-address"
-                                              v-model=" user.address "></textarea>
+                                    <textarea class="form-control" rows="2" id="billing-address"
+                                              v-model=" dataCheckout.user.address "></textarea>
                                   </div>
-
+                                  <div class="mb-3">
+                                    <label class="form-label" for="billing-note">Ghi chú</label>
+                                    <textarea class="form-control" rows="2" id="billing-note"
+                                              v-model=" dataCheckout.note "></textarea>
+                                  </div>
                                 </div>
                               </Form>
                             </div>
@@ -221,7 +158,8 @@ export default {
                                     <input checked type="radio" name="pay-method" id="pay-methodoption1"
                                            class="card-radio-input">
                                     <span class="card-radio py-3 text-center text-truncate">
-                                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png" alt="">
+                                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png"
+                                         alt="">
                                     </span>
                                   </label>
                                 </div>
@@ -248,8 +186,8 @@ export default {
                           <th scope="col">Tổng</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr v-for="(item, index) in cartList" :key="index">
+                        <tbody v-if="dataCheckout.items">
+                        <tr v-for="(item, index) in dataCheckout.items" :key="index">
                           <td>{{ item.name }}</td>
                           <td>{{ formattedPrice(item.price) }}</td>
                           <td>{{ item.quantity }}</td>
@@ -264,21 +202,29 @@ export default {
                         <div class="col">
                           <h2 class="tieu-de">Tổng tiền thanh toán</h2>
                           <ul class="list-unstyled block ">
+
+                            <li class="py-4">
+                              <div class="txt-holder">
+                                <strong class="sub-title pull-left title-style">Tổng phụ</strong>
+
+                                <div class="txt pull-right">
+                                  <strong style="font-size: 16px;
+    line-height: 16px;
+    display: block;
+    color: #917777;">{{ formattedPrice(dataCheckout.subtotal) }}</strong>
+                                </div>
+                              </div>
+                            </li>
+
                             <li class="py-4">
                               <div class="txt-holder">
                                 <strong class="sub-title pull-left title-style">Khuyến mãi</strong>
-                                <div v-if="publicDiscount > 0" class="txt pull-right">
+
+                                <div v-if="dataCheckout.discount > 0" class="txt pull-right">
                                   <strong style="font-size: 16px;
     line-height: 18px;
     display: block;
-    color: #494949;">{{ formattedPrice(publicDiscount) }}</strong>
-                                  <br>
-                                </div>
-                                <div v-if="discount > 0" class="txt pull-right">
-                                  <strong style="font-size: 16px;
-    line-height: 18px;
-    display: block;
-    color: #494949;">-{{ formattedPrice(discount) }}</strong>
+    color: #494949;">-{{ formattedPrice(dataCheckout.discount) }}</strong>
                                 </div>
                                 <div v-else class="txt pull-right">
                                   <strong style="font-size: 16px;
@@ -297,12 +243,12 @@ export default {
                                   <strong style="font-size: 16px;
     line-height: 18px;
     display: block;
-    color: #494949;">{{ formattedPrice(total) }}</strong>
+    color: #494949;">{{ formattedPrice(dataCheckout.total) }}</strong>
                                 </div>
                               </div>
                             </li>
                           </ul>
-                          <button type="button" v-if="user" class="btn process-btn btn-style" @click="checkout(total)">
+                          <button type="button" v-if="dataCheckout" class="btn process-btn btn-style" @click="checkout(dataCheckout.total)">
                             Thanh toán
                           </button>
                         </div>
@@ -318,18 +264,18 @@ export default {
       <span id="back-top" class="fa fa-arrow-up"></span>
     </div>
     <div v-else>
-          <section class="mt-error-sec dark">
-            <div class="container">
-              <div class="row">
-                <div class="col-xs-12 text-center">
-                  <h1 class="text-uppercase montserrat">Chưa có sản phẩm nào trong giỏ hàng</h1>
-                  <div class="txt">
-                    <p>Thêm sản phẩm vào giỏ hàng đi rồi quay lại!</p>
-                  </div>
-                </div>
+      <section class="mt-error-sec dark">
+        <div class="container">
+          <div class="row">
+            <div class="col-xs-12 text-center">
+              <h1 class="text-uppercase montserrat">Chưa có sản phẩm nào trong giỏ hàng</h1>
+              <div class="txt">
+                <p>Thêm sản phẩm vào giỏ hàng đi rồi quay lại!</p>
               </div>
             </div>
-          </section>
+          </div>
+        </div>
+      </section>
     </div>
   </LayoutView>
 </template>

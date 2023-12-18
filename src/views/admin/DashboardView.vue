@@ -2,14 +2,14 @@
 import LayoutView from "@/components/admin/LayoutView.vue";
 import axios from "axios";
 import ChartBar from "@/components/admin/statistic/ChartBar.vue";
-
+import StatisticChartBar from "@/components/admin/statistic/StatisticChartBar.vue";
 import StatisticOrderCategories from "@/components/admin/statistic/StatisticOrderCategories.vue";
 import StatisticOrderBrands from "@/components/admin/statistic/StatisticOrderBrands.vue";
 import ChartProductOrderTopInMonth from "@/components/admin/statistic/ChartProductOrderTopInMonth.vue";
 
 export default {
   name: "DashboardView",
-  components: {ChartProductOrderTopInMonth, StatisticOrderCategories, StatisticOrderBrands, ChartBar, LayoutView,},
+  components: {ChartProductOrderTopInMonth, StatisticOrderCategories, StatisticOrderBrands, ChartBar, LayoutView, StatisticChartBar},
   data() {
     return {
       countProduct: 0,
@@ -233,6 +233,7 @@ export default {
         </div>
       </div>
       <div>
+        <StatisticChartBar/>
         <ChartBar/>
         <StatisticOrderCategories/>
         <StatisticOrderBrands/>
