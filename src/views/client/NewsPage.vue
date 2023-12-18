@@ -80,8 +80,7 @@ export default {
     },
 
     formattedDate(date) {
-      const formatted = moment(date).format('DD/MM/YYYY HH:mm:ss');
-      return formatted;
+      return moment(date).format('DD/MM/YYYY HH:mm:ss');
     },
   },
 
@@ -104,16 +103,7 @@ export default {
     <div class="mt-blog-detail fullwidth">
       <div class="container">
         <div class="row">
-          <div class="col-xs-12 header wow fadeInUp" data-wow-delay="0.4s">
-            <nav class="breadcrumbs">
-            </nav>
-            <ul class="list-unstyled align-right">
-            </ul>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-xs-12 wow fadeInUp" data-wow-delay="0.4s">
-
             <div v-for="post in posts" :key="post.id">
               <article class="blog-post detail">
                 <div class="img-holder">
@@ -139,7 +129,7 @@ export default {
                     <li><a href="#"><i class="fa fa-list"></i>{{post.createdBy.fullName}}</a></li>
 
                   </ul>
-                  <a href="blog-post-detail-sidebar.html" class="btn-more">Read More</a>
+                  <a href="" class="btn-more">Read More</a>
                 </div>
               </article>
             </div>

@@ -40,20 +40,20 @@
 														</span>
                             <ul class="links add">
                               <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
-                                     data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
+                                     data-bs-target="#modal-add-to-cart"><i class="bi bi-handbag"></i></a></li>
                               <li v-if="product.wishlist == false"><a href="#"
                                                                       @click.prevent="handleAddToWishlist(product.id)"><i
-                                  class="icomoon icon-heart-empty"></i></a>
+                                  class="bi bi-suit-heart"></i></a>
                               </li>
                               <li v-else>
                                 <router-link to="/wishlist"><i
                                     style="color: red"
-                                    class="icomoon icon-heart-empty"></i></router-link>
+                                    class="bi bi-suit-heart-fill"></i></router-link>
                               </li>
                               <li>
                                 <router-link
                                     :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
-                                  <i class="icomoon fa fa-eye"></i></router-link>
+                                  <i class="bi bi-eye"></i></router-link>
                               </li>
                             </ul>
                           </div>
@@ -115,20 +115,20 @@
 														</span>
                             <ul class="links add">
                               <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
-                                     data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
+                                     data-bs-target="#modal-add-to-cart"><i class="bi bi-handbag"></i></a></li>
                               <li v-if="product.wishlist == false"><a href="#"
                                                                       @click.prevent="handleAddToWishlist(product.id)"><i
-                                  class="icomoon icon-heart-empty"></i></a>
+                                  class="bi bi-suit-heart"></i></a>
                               </li>
                               <li v-else>
                                 <router-link to="/wishlist"><i
                                     style="color: red"
-                                    class="icomoon icon-heart-empty"></i></router-link>
+                                    class="bi bi-suit-heart-fill"></i></router-link>
                               </li>
                               <li>
                                 <router-link class=""
                                              :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
-                                  <i class="icomoon fa fa-eye"></i></router-link>
+                                  <i class="bi bi-eye"></i></router-link>
                               </li>
                             </ul>
                           </div>
@@ -208,21 +208,17 @@ export default {
     }),
 
     fetchNewProductAndWishlist() {
-      const products = this.newProducts.map(product => ({
+      return this.newProducts.map(product => ({
         ...product,
         wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
       }));
-
-      return products;
     },
 
     fetchTopProductAndWishlist() {
-      const products = this.topViewProducts.map(product => ({
+      return this.topViewProducts.map(product => ({
         ...product,
         wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
       }));
-
-      return products;
     }
   },
 

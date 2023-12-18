@@ -53,7 +53,7 @@ export default {
       totalPages.value = response.totalPages
       currentPage.value = response.currentPage
     })
-    // await new Promise(resolve => setTimeout(resolve, 500)); // 1000 milliseconds = 1 giây
+    await new Promise(resolve => setTimeout(resolve, 500)); // 1000 milliseconds = 1 giây
 
     return {
       products, categories, brands,
@@ -95,7 +95,7 @@ export default {
       }
     },
     name(val) {
-      this.$router.push({query: {...this.$route.query, page: 1, name_filter: val}})
+      this.$router.push({query: {...this.$route.query, page: 1, name_filter: val.trim()}})
     },
     sortingOption(val) {
       this.$router.push({query: {...this.$route.query, page: 1, sorting_option: val}})
@@ -121,7 +121,7 @@ export default {
   methods: {
     async handleQueryChange() {
       const newQuery = {
-        name: this.name,
+        name: this.name.trim(),
         brands: this.brandsCheck,
         categories: this.categoriesCheck,
         sizes: this.sizesCheck,
@@ -159,11 +159,10 @@ export default {
 
   computed: {
     fetchProductsOfWishlist() {
-      const products = this.products.map(product => ({
+      return this.products.map(product => ({
         ...product,
         wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
       }));
-      return products;
     },
   },
 
@@ -298,20 +297,21 @@ export default {
                            alt="image description">
                       <ul class="links add">
                         <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
-                               data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
+                               data-bs-target="#modal-add-to-cart"><i class="bi bi-handbag"></i></a></li>
                         <li v-if="product.wishlist == false"><a href="#"
-                                                                @click.prevent="handleAddToWishlist(product.id)"><i
-                            class="icomoon icon-heart-empty"></i></a>
+                                                                @click.prevent="handleAddToWishlist(product.id)">
+                          <i class="bi bi-suit-heart"></i>
+                        </a>
                         </li>
                         <li v-if="product.wishlist == true">
                           <router-link to="/wishlist"><i
                               style="color: red"
-                              class="icomoon icon-heart-empty"></i></router-link>
+                              class="bi bi-suit-heart-fill"></i></router-link>
                         </li>
                         <li>
                           <router-link
                               :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
-                            <i class="icomoon fa fa-eye"></i></router-link>
+                            <i class="bi bi-eye"></i></router-link>
                         </li>
                       </ul>
                     </div>
@@ -409,6 +409,10 @@ export default {
   border: 2px solid #777676;
   border-radius: 5px;
   outline: none;
+}
+
+.mt-pagination .bi {
+  -webkit-text-stroke: 1px;
 }
 
 </style>

@@ -1,12 +1,12 @@
 <script>
-import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
 import {useToast} from "vue-toastification";
+import LoaderView from "@/components/client/LoaderView.vue";
 
 
 export default {
   name: "SuccessTransaction",
-  components: {LayoutView,},
+  components: {LoaderView,},
   setup() {
     const toast = useToast();
     return {toast}
@@ -47,6 +47,8 @@ export default {
         await axios.post(`http://localhost:3030/api/orders`, obj)
             .then(res => {
               this.toast.success("Đặt hàng thành công.")
+              localStorage.removeItem('cartList');
+              this.$cookies.remove("checkout_data")
               this.sendMailSuccess(obj)
               this.$router.push({name: 'OrderDetails', params: {id: res.data}});
             }).catch(err => {
@@ -55,8 +57,7 @@ export default {
               }
               console.log(err)
             })
-        localStorage.removeItem('cartList');
-        this.$cookies.remove("checkout_data")
+
       }
     },
 
@@ -93,28 +94,29 @@ CẢM ƠN QUÝ KHÁCH ĐÃ MUA HÀNG TẠI FAKESHOES!!!`,
 </script>
 
 <template>
-  <LayoutView>
-    <section class="mt-error-sec dark">
-      <div class="container">
-        <div class="row">
-          <div class="col-xs-12 text-center">
-            <h1 class="text-uppercase montserrat">404</h1>
-            <h3 class="text-uppercase montserrat">Trang không tồn tại</h3>
-            <section class="mt-detail-sec" style="padding: 0 0 40px 0">
-              <div class="container" style="border-radius: 7px;background-color: #fff">
-                <form class="bill-detail">
-                  <div class="row py-5" style="display: flex; justify-content: center;">
-                    <router-link to="/" class="btn process-btn">Quay lại
-                    </router-link>
-                  </div>
-                </form>
-              </div>
-            </section>
-          </div>
-        </div>
-      </div>
-    </section>
-  </LayoutView>
+  <LoaderView/>
+<!--  <LayoutView>-->
+<!--    <section class="mt-error-sec dark">-->
+<!--      <div class="container">-->
+<!--        <div class="row">-->
+<!--          <div class="col-xs-12 text-center">-->
+<!--            <h1 class="text-uppercase montserrat">404</h1>-->
+<!--            <h3 class="text-uppercase montserrat">Trang không tồn tại</h3>-->
+<!--            <section class="mt-detail-sec" style="padding: 0 0 40px 0">-->
+<!--              <div class="container" style="border-radius: 7px;background-color: #fff">-->
+<!--                <form class="bill-detail">-->
+<!--                  <div class="row py-5" style="display: flex; justify-content: center;">-->
+<!--                    <router-link to="/" class="btn process-btn">Quay lại-->
+<!--                    </router-link>-->
+<!--                  </div>-->
+<!--                </form>-->
+<!--              </div>-->
+<!--            </section>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </section>-->
+<!--  </LayoutView>-->
 </template>
 
 <style scoped>

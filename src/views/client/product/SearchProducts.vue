@@ -48,12 +48,30 @@ export default {
     async fetchData() {
       await axios.get("http://localhost:3030/api/client/search", {params: this.$route.query}).then(res => {
         const response = res.data
-        console.log(response)
         this.products = response.items
         this.totalItems = response.totalItems
         this.totalPages = response.totalPages
         this.currentPage = response.currentPage
       })
+    },
+
+    handleAddToWishlist(id) {
+      const wishlist = JSON.parse(localStorage.getItem('w_ls')) || [];
+      if (!wishlist.includes(id)) {
+        wishlist.push(id);
+        localStorage.setItem('w_ls', JSON.stringify(wishlist));
+        this.products = this.products.slice();
+
+      }
+    }
+  },
+
+  computed: {
+    fetchProductsOfWishlist() {
+      return this.products.map(product => ({
+        ...product,
+        wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
+      }));
     },
   },
 
@@ -79,7 +97,7 @@ export default {
             <!-- mt shoplist header start here -->
             <!-- mt productlisthold start here -->
             <ul v-if="products" class="mt-productlisthold list-inline d-flex flex-wrap justify-content-start">
-              <li v-for="product in products" :key="product.id" style="width:25%">
+              <li v-for="product in fetchProductsOfWishlist" :key="product.id" style="width:25%">
                 <!-- mt product1 large start here -->
                 <div class="mt-product1">
                   <div class="box">
@@ -91,12 +109,21 @@ export default {
                              alt="image description">
                         <ul class="links add">
                           <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
-                                 data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
-                          <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
+                                 data-bs-target="#modal-add-to-cart"><i class="bi bi-handbag"></i></a></li>
+                          <li v-if="product.wishlist == false"><a href="#"
+                                                                  @click.prevent="handleAddToWishlist(product.id)">
+                            <i class="bi bi-suit-heart"></i>
+                          </a>
+                          </li>
+                          <li v-if="product.wishlist == true">
+                            <router-link to="/wishlist"><i
+                                style="color: red"
+                                class="bi bi-suit-heart-fill"></i></router-link>
+                          </li>
                           <li>
                             <router-link
                                 :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
-                              <i class="icomoon fa fa-eye"></i></router-link>
+                              <i class="bi bi-eye"></i></router-link>
                           </li>
                         </ul>
                       </div>
@@ -180,5 +207,7 @@ export default {
 </template>
 
 <style scoped>
-
+.mt-pagination .bi {
+  -webkit-text-stroke: 1px;
+}
 </style>

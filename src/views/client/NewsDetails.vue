@@ -55,8 +55,7 @@ export default {
 
 
     formattedDate(date) {
-      const formatted = moment(date).format('DD/MM/YYYY HH:mm:ss');
-      return formatted;
+      return moment(date).format('DD/MM/YYYY HH:mm:ss');
     },
   },
 
@@ -78,10 +77,6 @@ export default {
     </section>
     <div class="mt-blog-detail fullwidth wow fadeInUp" data-wow-delay="0.4s">
       <div class="container">
-        <div class="row">
-          <div class="col-xs-12 header">
-          </div>
-        </div>
         <div class="row">
           <div class="col-xs-12">
             <article v-if="posts" class="blog-post style3">

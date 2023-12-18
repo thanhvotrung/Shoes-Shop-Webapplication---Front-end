@@ -43,6 +43,7 @@ export default {
       id: null,
       slug: null,
       product: null,
+      isFavorite: false,
       relatedProducts: null,
 
       sizesVN: [35, 36, 37, 38, 39, 40, 41, 42],
@@ -78,6 +79,14 @@ export default {
   },
 
   computed: {
+
+    fetchRelatedProductsOfWishlist() {
+      return this.relatedProducts.map(product => ({
+        ...product,
+        wishlist: (JSON.parse(localStorage.getItem('w_ls')) || []).includes(product.id),
+      }));
+    },
+
     filteredSizes() {
       return this.sizesVN.map(sizeVN => {
         const outStock = !this.sizesProduct.includes(sizeVN);
@@ -90,6 +99,35 @@ export default {
   },
 
   methods: {
+
+    handleDeleteItemInWls(id) {
+      const wishlist = JSON.parse(localStorage.getItem('w_ls')) || [];
+      if (wishlist.includes(id)) {
+        wishlist.splice(wishlist.findIndex(item => item === id), 1);
+        localStorage.setItem('w_ls', JSON.stringify(wishlist));
+        this.isFavorite = false
+      }
+    },
+
+    handleAddToWishlist(id) {
+      const wishlist = JSON.parse(localStorage.getItem('w_ls')) || [];
+      if (!wishlist.includes(id)) {
+        wishlist.push(id);
+        localStorage.setItem('w_ls', JSON.stringify(wishlist));
+        this.relatedProducts = this.relatedProducts.slice();
+      }
+    },
+
+    // xử lý cho sản phẩm chính
+    handleAddToWishlist2(id) {
+      const wishlist = JSON.parse(localStorage.getItem('w_ls')) || [];
+      if (!wishlist.includes(id)) {
+        wishlist.push(id);
+        localStorage.setItem('w_ls', JSON.stringify(wishlist));
+        this.isFavorite = true
+      }
+    },
+
     slideTo(val) {
       this.currentSlide = val
     },
@@ -124,6 +162,8 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+      this.isFavorite = (JSON.parse(localStorage.getItem('w_ls')) || []).includes(this.product.id)
+
     },
 
     handleTest() {
@@ -154,6 +194,7 @@ export default {
       },1000)
     },
   },
+
 
   mounted() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -219,7 +260,8 @@ export default {
                 <!-- Breadcrumbs of the Page end -->
                 <h2>{{ product.name }}</h2>
                 <ul class="list-unstyled list">
-                  <li><a href="#"><i class="fa fa-heart"></i>THÊM VÀO DANH SÁCH YÊU THÍCH</a></li>
+                  <li v-if="isFavorite"><a style="color: red" href="#" @click.prevent="handleDeleteItemInWls(product.id)"><i class="bi bi-suit-heart-fill"></i> SẢN PHẨM YÊU THÍCH</a></li>
+                  <li v-else ><a href="#" @click.prevent="handleAddToWishlist2(product.id)"><i class="bi bi-suit-heart-fill"></i> THÊM VÀO DANH SÁCH YÊU THÍCH</a></li>
                 </ul>
                 <div class="text-holder list">
                   <span v-if="product.promotionPrice > 0" class="price">{{ formattedPrice(product.promotionPrice) }}<del>{{
@@ -289,97 +331,10 @@ export default {
                           type="button" role="tab" aria-controls="home" aria-selected="true">Mô tả chi tiết sản phẩm
                   </button>
                 </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link text-uppercase font-weight-500" id="profile-tab" data-bs-toggle="tab"
-                          data-bs-target="#profile" type="button"
-                          role="tab" aria-controls="profile" aria-selected="false">Hình ảnh feedback
-                  </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link text-uppercase font-weight-500" id="contact-tab" data-bs-toggle="tab"
-                          data-bs-target="#contact" type="button"
-                          role="tab" aria-controls="contact" aria-selected="false">Đánh giá sản phẩm
-                  </button>
-                </li>
               </ul>
               <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                   <div ref="utextDesc">
-                  </div>
-                </div>
-                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                  <p>Koila is a chair designed for restaurants and food lovers in general. Designed in collaboration
-                    with restaurant professionals, it ensures comfort and an ideal posture, as there are armrests on
-                    both sides of the chair. </p>
-                  <p>Koila is a seat designed for restaurants and gastronomic places in general. Designed in
-                    collaboration with professional of restaurants and hotels field, this armchair is composed of a
-                    curved shell with a base in oak who has pinched the back upholstered in fabric or leather. It
-                    provides comfort and holds for ideal sitting position,the arms may rest on the sides ofthe armchair.
-                    <br>Solid oak construction.<br> Back in plywood (2 faces oak veneer) or upholstered in fabric,
-                    leather or eco-leather.<br> Seat upholstered in fabric, leather or eco-leather. <br> H 830 x L 585 x
-                    P 540 mm.</p>
-                </div>
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                  <div class="product-comment">
-                    <div class="mt-box">
-                      <div class="mt-hold">
-                        <ul class="mt-star">
-                          <li><i class="fa fa-star"></i></li>
-                          <li><i class="fa fa-star"></i></li>
-                          <li><i class="fa fa-star"></i></li>
-                          <li><i class="fa fa-star-o"></i></li>
-                        </ul>
-                        <span class="name">John Wick</span>
-                        <time datetime="2016-01-01">09:10 Nov, 19 2016</time>
-                      </div>
-                      <p>Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                        aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit sse cillum dolore
-                        eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non</p>
-                    </div>
-                    <div class="mt-box">
-                      <div class="mt-hold">
-                        <ul class="mt-star">
-                          <li><i class="fa fa-star"></i></li>
-                          <li><i class="fa fa-star"></i></li>
-                          <li><i class="fa fa-star-o"></i></li>
-                          <li><i class="fa fa-star-o"></i></li>
-                        </ul>
-                        <span class="name">John Wick</span>
-                        <time datetime="2016-01-01">09:10 Nov, 19 2016</time>
-                      </div>
-                      <p>Usmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit sse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                        occaecat cupidatat non</p>
-                    </div>
-                    <form action="#" class="p-commentform">
-                      <fieldset>
-                        <h2>Add Comment</h2>
-                        <div class="mt-row">
-                          <label>Rating</label>
-                          <ul class="mt-star">
-                            <li><i class="fa fa-star"></i></li>
-                            <li><i class="fa fa-star"></i></li>
-                            <li><i class="fa fa-star-o"></i></li>
-                            <li><i class="fa fa-star-o"></i></li>
-                          </ul>
-                        </div>
-                        <div class="mt-row">
-                          <label>Name</label>
-                          <input type="text" class="form-control">
-                        </div>
-                        <div class="mt-row">
-                          <label>E-Mail</label>
-                          <input type="text" class="form-control">
-                        </div>
-                        <div class="mt-row">
-                          <label>Review</label>
-                          <textarea class="form-control"></textarea>
-                        </div>
-                        <button type="submit" class="btn-type4">ADD REVIEW</button>
-                      </fieldset>
-                    </form>
                   </div>
                 </div>
               </div>
@@ -399,7 +354,7 @@ export default {
             <div class="col-xs-12">
               <div class="">
                 <Carousel v-bind="settings" :breakpoints="breakpoints">
-                  <Slide v-for="(product) in relatedProducts" :key="product.id" class="slide">
+                  <Slide v-for="(product) in fetchRelatedProductsOfWishlist" :key="product.id" class="slide">
                     <div class="mt-product1" style="width: 95%">
                       <div class="box">
                         <div class="b1">
@@ -409,12 +364,20 @@ export default {
                             <img v-else src="http://placehold.it/275x285" alt="image description">
                             <ul class="links add">
                               <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
-                                     data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
-                              <li><a href="#"><i class="icomoon icon-heart-empty"></i></a></li>
-                              <li>
+                                     data-bs-target="#modal-add-to-cart"><i class="bi bi-handbag"></i></a></li>
+                              <li v-if="product.wishlist == false"><a href="#"
+                                                                      @click.prevent="handleAddToWishlist(product.id)">
+                                <i class="bi bi-suit-heart"></i>
+                              </a>
+                              </li>
+                              <li v-if="product.wishlist == true">
+                                <router-link to="/wishlist"><i
+                                    style="color: red"
+                                    class="bi bi-suit-heart-fill"></i></router-link>
+                              </li>                              <li>
                                 <router-link
                                     :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
-                                  <i class="icomoon fa fa-eye"></i></router-link>
+                                  <i class="bi bi-eye"></i></router-link>
                               </li>
                             </ul>
                           </div>
@@ -487,5 +450,7 @@ export default {
   margin: 0;
 }
 
-
+.item-quantity .bi {
+  -webkit-text-stroke: 1px;
+}
 </style>

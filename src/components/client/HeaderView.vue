@@ -67,7 +67,7 @@ export default {
 
         this.decodeJwt(token)
         try {
-          this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
+          this.$cookies.set("JWT_TOKEN", `${token}`)
         } catch (err) {
           console.log(err)
         }
@@ -108,8 +108,8 @@ export default {
     },
 
     handleSearch() {
-      this.$router.push({name: "SearchProducts", query: {keyword: this.keyword}})
-      console.log(this.keyword)
+      const kw = this.keyword.trim()
+      this.$router.push({name: "SearchProducts", query: {keyword: kw}})
       this.$refs.closeSearch.click()
     },
 
@@ -238,16 +238,7 @@ export default {
                 </li>
                 <li><router-link to="/news">TIN TỨC</router-link></li>
                 <li><a href="#">CHÍNH SÁCH</a></li>
-                <li>
-                  <a class="drop-link" href="">LIÊN HỆ<i class="fa fa-angle-down hidden-lg hidden-md"
-                                                                        aria-hidden="true"></i></a>
-                  <div class="s-drop">
-                    <ul>
-                      <li><a href="contact-us.html">Contact</a></li>
-                      <li><a href="contact-us2.html">Contact 2</a></li>
-                    </ul>
-                  </div>
-                </li>
+                <li><a href="">LIÊN HỆ</a></li>
                 <li v-if="this.$store.state.isAuthenticated && this.$store.state.user.role == 'ADMIN'"><router-link to="/admin">ADMIN</router-link></li>
               </ul>
             </nav>

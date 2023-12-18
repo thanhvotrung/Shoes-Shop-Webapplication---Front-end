@@ -54,7 +54,7 @@ export default {
         this.decodeJwt(token)
 
         try {
-          this.$cookies.set("JWT_TOKEN", `${token}`, '30min')
+          this.$cookies.set("JWT_TOKEN", `${token}`)
         } catch (err) {
           console.log(err)
         }

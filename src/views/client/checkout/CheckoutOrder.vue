@@ -16,19 +16,6 @@ export default {
     return {toast}
   },
   data() {
-    // Validate form
-    const schema = Yup.object().shape({
-      oldPassword: Yup.string().required("Mật khẩu không được trống.")
-          .min(6, "Mật khẩu phải có ít nhất 6 ký tự.")
-          .max(50, "Mật khẩu tối đa 50 ký tự.."),
-      newPassword: Yup.string().required("Mật khẩu không được trống.")
-          .min(6, "Mật khẩu phải có ít nhất 6 ký tự.")
-          .max(50, "Mật khẩu tối đa 50 ký tự..")
-          .notOneOf([Yup.ref('oldPassword'), null], 'Hai mật khẩu không được giống nhau.'),
-      confirmPassword: Yup.string().required("Mật khẩu không được trống.")
-          .oneOf([Yup.ref('newPassword'), null], 'Hai mật khẩu không giống nhau.'),
-
-    })
     const phoneRegExp = /^((\+[1-9]{1,4})|(\([0-9]{2,3}\))|([0-9]{2,4}))?[0-9]{3,4}?[0-9]{3,4}?$/
     const schemaProfile = Yup.object().shape({
       fullName: Yup.string().required(" Tên không được để trống."),
@@ -39,7 +26,6 @@ export default {
           .max(10, "Số điện thoại không hợp lệ")
     })
     return {
-      schema,
       schemaProfile,
       user: null,
       token: null,
@@ -65,36 +51,20 @@ export default {
   computed: {},
 
   methods: {
-    async updateProfile() {
-      const obj = {
-        phone: this.user.phone,
-        full_name: this.user.fullName,
-        address: this.user.address,
-        email: this.email,
-      }
-      await axios.put(`http://localhost:3030/api/update-profile`, obj).then(res => {
-        console.log(res)
-        this.toast.success("Đổi thông tin thành công!")
-      }).catch(err => {
-            console.log(err)
-            this.toast.error("Thông tin không đúng!")
-          }
-      )
-    },
-
     async fetchData() {
-      await axios.get(`http://localhost:3030/users`).then(res => {
-        console.log(res.data)
-        this.user = res.data
-      })
-
-      this.cartList = this.dataCheckout.items || []
-      this.total = this.dataCheckout.total
-      this.subtotal = this.dataCheckout.subtotal
-      this.discount = this.dataCheckout.discount
-      this.user = this.dataCheckout.user
-      this.note = this.dataCheckout.note
-      this.promotionName = this.dataCheckout.promotionName
+      const data = this.$cookies.get("checkout_data")
+      if(data){
+        this.dataCheckout = data
+        this.cartList = data.items || []
+        this.total = data.total
+        this.subtotal = data.subtotal
+        this.discount = data.discount
+        this.user = data.user
+        this.note = data.note
+        this.promotionName = data.promotionName
+      }else{
+        this.$router.push("/")
+      }
     },
 
     async getUser() {
@@ -149,7 +119,6 @@ export default {
     this.getUser()
 
     window.scrollTo({top: 0, behavior: 'smooth'})
-    this.dataCheckout = this.$cookies.get("checkout_data")
     this.fetchData()
     console.log((this.dataCheckout))
   }
@@ -159,28 +128,7 @@ export default {
 
 <template>
   <LayoutView>
-    <main id="mt-main" v-if="cartList.length > 0" style="background-color: #f2f2f2">
-    </main>
-    <section v-else class="mt-error-sec dark">
-      <div class="container">
-        <div class="row">
-          <div class="col-xs-12 text-center">
-            <h1 class="text-uppercase montserrat">Chưa có sản phẩm nào trong giỏ hàng</h1>
-            <div class="txt">
-              <p>Thêm sản phẩm vào giỏ hàng đi rồi quay lại!</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div id="wrapper">
-      <!-- Page Loader -->
-      <!--      <div id="pre-loader" class="loader-container">-->
-      <!--        <div class="loader" style="width: 230px">-->
-      <!--          <img src="https://img.idesign.vn/2018/10/23/id-loading-1.gif" alt="loader">-->
-      <!--        </div>-->
-      <!--      </div>-->
+    <div v-if="dataCheckout" id="wrapper">
       <div class="w1">
         <div class="mt-search-popup">
           <div class="mt-holder">
@@ -198,49 +146,7 @@ export default {
         </div><!-- mt search popup end here -->
         <!-- Main of the Page -->
         <main id="mt-main">
-          <section class="mt-contact-banner mt-banner-22 wow fadeInUp" data-wow-delay="0.4s"
-                   style="background-image: url(http://placehold.it/1920x325);">
-            <div class="container">
-              <div class="row">
-                <div class="col-xs-12">
-                  <h1 class="text-center">CHECK OUT</h1>
-                  <!-- Breadcrumbs of the Page -->
-                  <nav class="breadcrumbs">
-                    <ul class="list-unstyled">
-                      <li><a href="index.html">Home <i class="fa fa-angle-right"></i></a></li>
-                      <li>Check Out</li>
-                    </ul>
-                  </nav>
-                  <!-- Breadcrumbs of the Page end -->
-                </div>
-              </div>
-            </div>
-          </section>
-          <!-- Mt Process Section of the Page -->
-          <div class="mt-process-sec wow fadeInUp" data-wow-delay="0.4s">
-            <div class="container">
-              <div class="row">
-                <div class="col-xs-12">
-                  <!-- Process List of the Page -->
-                  <ul class="list-unstyled process-list">
-                    <li class="active">
-                      <span class="counter">01</span>
-                      <strong class="title">Mua sản phẩm</strong>
-                    </li>
-                    <li class="active">
-                      <span class="counter">02</span>
-                      <strong class="title">Giỏ hàng</strong>
-                    </li>
-                    <li>
-                      <span class="counter">03</span>
-                      <strong class="title">Thủ tục thanh toán</strong>
-                    </li>
-                  </ul>
-                  <!-- Process List of the Page end -->
-                </div>
-              </div>
-            </div>
-          </div><!-- Mt Process Section of the Page end -->
+
           <!-- Mt Detail Section of the Page -->
           <div class="container" style="margin-top: 30px; max-width: 1360px !important;">
             <div class="row">
@@ -256,29 +162,28 @@ export default {
                         </div>
                         <div class="feed-item-list">
                           <div>
-                            <h5 class="font-size-16 mb-1">Billing Info</h5>
-                            <p class="text-muted text-truncate mb-4">Sed ut perspiciatis unde omnis iste</p>
+                            <h5 class="font-size-16 mb-3">Thông tin thanh toán</h5>
                             <div class="mb-3">
-                              <Form v-if="user" @submit="updateProfile" :validation-schema="schemaProfile">
+                              <Form v-if="user" :validation-schema="schemaProfile">
                                 <div>
                                   <div class="row">
                                     <div class="col-lg-4">
                                       <div class="mb-3">
-                                        <label class="form-label" for="billing-name">Name</label>
+                                        <label class="form-label" for="billing-name">Tên</label>
                                         <Field class="form-control" id="in-user-fullname" v-model=" user.fullName "
                                                name="fullName"/>
                                       </div>
                                     </div>
                                     <div class="col-lg-4">
                                       <div class="mb-3">
-                                        <label class="form-label" for="billing-email-address">Email Address</label>
+                                        <label class="form-label" for="billing-email-address">Email</label>
                                         <Field class="form-control" id="in-user-mail" v-model=" user.email "
                                                name="mail"/>
                                       </div>
                                     </div>
                                     <div class="col-lg-4">
                                       <div class="mb-3">
-                                        <label class="form-label" for="billing-phone">Phone</label>
+                                        <label class="form-label" for="billing-phone">Số điện thoại</label>
                                         <Field class="form-control" id="in-user-phone" v-model=" user.phone "
                                                name="phone"/>
                                       </div>
@@ -286,7 +191,7 @@ export default {
                                   </div>
 
                                   <div class="mb-3">
-                                    <label class="form-label" for="billing-address">Address</label>
+                                    <label class="form-label" for="billing-address">Địa chỉ nhận hàng</label>
                                     <textarea class="form-control" rows="2" id="in-user-address"
                                               v-model=" user.address "></textarea>
                                   </div>
@@ -306,53 +211,21 @@ export default {
                         </div>
                         <div class="feed-item-list">
                           <div>
-                            <h5 class="font-size-16 mb-1">Payment Info</h5>
-                            <p class="text-muted text-truncate mb-4">Duis arcu tortor, suscipit eget</p>
+                            <h5 class="font-size-16 mb-3">Phương thức thanh toán</h5>
                           </div>
                           <div>
-                            <h5 class="font-size-14 mb-3">Payment method :</h5>
                             <div class="row">
                               <div class="col-lg-3 col-sm-6">
                                 <div data-bs-toggle="collapse">
                                   <label class="card-radio-label">
-                                    <input type="radio" name="pay-method" id="pay-methodoption1"
+                                    <input checked type="radio" name="pay-method" id="pay-methodoption1"
                                            class="card-radio-input">
                                     <span class="card-radio py-3 text-center text-truncate">
-                                                        <i class="bx bx-credit-card d-block h2 mb-3"></i>
-                                                        Credit / Debit Card
-                                                    </span>
+                                    <img src="https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png" alt="">
+                                    </span>
                                   </label>
                                 </div>
                               </div>
-
-                              <div class="col-lg-3 col-sm-6">
-                                <div>
-                                  <label class="card-radio-label">
-                                    <input type="radio" name="pay-method" id="pay-methodoption2"
-                                           class="card-radio-input">
-                                    <span class="card-radio py-3 text-center text-truncate">
-                                                        <i class="bx bxl-paypal d-block h2 mb-3"></i>
-                                                        Paypal
-                                                    </span>
-                                  </label>
-                                </div>
-                              </div>
-
-                              <div class="col-lg-3 col-sm-6">
-                                <div>
-                                  <label class="card-radio-label">
-                                    <input type="radio" name="pay-method" id="pay-methodoption3"
-                                           class="card-radio-input"
-                                           checked="">
-
-                                    <span class="card-radio py-3 text-center text-truncate">
-                                                        <i class="bx bx-money d-block h2 mb-3"></i>
-                                                        <span>Cash on Delivery</span>
-                                                    </span>
-                                  </label>
-                                </div>
-                              </div>
-
                             </div>
                           </div>
                         </div>
@@ -365,26 +238,22 @@ export default {
                 <div class="card checkout-order-summary">
                   <div class="card-body">
                     <div class="table-responsive">
-                      <table class="table table-centered mb-0 table-nowrap">
+                      <table class="table table-borderless">
                         <thead>
                         <tr>
-                          <th class="border-top-0" style="width: 222px;" scope="col">Hình ảnh</th>
-                          <th class="border-top-0" style="width: 150px;" scope="col">Tên sản phẩm</th>
-                          <th class="border-top-0" style="width: 100px;" scope="col">Giá</th>
-                          <th class="border-top-0" style="width: 180px;" scope="col">Số lượng</th>
-                          <th class="border-top-0" style="width: 50px;" scope="col">Tổng</th>
+                          <th scope="col">Tên sản phẩm</th>
+                          <th scope="col">Giá</th>
+                          <th scope="col">Số lượng</th>
+                          <th scope="col">Kích thước</th>
+                          <th scope="col">Tổng</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="(item, index) in cartList" :key="index">
-                          <td scope="row"><img :src="item.images" alt="Slide"></td>
-                          <td>
-                            <h5 class="font-size-16 text-truncate"><a href="#" class="text-dark">Waterproof Mobile
-                              Phone</a>
-                            </h5>
-                          </td>
+                          <td>{{ item.name }}</td>
                           <td>{{ formattedPrice(item.price) }}</td>
                           <td>{{ item.quantity }}</td>
+                          <td>{{ item.size }}</td>
                           <td>
                             <div>{{ formattedPrice(item.price * item.quantity) }}</div>
                           </td>
@@ -422,7 +291,7 @@ export default {
 
                             <li class="py-4">
                               <div class="txt-holder">
-                                <hr style=" margin: 10px 0px 20px 0px;border-style: solid; border-width: 0 0 1px; border-color: black;">
+                                <hr style=" margin: 10px 0 20px 0;border-style: solid; border-width: 0 0 1px; border-color: black;">
                                 <strong class="title sub-title pull-left title-style">Tổng Tiền</strong>
                                 <div class="txt pull-right">
                                   <strong style="font-size: 16px;
@@ -448,6 +317,20 @@ export default {
       </div>
       <span id="back-top" class="fa fa-arrow-up"></span>
     </div>
+    <div v-else>
+          <section class="mt-error-sec dark">
+            <div class="container">
+              <div class="row">
+                <div class="col-xs-12 text-center">
+                  <h1 class="text-uppercase montserrat">Chưa có sản phẩm nào trong giỏ hàng</h1>
+                  <div class="txt">
+                    <p>Thêm sản phẩm vào giỏ hàng đi rồi quay lại!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+    </div>
   </LayoutView>
 </template>
 
@@ -459,22 +342,6 @@ export default {
 
 .table-cart thead {
   font-size: 15px;
-}
-
-.table-cart tbody .cart-name {
-  font-size: 14px;
-}
-
-.table-cart tbody .cart-description {
-  font-size: 13px;
-}
-
-.table-cart tbody .cart-price {
-  font-size: 15px;
-}
-
-.table-cart tbody .cart-quantity {
-  font-size: 16px;
 }
 
 .account a:hover {
@@ -544,29 +411,11 @@ body {
   position: relative;
   padding-bottom: 24px;
   padding-left: 35px;
-  border-left: 2px solid #f5f6f8
 }
 
-.activity-checkout .checkout-item:first-child {
-  border-color: #3b76e1
-}
-
-.activity-checkout .checkout-item:first-child:after {
-  background-color: #3b76e1
-}
 
 .activity-checkout .checkout-item:last-child {
   border-color: transparent
-}
-
-.activity-checkout .checkout-item.crypto-activity {
-  margin-left: 50px
-}
-
-.activity-checkout .checkout-item .crypto-date {
-  position: absolute;
-  top: 3px;
-  left: -65px
 }
 
 
@@ -591,21 +440,6 @@ body {
   -ms-flex-pack: center;
   justify-content: center;
   width: 100%
-}
-
-
-.avatar-group .avatar-group-item {
-  margin-left: -8px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  -webkit-transition: all .2s;
-  transition: all .2s
-}
-
-.avatar-group .avatar-group-item:hover {
-  position: relative;
-  -webkit-transform: translateY(-2px);
-  transform: translateY(-2px)
 }
 
 .card-radio {
