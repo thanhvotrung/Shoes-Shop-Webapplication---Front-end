@@ -132,7 +132,7 @@ export default {
           </section>
         </div>
 
-        <div v-else class="col-xs-12 text-center">
+        <div v-else-if="responseCode != '00' && responseCode != null" class="col-xs-12 text-center">
           <div class="d-flex justify-content-center my-5">
             <img style="width: 10rem;" src="https://storage.needpix.com/thumbs/false-2061132_1280.png" alt="ERROR">
           </div>
@@ -154,6 +154,26 @@ export default {
             </div>
           </section>
         </div>
+
+        <div v-else class="col-xs-12 text-center">
+          <div class="d-flex justify-content-center my-5">
+            <img style="width: 10rem;" src="https://storage.needpix.com/thumbs/false-2061132_1280.png" alt="ERROR">
+          </div>
+          <h1 class="text-uppercase montserrat">Chưa có bất kỳ thanh toán nào được thực hiện</h1>
+          <section class="mt-detail-sec" style="padding: 0 0 40px 0">
+            <div class="container">
+              <form class="">
+                <div class="py-5 d-flex justify-content-center">
+                  <div class="mx-2">
+                    <router-link to="/" class="btn process-btn">Trang chủ
+                    </router-link>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+
 
       </div>
     </div>

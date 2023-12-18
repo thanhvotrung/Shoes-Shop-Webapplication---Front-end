@@ -140,34 +140,34 @@ export default {
                     <h4 class="text-5">Tổng số danh mục</h4>
                   </div>
                   <div class="summary-footer">
-                    <a class="text-muted text-uppercase" href="/admin/categories">(Xem chi tiết)</a>
+                    <router-link class="text-muted text-uppercase" to="/admin/categories">(Xem chi tiết)</router-link>
                   </div>
                 </div>
               </div>
             </div>
           </section>
         </div>
-        <div class="col-xl-4">
-          <section class="card card-featured-left card-featured-secondary">
-            <div class="card-body">
-              <div class="widget-summary">
-                <div class="widget-summary-col widget-summary-col-icon">
-                  <div class="summary-icon bg-secondary">
-                    {{ countPost }}
-                  </div>
-                </div>
-                <div class="widget-summary-col">
-                  <div class="">
-                    <h4 class="text-5">Tổng số bài viết</h4>
-                  </div>
-                  <div class="summary-footer">
-                    <a class="text-muted text-uppercase" href="/admin/posts">(Xem chi tiết)</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
+<!--        <div class="col-xl-4">-->
+<!--          <section class="card card-featured-left card-featured-secondary">-->
+<!--            <div class="card-body">-->
+<!--              <div class="widget-summary">-->
+<!--                <div class="widget-summary-col widget-summary-col-icon">-->
+<!--                  <div class="summary-icon bg-secondary">-->
+<!--                    {{ countPost }}-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="widget-summary-col">-->
+<!--                  <div class="">-->
+<!--                    <h4 class="text-5">Tổng số bài viết</h4>-->
+<!--                  </div>-->
+<!--                  <div class="summary-footer">-->
+<!--                    <a class="text-muted text-uppercase" href="/admin/posts">(Xem chi tiết)</a>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </section>-->
+<!--        </div>-->
         <div class="col-xl-4">
           <section class="card card-featured-left card-featured-tertiary mb-3">
             <div class="card-body">
@@ -182,7 +182,7 @@ export default {
                     <h4 class="text-5">Tổng số đơn hàng</h4>
                   </div>
                   <div class="summary-footer">
-                    <a class="text-muted text-uppercase" href="/admin/orders">(Xem chi tiết)</a>
+                    <router-link class="text-muted text-uppercase" to="/admin/orders-list">(Xem chi tiết)</router-link>
                   </div>
                 </div>
               </div>
@@ -203,7 +203,7 @@ export default {
                     <h4 class="text-5">Tổng số nhãn hiệu</h4>
                   </div>
                   <div class="summary-footer">
-                    <a class="text-muted text-uppercase" href="/admin/brands">(Xem chi tiết)</a>
+                    <router-link class="text-muted text-uppercase" to="/admin/brands">(Xem chi tiết)</router-link>
                   </div>
                 </div>
               </div>
@@ -224,7 +224,7 @@ export default {
                     <h4 class="text-5">Tổng số Khách hàng</h4>
                   </div>
                   <div class="summary-footer">
-                    <a class="text-muted text-uppercase" href="/admin/users">(Xem chi tiết)</a>
+                    <router-link class="text-muted text-uppercase" to="/admin/users">(Xem chi tiết)</router-link>
                   </div>
                 </div>
               </div>

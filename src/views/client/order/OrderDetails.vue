@@ -136,12 +136,12 @@ export default {
                       class="text-price">{{ formattedPrice(orderDetails[0].totalPrice) }}</span></span></div>
                 </div>
               </div>
-              <div v-if="orderDetails[0].status == 1" class="d-flex flex-row-reverse">
-                <button class="btn btn-primary red-btn cancel-btn " @click="handleCancelOrder(orderDetails[0].id)">Hủy
-                  đơn hàng
-                </button>
+<!--              <div v-if="orderDetails[0].status == 1" class="d-flex flex-row-reverse">-->
+<!--                <button class="btn btn-primary red-btn cancel-btn " @click="handleCancelOrder(orderDetails[0].id)">Hủy-->
+<!--                  đơn hàng-->
+<!--                </button>-->
 
-              </div>
+<!--              </div>-->
             </div>
           </div>
 

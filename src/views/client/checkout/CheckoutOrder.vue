@@ -1,5 +1,5 @@
 <script>
-import LayoutView from "@/components/client/LayoutView.vue";
+// import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
 import {Field, Form} from "vee-validate";
 
@@ -9,7 +9,7 @@ import * as Yup from "yup";
 export default {
   name: "CheckoutOrder",
   props: [],
-  components: {LayoutView, Form, Field},
+  components: {Form, Field},
   setup() {
     const toast = useToast();
     return {toast}
@@ -76,7 +76,7 @@ export default {
 </script>
 
 <template>
-  <LayoutView>
+<!--  <LayoutView>-->
     <div v-if="dataCheckout" id="wrapper">
       <div class="w1">
 
@@ -277,7 +277,7 @@ export default {
         </div>
       </section>
     </div>
-  </LayoutView>
+<!--  </LayoutView>-->
 </template>
 
 <style scoped>

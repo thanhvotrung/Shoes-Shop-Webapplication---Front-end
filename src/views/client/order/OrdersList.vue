@@ -86,9 +86,9 @@ export default {
 <!--                <li class="nav-item">-->
 <!--                  <div class="nav-link order-status" data-status="4" @click="getOrderStatus" :class="{'active' : status == 4}">&Dstrok;ơn hàng đã trả lại</div>-->
 <!--                </li>-->
-                <li class="nav-item">
-                  <div class="nav-link order-status" data-status="5" @click="getOrderStatus" :class="{'active' : status == 5}">Đơn hàng đã hủy</div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                  <div class="nav-link order-status" data-status="5" @click="getOrderStatus" :class="{'active' : status == 5}">Đơn hàng đã hủy</div>-->
+<!--                </li>-->
               </ul>
             </div>
             <div class="tab-content" id="pills-tabContent">
@@ -183,7 +183,7 @@ export default {
 .main-content .nav-pills .nav-link.active {
   background-color: transparent;
   color: #2e2e2e;
-  border-radius: 0px;
+  border-radius: 0;
   border-bottom: 2px solid #ccc;
 }
 .main-content .nav-link {
