@@ -24,47 +24,47 @@ export default {
 
   methods: {
     async handleOrder() {
-      const dataCheckout = this.$cookies.get("checkout_data")
-      if (dataCheckout) {
-        let orderDetailsList = []
-        for (let i = 0; i < dataCheckout.items.length; i++) {
-          let obj = {
-            product_id: dataCheckout.items[i].id,
-            size: dataCheckout.items[i].size,
-            quantity: dataCheckout.items[i].quantity,
-            product_price: dataCheckout.items[i].price
-          }
-          orderDetailsList.push(obj)
-        }
-        const obj = {
-          email: dataCheckout.user.email,
-          receiver_name: dataCheckout.user.fullName,
-          receiver_phone: dataCheckout.user.phone,
-          receiver_address: dataCheckout.user.address,
-          coupon_code: dataCheckout.promotionName,
-          total_price: dataCheckout.total,
-          subtotal_price: dataCheckout.subtotal,
-          note: dataCheckout.note,
-          products: orderDetailsList
-        }
-        await axios.post(`http://localhost:3030/api/orders`, obj)
-            .then((res) => {
-              this.toast.success("Đặt hàng thành công.")
-              localStorage.removeItem('cartList');
-              this.$cookies.remove("checkout_data")
-              this.sendMailSuccess(obj)
-              this.idOrder = res.data
-              // this.$router.push({name: 'OrderDetails', params: {id: res.data}});
-            }).catch(err => {
-              if (err.response.status === 400) {
-                this.toast.warning(err.response.data.message)
-              }
-              console.log(err)
-            })
-
-      }
       if (this.responseCode == '00') {
-        // this.$router.push({name: 'OrderDetails', params: {id: this.idOrder}});
+        const dataCheckout = this.$cookies.get("checkout_data")
+        if (dataCheckout) {
+          let orderDetailsList = []
+          for (let i = 0; i < dataCheckout.items.length; i++) {
+            let obj = {
+              product_id: dataCheckout.items[i].id,
+              size: dataCheckout.items[i].size,
+              quantity: dataCheckout.items[i].quantity,
+              product_price: dataCheckout.items[i].price
+            }
+            orderDetailsList.push(obj)
+          }
+          const obj = {
+            email: dataCheckout.user.email,
+            receiver_name: dataCheckout.user.fullName,
+            receiver_phone: dataCheckout.user.phone,
+            receiver_address: dataCheckout.user.address,
+            coupon_code: dataCheckout.promotionName,
+            total_price: dataCheckout.total,
+            subtotal_price: dataCheckout.subtotal,
+            note: dataCheckout.note,
+            products: orderDetailsList
+          }
+          await axios.post(`http://localhost:3030/api/orders`, obj)
+              .then((res) => {
+                this.toast.success("Đặt hàng thành công.")
+                localStorage.removeItem('cartList');
+                this.$cookies.remove("checkout_data")
+                this.sendMailSuccess(obj)
+                this.idOrder = res.data
+                // this.$router.push({name: 'OrderDetails', params: {id: res.data}});
+              }).catch(err => {
+                if (err.response.status === 400) {
+                  this.toast.warning(err.response.data.message)
+                }
+                console.log(err)
+              })
+        }
+      }else{
+        this.$cookies.remove("checkout_data")
       }
     },
 
@@ -132,19 +132,35 @@ export default {
           </section>
         </div>
 
-        <div v-else-if="responseCode != '00' && responseCode != null" class="col-xs-12 text-center">
+        <div v-else-if="responseCode == '24'" class="col-xs-12 text-center">
+          <div class="d-flex justify-content-center my-5">
+            <img style="width: 10rem;" src="https://www.freeiconspng.com/thumbs/success-icon/success-icon-10.png"
+                 alt="SUCCESS">
+          </div>
+          <h1 class="text-uppercase montserrat">Hủy thành công</h1>
+          <section class="mt-detail-sec" style="padding: 0 0 40px 0">
+            <div class="container">
+              <form class="">
+                <div class=" py-5 d-flex justify-content-center">
+                  <div class="mx-2">
+                    <router-link to="/" class="btn process-btn">Trang chủ
+                    </router-link>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <div v-else-if="responseCode == null" class="col-xs-12 text-center">
           <div class="d-flex justify-content-center my-5">
             <img style="width: 10rem;" src="https://storage.needpix.com/thumbs/false-2061132_1280.png" alt="ERROR">
           </div>
-          <h1 class="text-uppercase montserrat">Thanh toán thất bại</h1>
+          <h1 class="text-uppercase montserrat">Chưa có bất kỳ thanh toán nào được thực hiện</h1>
           <section class="mt-detail-sec" style="padding: 0 0 40px 0">
             <div class="container">
               <form class="">
                 <div class="py-5 d-flex justify-content-center">
-                  <div class="mx-2">
-                    <router-link to="/cart" class="btn process-btn">Thử lại
-                    </router-link>
-                  </div>
                   <div class="mx-2">
                     <router-link to="/" class="btn process-btn">Trang chủ
                     </router-link>
@@ -159,11 +175,15 @@ export default {
           <div class="d-flex justify-content-center my-5">
             <img style="width: 10rem;" src="https://storage.needpix.com/thumbs/false-2061132_1280.png" alt="ERROR">
           </div>
-          <h1 class="text-uppercase montserrat">Chưa có bất kỳ thanh toán nào được thực hiện</h1>
+          <h1 class="text-uppercase montserrat">Thanh toán thất bại</h1>
           <section class="mt-detail-sec" style="padding: 0 0 40px 0">
             <div class="container">
               <form class="">
                 <div class="py-5 d-flex justify-content-center">
+                  <div class="mx-2">
+                    <router-link to="/cart" class="btn process-btn">Thử lại
+                    </router-link>
+                  </div>
                   <div class="mx-2">
                     <router-link to="/" class="btn process-btn">Trang chủ
                     </router-link>

@@ -13,11 +13,34 @@ export default {
   components: {ModalAddToCart, Navigation, LayoutView, Carousel, Slide, Form, Field},
 
   watch: {
-    "$route.params"(){
+    "$route.params"() {
       this.id = this.$route.params.id;
       this.slug = this.$route.params.slug;
       this.fetchData()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({top: 0, behavior: 'smooth'})
+    },
+
+    size() {
+      this.quantity = 1
+
+
+    },
+
+    async quantity() {
+      if (this.size) {
+        if (this.quantity <= 0) {
+          this.quantity = 1
+        }else{
+          await axios.get(`http://localhost:3030/api/client/check-quantity-product?id=${this.product.id}&size=${this.size}`)
+              .then(res => {
+                let quantityCheck = res.data
+                if (this.quantity > quantityCheck) {
+                  this.quantity = quantityCheck
+                  this.toast.warning(`Số lượng sản phẩm không đủ!`)
+                }
+              })
+        }
+      }
     }
   },
 
@@ -32,7 +55,6 @@ export default {
           .typeError("Không đúng định dạng.")
           .positive("Số lượng phải dương")
           .min(1, "Số lượng phải lớn hơn 0")
-          .max(10, "Số lượng phải nhỏ hơn 10")
 
     })
     return {
@@ -76,6 +98,7 @@ export default {
           snapAlign: 'start',
         },
       },
+
     }
   },
 
@@ -100,6 +123,7 @@ export default {
   },
 
   methods: {
+
 
     handleDeleteItemInWls(id) {
       const wishlist = JSON.parse(localStorage.getItem('w_ls')) || [];
@@ -189,7 +213,23 @@ export default {
 
     },
 
-    handleTest() {
+    // async handleUpdateQuantity(id, size) {
+    //     if(size){
+    //       await this.fetchQuantity(id, size)
+    //       if(this.quantityCheck < this.quantity){
+    //         this.quantity = this.quantityCheck
+    //         this.toast.warning(`Số lượng sản phẩm không đủ!`)
+    //       }
+    //     }else{
+    //
+    //     }
+    // },
+
+    handleUpdateQuantity(quantity) {
+      this.quantity = quantity;
+    },
+
+    async handleTest() {
       if (!this.size) {
         this.toast.warning("Chọn kích cỡ giày.");
         return;
@@ -200,7 +240,18 @@ export default {
       const foundItem = cartList.find(item => item.product_id === this.id && item.size === this.size);
 
       if (foundItem) {
-        foundItem.quantity += this.quantity;
+        let count01 = foundItem.quantity + this.quantity
+        let count02 = 0
+        await axios.get(`http://localhost:3030/api/client/check-quantity-product?id=${this.product.id}&size=${this.size}`)
+            .then(res => {
+              count02 = res.data
+            })
+        if (count01 > count02) {
+          this.toast.warning(`Số lượng sản phẩm không đủ!`)
+          return
+        } else {
+          foundItem.quantity += this.quantity;
+        }
       } else {
         const cartItem = {
           product_id: this.id,
@@ -215,13 +266,13 @@ export default {
       this.handleUpdateCountCartItem()
       setTimeout(() => {
         this.$router.push("/cart")
-      },1000)
+      }, 1000)
     },
   },
 
 
   mounted() {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({top: 0, behavior: 'smooth'})
     this.id = this.$route.params.id;
     this.slug = this.$route.params.slug;
     this.fetchData();
@@ -284,8 +335,11 @@ export default {
                 <!-- Breadcrumbs of the Page end -->
                 <h2>{{ product.name }}</h2>
                 <ul class="list-unstyled list">
-                  <li v-if="isFavorite"><a style="color: red" href="#" @click.prevent="handleDeleteItemInWls(product.id)"><i class="bi bi-suit-heart-fill"></i> SẢN PHẨM YÊU THÍCH</a></li>
-                  <li v-else ><a href="#" @click.prevent="handleAddToWishlist2(product.id)"><i class="bi bi-suit-heart-fill"></i> THÊM VÀO DANH SÁCH YÊU THÍCH</a></li>
+                  <li v-if="isFavorite"><a style="color: red" href="#"
+                                           @click.prevent="handleDeleteItemInWls(product.id)"><i
+                      class="bi bi-suit-heart-fill"></i> SẢN PHẨM YÊU THÍCH</a></li>
+                  <li v-else><a href="#" @click.prevent="handleAddToWishlist2(product.id)"><i
+                      class="bi bi-suit-heart-fill"></i> THÊM VÀO DANH SÁCH YÊU THÍCH</a></li>
                 </ul>
                 <div class="text-holder list">
                   <span v-if="product.promotionPrice > 0" class="price">{{ formattedPrice(product.promotionPrice) }}<del>{{
@@ -321,14 +375,15 @@ export default {
                 <Form @submit="handleTest" class="product-form" :validation-schema="schemaQuantity" v-slot="{ errors }">
                   <fieldset>
                     <div class="row-val">
-<!--                      <label for="qty">Số lượng</label>-->
-                        <div class="item-quantity d-flex">
-                          <button type="button" v-if="quantity < 1 ? quantity = 1: quantity" @click="quantity -= 1"><i
-                              class="bi bi-dash"></i></button>
-                          <Field :class="{'is-invalid': errors.quantity}" name="quantity" type="number" v-model="quantity"/>
-                          <button type="button" v-if="quantity > 10 ? quantity = 10: quantity" @click="quantity += 1"><i class="bi bi-plus"></i>
-                          </button>
-                        </div>
+                      <!--                      <label for="qty">Số lượng</label>-->
+                      <div class="item-quantity d-flex">
+                        <button type="button"  @click="handleUpdateQuantity(quantity - 1 )"><i
+                            class="bi bi-dash"></i></button>
+                        <Field :class="{'is-invalid': errors.quantity}" name="quantity" type="number"
+                               v-model="quantity"/>
+                        <button type="button" @click="handleUpdateQuantity(quantity + 1 )"><i class="bi bi-plus"></i>
+                        </button>
+                      </div>
                     </div>
                     <div class="row-val">
                       <button v-if="sizesProduct.length > 0" type="submit" style="width:100%">Thêm vào giỏ hàng</button>
@@ -398,7 +453,8 @@ export default {
                                 <router-link to="/wishlist"><i
                                     style="color: red"
                                     class="bi bi-suit-heart-fill"></i></router-link>
-                              </li>                              <li>
+                              </li>
+                              <li>
                                 <router-link
                                     :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
                                   <i class="bi bi-eye"></i></router-link>
@@ -434,7 +490,9 @@ export default {
         </div>
       </div>
     </main>
-    <div><ModalAddToCart :id="productId"/></div>
+    <div>
+      <ModalAddToCart :id="productId"/>
+    </div>
   </LayoutView>
 </template>
 
@@ -455,7 +513,7 @@ export default {
   background-color: #fff;
 }
 
-.item-quantity button{
+.item-quantity button {
   border-radius: 5px;
   width: 4rem;
 }
@@ -465,7 +523,6 @@ export default {
   padding: 0;
   width: 4rem;
 }
-
 
 
 .item-quantity input::-webkit-outer-spin-button,

@@ -40,24 +40,52 @@ export default {
         }
       },
     },
-    quantitySmallCart() {
-      if (this.quantitySmallCart <= 0) {
-        this.quantitySmallCart = 1
-      }
-      if (this.quantitySmallCart > 10) this.quantitySmallCart = 10
 
-    }
+     sizeSmallCart() {
+      this.quantitySmallCart = 1
+
+
+    },
+
+    async quantitySmallCart() {
+      if (this.sizeSmallCart) {
+        if (this.quantitySmallCart <= 0) {
+          this.quantitySmallCart = 1
+        } else {
+          await axios.get(`http://localhost:3030/api/client/check-quantity-product?id=${this.id}&size=${this.sizeSmallCart}`)
+              .then(res => {
+                const quantityCheck = res.data
+                if (this.quantitySmallCart > quantityCheck) {
+                  this.quantitySmallCart = quantityCheck
+                  this.toast.warning(`Số lượng sản phẩm không đủ!`)
+                }
+              })
+        }
+      }
+
+
+    },
   },
 
   methods: {
-
-    handleAddToCart() {
+    async handleAddToCart() {
       const cartList = JSON.parse(localStorage.getItem('cartList')) || [];
 
       const foundItem = cartList.find(item => item.product_id === this.id && item.size === this.sizeSmallCart);
 
       if (foundItem) {
-        foundItem.quantity += this.quantitySmallCart;
+        let count01 = foundItem.quantity + this.quantitySmallCart
+        let count02 = 0
+        await axios.get(`http://localhost:3030/api/client/check-quantity-product?id=${this.id}&size=${this.sizeSmallCart}`)
+            .then(res => {
+              count02 = res.data
+            })
+        if (count01 > count02) {
+          this.toast.warning(`Số lượng sản phẩm không đủ!`)
+          return
+        } else {
+          foundItem.quantity += this.quantitySmallCart;
+        }
       } else {
         const cartItem = {
           product_id: this.id,
@@ -143,12 +171,14 @@ export default {
           <Form @submit="handleAddToCart" :validation-schema="schemaSize" v-slot="{ errors }">
             <div>
               <div class="d-flex align-items-center">
-                <img v-if="productSmallCart.productImages" style="width: 100px" :src="productSmallCart.productImages[0]" alt="Slide">
+                <img v-if="productSmallCart.productImages" style="width: 100px" :src="productSmallCart.productImages[0]"
+                     alt="Slide">
                 <div class="text-start px-5">
                   <div class="">
                     <div class="font-weight-bold py-2 cart-name">{{ productSmallCart.name }}</div>
                     <div class="cart-description">Giá tiền:
-                      <span v-if="productSmallCart.promotionPrice > 0" class="">{{ formattedPrice(productSmallCart.promotionPrice) }}&ensp;<del>{{
+                      <span v-if="productSmallCart.promotionPrice > 0"
+                            class="">{{ formattedPrice(productSmallCart.promotionPrice) }}&ensp;<del>{{
                           formattedPrice(productSmallCart.price)
                         }}</del></span>
                       <span v-else class="">{{ formattedPrice(productSmallCart.price) }}</span>
@@ -189,11 +219,13 @@ export default {
                     <button type="button" @click="handleUpdateQuantity(quantitySmallCart - 1)"><i
                         class="bi bi-dash"></i></button>
                     <input type="number" v-model="quantitySmallCart">
-                    <button type="button" @click="handleUpdateQuantity(quantitySmallCart + 1)"><i class="bi bi-plus"></i>
+                    <button type="button" @click="handleUpdateQuantity(quantitySmallCart + 1)"><i
+                        class="bi bi-plus"></i>
                     </button>
                   </div>
                   <div>
-                    <button type="submit" v-if="sizesProductSmallCart.length > 0" class="addToCart my-4">Thêm vào giỏ hàng
+                    <button type="submit" v-if="sizesProductSmallCart.length > 0" class="addToCart my-4">Thêm vào giỏ
+                      hàng
                     </button>
                     <button disabled v-else class="addToCart my-4" style="background-color: rgb(120 120 120)">Hết hàng
                     </button>

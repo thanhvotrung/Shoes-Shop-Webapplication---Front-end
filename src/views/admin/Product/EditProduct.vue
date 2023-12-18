@@ -43,12 +43,12 @@ export default {
           .typeError("Không đúng định dạng.")
           .positive("Giá tiền phải dương")
           .min(1000, "Giá tiền phải lớn hơn 1000đ")
-          .max(1000000000, "Giá tiền phải thấp hơn 1.000.000.000đ"),
+          .max(10000000, "Giá tiền phải thấp hơn 10.000.000đ"),
       salePrice: Yup.number().required("Giá tiền bán ra không được trống.")
           .typeError("Không đúng định dạng.")
           .positive("Giá tiền phải dương")
           .min(1000, "Giá tiền phải lớn hơn 1000đ")
-          .max(1000000000, "Giá tiền phải thấp hơn 1.000.000.000đ")
+          .max(10000000, "Giá tiền phải thấp hơn 10.000.000đ")
           .test(
               'is-less-than-price',
               'Giá tiền bán phải cao hơn giá tiền nhập',

@@ -22,7 +22,8 @@ export default {
           .required("Số điện thoại không được trống")
           .matches(phoneRegExp, 'Số điện thoại không hợp lệ')
           .min(10, "Số điện thoại không hợp lệ")
-          .max(10, "Số điện thoại không hợp lệ")
+          .max(10, "Số điện thoại không hợp lệ"),
+      address: Yup.string().required("Địa chỉ không được để trống")
     })
     return {
       schemaProfile,
@@ -85,6 +86,7 @@ export default {
 
           <!-- Mt Detail Section of the Page -->
           <div class="container" style="margin-top: 30px; max-width: 1360px !important;">
+              <Form @submit="checkout(dataCheckout.total)" v-if="dataCheckout.user" :validation-schema="schemaProfile" v-slot="{errors}">
             <div class="row">
               <div class="col-xl-6">
                 <div class="card">
@@ -100,7 +102,7 @@ export default {
                           <div>
                             <h5 class="font-size-16 mb-3">Thông tin thanh toán</h5>
                             <div class="mb-3">
-                              <Form v-if="dataCheckout.user" :validation-schema="schemaProfile">
+
                                 <div>
                                   <div class="row">
                                     <div class="col-lg-6">
@@ -109,6 +111,7 @@ export default {
                                         <Field class="form-control" id="billing-name"
                                                v-model=" dataCheckout.user.fullName "
                                                name="fullName"/>
+                                        <div class="text-danger font-italic text-1 text-end">{{ errors.fullName }}</div>
                                       </div>
                                     </div>
                                     <Field hidden class="form-control" id="billing-mail"
@@ -120,13 +123,15 @@ export default {
                                         <Field class="form-control" id="billing-phone"
                                                v-model=" dataCheckout.user.phone "
                                                name="phone"/>
+                                        <div class="text-danger font-italic text-1 text-end">{{ errors.phone }}</div>
                                       </div>
                                     </div>
                                   </div>
                                   <div class="mb-3">
                                     <label class="form-label" for="billing-address">Địa chỉ nhận hàng</label>
-                                    <textarea class="form-control" rows="2" id="billing-address"
-                                              v-model=" dataCheckout.user.address "></textarea>
+                                    <Field as="textarea" name="address" class="form-control" rows="2" id="billing-address"
+                                              v-model=" dataCheckout.user.address "></Field>
+                                    <div class="text-danger font-italic text-1 text-end">{{ errors.address }}</div>
                                   </div>
                                   <div class="mb-3">
                                     <label class="form-label" for="billing-note">Ghi chú</label>
@@ -134,7 +139,7 @@ export default {
                                               v-model=" dataCheckout.note "></textarea>
                                   </div>
                                 </div>
-                              </Form>
+
                             </div>
                           </div>
                         </div>
@@ -198,7 +203,7 @@ export default {
                         </tr>
                         </tbody>
                       </table>
-                      <Form class="bill-detail">
+
                         <div class="col">
                           <h2 class="tieu-de">Tổng tiền thanh toán</h2>
                           <ul class="list-unstyled block ">
@@ -248,16 +253,17 @@ export default {
                               </div>
                             </li>
                           </ul>
-                          <button type="button" v-if="dataCheckout" class="btn process-btn btn-style" @click="checkout(dataCheckout.total)">
+                          <button type="submit" v-if="dataCheckout" class="btn process-btn btn-style">
                             Thanh toán
                           </button>
                         </div>
-                      </Form>
+
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+              </Form>
           </div>
         </main>
       </div>
@@ -269,9 +275,9 @@ export default {
           <div class="row">
             <div class="col-xs-12 text-center">
               <h1 class="text-uppercase montserrat">Chưa có sản phẩm nào trong giỏ hàng</h1>
-              <div class="txt">
-                <p>Thêm sản phẩm vào giỏ hàng đi rồi quay lại!</p>
-              </div>
+<!--              <div class="txt">-->
+<!--                <p>Thêm sản phẩm vào giỏ hàng đi rồi quay lại!</p>-->
+<!--              </div>-->
             </div>
           </div>
         </div>

@@ -129,7 +129,7 @@ export default {
                     <fieldset>
                       <div class="row">
                         <div class="col-xs-12 col-sm-12">
-                          <Field v-model="fullName" name="fullName" type="text" placeholder="Họ và tên của mày" class="input"/>
+                          <Field v-model="fullName" name="fullName" type="text" placeholder="Họ và tên" class="input"/>
                           <div class="text-danger font-italic text-1 text-end">{{ errors.fullName }}</div>
                         </div>
                         <div class="col-xs-12 col-sm-12">

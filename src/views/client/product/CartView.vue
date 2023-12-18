@@ -50,11 +50,21 @@ export default {
       publicDiscount: 0,
 
       note: null,
+
+      quantityCheck: 0,
     }
   },
-  computed: {},
+
 
   methods: {
+    async fetchQuantity(id,size) {
+      await axios.get(`http://localhost:3030/api/client/check-quantity-product?id=${id}&size=${size}`)
+          .then(res => {
+            this.quantityCheck = res.data
+          })
+    },
+
+
     async fetchData() {
       let couponCode = null
       this.cartsLocal = JSON.parse(localStorage.getItem('cartList')) || [];
@@ -113,9 +123,16 @@ export default {
       this.handleUpdateCountCartItem()
     },
 
-    handleUpdateQuantity(index, quantity) {
+    async handleUpdateQuantity(index, quantity) {
       const indexToUpdate = this.cartList.findIndex((item, i) => i === index);
+
       if (indexToUpdate !== -1) {
+        const item = this.cartList[indexToUpdate];
+        await this.fetchQuantity(item.id, item.size)
+        if(this.quantityCheck < quantity){
+          quantity = this.quantityCheck
+          this.toast.warning(`Số lượng sản phẩm không đủ!`)
+        }
         this.cartList[indexToUpdate].quantity = quantity;
         this.cartsLocal[indexToUpdate].quantity = quantity;
         this.checkAfterHandleItem(this.promotionName);
@@ -304,7 +321,7 @@ export default {
 
     },
 
-    handleTest(){
+    handleTest() {
       let data = {
         total: this.total,
         subtotal: this.subtotal,
@@ -313,13 +330,12 @@ export default {
         user: this.user,
         note: this.note,
         promotionName: this.promotionName
-
-
       };
       this.$cookies.set("checkout_data", data, '30min')
       this.$router.push({name: 'Checkout'})
+    },
 
-    }
+
   },
 
   mounted() {
@@ -329,7 +345,7 @@ export default {
     this.decodeJwt()
     this.getUser()
   },
-  watch(){
+  watch() {
 
   }
 }
@@ -383,7 +399,7 @@ export default {
                     </button>
                     <button v-if="item.quantity > 1" @click="handleUpdateQuantity(index, item.quantity - 1)"><i
                         class="bi bi-dash"></i></button>
-                    <input disabled type="number" v-model="item.quantity" >
+                    <input disabled type="number" v-model="item.quantity">
                     <button @click="handleUpdateQuantity(index, item.quantity + 1)"><i class="bi bi-plus"></i>
                     </button>
                   </div>
@@ -505,9 +521,9 @@ export default {
                     </div>
                   </li>
                 </ul>
-<!--                <button v-if="user" class="btn process-btn" @submit="handleOrder()">Đặt hàng-->
-<!--                </button>-->
-                <button v-if="user"  class="btn process-btn" @click="handleTest">THỦ TỤC THANH TOÁN
+                <!--                <button v-if="user" class="btn process-btn" @submit="handleOrder()">Đặt hàng-->
+                <!--                </button>-->
+                <button v-if="user" class="btn process-btn" @click="handleTest">THỦ TỤC THANH TOÁN
                 </button>
               </div>
             </div>

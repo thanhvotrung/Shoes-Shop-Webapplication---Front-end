@@ -118,7 +118,6 @@ export default {
 
                   <header>
                     <h2 style="margin: 0 0 5px;">ĐĂNG NHẬP</h2>
-                    <p>Đăng nhập rồi mua đồ cho tao.</p>
                   </header>
                   <Form @submit="login" :validation-schema="schema" v-slot="{ errors }">
                     <fieldset>
