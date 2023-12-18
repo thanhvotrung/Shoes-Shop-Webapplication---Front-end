@@ -26,15 +26,15 @@ import AccountView from "@/views/client/user/AccountView.vue";
 import CheckoutOrder from "@/views/client/checkout/CheckoutOrder.vue";
 import SuccessPay from "@/views/client/checkout/SuccessPay.vue";
 import AdminUsers from "@/views/admin/Users/AdminUsers.vue";
-import AddPost from "@/views/admin/post/AddPost.vue";
-import AdminPosts from "@/views/admin/post/AdminPosts.vue";
-import EditPost from "@/views/admin/post/EditPost.vue";
+// import AddPost from "@/views/admin/post/AddPost.vue";
+// import AdminPosts from "@/views/admin/post/AdminPosts.vue";
+// import EditPost from "@/views/admin/post/EditPost.vue";
 import NotFound from "@/views/client/exception/NotFound.vue";
 import testAuth from "@/views/testAuth.vue";
 import Wishlist from "@/views/client/wishlist/Wishlist.vue";
-
-import NewsPage from "@/views/client/NewsPage.vue";
-import NewsDetails from "@/views/client/NewsDetails.vue";
+//
+// import NewsPage from "@/views/client/NewsPage.vue";
+// import NewsDetails from "@/views/client/NewsDetails.vue";
 
 
 
@@ -231,43 +231,43 @@ const routes = [
         component: AdminUsers,
         meta: {title: 'Trang danh sách người dùng', requiresAuth: true, requiresAdmin: true}
     },
-    {
-        path: '/admin/news',
-        name: 'AdminPosts',
-        component: AdminPosts,
-        meta: {title: 'Trang danh sách tin tức', requiresAuth: true, requiresAdmin: true}
-    },
-    {
-        path: '/admin/posts/create',
-        name: 'AddPost',
-        component: AddPost,
-        meta: {title: 'Trang thêm tin tức', requiresAuth: true, requiresAdmin: true}
-    },
-    {
-        path: '/admin/posts/update/:id',
-        name: 'EditPost',
-        component: EditPost,
-        meta: {title: 'Trang sửa tin tức', requiresAuth: true, requiresAdmin: true}
-    },
+    // {
+    //     path: '/admin/news',
+    //     name: 'AdminPosts',
+    //     component: AdminPosts,
+    //     meta: {title: 'Trang danh sách tin tức', requiresAuth: true, requiresAdmin: true}
+    // },
+    // {
+    //     path: '/admin/posts/create',
+    //     name: 'AddPost',
+    //     component: AddPost,
+    //     meta: {title: 'Trang thêm tin tức', requiresAuth: true, requiresAdmin: true}
+    // },
+    // {
+    //     path: '/admin/posts/update/:id',
+    //     name: 'EditPost',
+    //     component: EditPost,
+    //     meta: {title: 'Trang sửa tin tức', requiresAuth: true, requiresAdmin: true}
+    // },
     {
         path: '/wishlist',
         name: 'Wishlist',
         component: Wishlist,
         meta: {title: 'Sản phẩm yêu thích'}
     },
-    {
-        path: '/news',
-        name: 'NewsPage',
-        component: NewsPage,
-        meta: {title: 'Tin Tức'}
-    },
-
-    {
-        path: '/news/:slug/:id',
-        name: 'NewsDetails',
-        component: NewsDetails,
-        meta: {title: 'Chi tiết tin tức'}
-    },
+    // {
+    //     path: '/news',
+    //     name: 'NewsPage',
+    //     component: NewsPage,
+    //     meta: {title: 'Tin Tức'}
+    // },
+    //
+    // {
+    //     path: '/news/:slug/:id',
+    //     name: 'NewsDetails',
+    //     component: NewsDetails,
+    //     meta: {title: 'Chi tiết tin tức'}
+    // },
 ]
 
 

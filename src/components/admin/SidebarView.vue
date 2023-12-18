@@ -46,12 +46,12 @@ export default {
                 <span>Quản lý sản phẩm</span>
               </router-link>
             </li>
-            <li>
-              <router-link to="/admin/news">
-                <i class="bx bx-cart-alt" aria-hidden="true"></i>
-                <span>Quản lý bài viết</span>
-              </router-link>
-            </li>
+<!--            <li>-->
+<!--              <router-link to="/admin/news">-->
+<!--                <i class="bx bx-cart-alt" aria-hidden="true"></i>-->
+<!--                <span>Quản lý bài viết</span>-->
+<!--              </router-link>-->
+<!--            </li>-->
             <li>
               <router-link to="/admin/promotions">
                 <i class="bx bx-collection" aria-hidden="true"></i>

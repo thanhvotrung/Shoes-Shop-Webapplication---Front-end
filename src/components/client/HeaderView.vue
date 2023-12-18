@@ -260,11 +260,11 @@ export default {
                 <li>
                   <router-link to="/products">SẢN PHẨM</router-link>
                 </li>
-                <li>
-                  <router-link to="/news">TIN TỨC</router-link>
-                </li>
-                <li><a href="#">CHÍNH SÁCH</a></li>
-                <li><a href="">LIÊN HỆ</a></li>
+<!--                <li>-->
+<!--                  <router-link to="/news">TIN TỨC</router-link>-->
+<!--                </li>-->
+<!--                <li><a href="#">CHÍNH SÁCH</a></li>-->
+<!--                <li><a href="">LIÊN HỆ</a></li>-->
                 <li v-if="this.$store.state.isAuthenticated && this.$store.state.user.role == 'ADMIN'">
                   <router-link to="/admin">ADMIN</router-link>
                 </li>
