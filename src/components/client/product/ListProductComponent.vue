@@ -5,6 +5,8 @@ import Slider from '@vueform/slider'
 import "@vueform/slider/themes/default.css"
 import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 import {useRoute} from "vue-router";
+import {mapMutations} from 'vuex';
+
 
 export default {
   name: "ListProductComponent",
@@ -72,6 +74,8 @@ export default {
   data() {
     return {
       productId: null,
+      countCartItem: 0,
+      countWlsItem: 0,
       format: function (rangePriceValue) {
         return `${Math.round(rangePriceValue * 100000)} VND`
       }
@@ -84,8 +88,6 @@ export default {
       immediate: true,
       handler() {
         this.handleQueryChange();
-        // window.scrollTo({ top: 0, behavior: 'smooth' })
-        // this.scrollToTop()
       }
     },
     'sizesCheck': {
@@ -152,9 +154,24 @@ export default {
         wishlist.push(id);
         localStorage.setItem('w_ls', JSON.stringify(wishlist));
         this.products = this.products.slice();
-
+        // update number wls
+        this.handleUpdateCountWlsItem()
       }
-    }
+    },
+
+    // use vuex store to update count wishlist and cartlist
+    ...mapMutations(['setCountWlsItem']),
+
+    handleUpdateCountWlsItem() {
+      let wls = JSON.parse(localStorage.getItem('w_ls')) || [];
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountWlsItem = wls.length;
+      // Cập nhật giá trị trong store Vuex
+      this.setCountWlsItem(newCountWlsItem);
+    },
+
+
+
   },
 
   computed: {

@@ -4,6 +4,9 @@ const store = createStore({
     state: {
         isAuthenticated: false,
         user: null,
+
+        countCartItem: 0,
+        countWlsItem: 0,
     },
     mutations: {
         SET_AUTHENTICATION(state, isAuthenticated) {
@@ -14,6 +17,13 @@ const store = createStore({
         },
         SET_LOCAL(state) {
             localStorage.setItem('AUTH', JSON.stringify(state));
+        },
+
+        setCountCartItem(state, count) {
+            state.countCartItem = count;
+        },
+        setCountWlsItem(state, count) {
+            state.countWlsItem = count;
         },
     },
     actions: {

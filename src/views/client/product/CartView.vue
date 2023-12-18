@@ -6,6 +6,7 @@ import {Form, Field} from "vee-validate";
 import * as Yup from 'yup';
 import {useToast} from "vue-toastification";
 import Popper from "vue3-popper";
+import {mapMutations} from "vuex";
 
 export default {
   name: "CartView",
@@ -93,11 +94,23 @@ export default {
       });
     },
 
+    // use vuex store to update count wishlist and cartlist
+    ...mapMutations(['setCountCartItem']),
+
+    handleUpdateCountCartItem() {
+      let cls = JSON.parse(localStorage.getItem('cartList')) || [];
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountCartItem = cls.reduce((count, item) => count + item.quantity, 0);
+      // Cập nhật giá trị trong store Vuex
+      this.setCountCartItem(newCountCartItem);
+    },
+
     deleteItem(i) {
       this.cartsLocal = this.cartsLocal.filter((item, index) => index != i)
       this.cartList = this.cartList.filter((item, index) => index != i)
       this.checkAfterHandleItem(this.promotionName)
       localStorage.setItem('cartList', JSON.stringify(this.cartsLocal));
+      this.handleUpdateCountCartItem()
     },
 
     handleUpdateQuantity(index, quantity) {
@@ -107,7 +120,7 @@ export default {
         this.cartsLocal[indexToUpdate].quantity = quantity;
         this.checkAfterHandleItem(this.promotionName);
         localStorage.setItem('cartList', JSON.stringify(this.cartsLocal));
-        this.$emit('fetchCartData')
+        this.handleUpdateCountCartItem()
       }
     },
 

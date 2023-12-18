@@ -185,7 +185,7 @@ import LayoutView from "@/components/client/LayoutView.vue";
 import axios from "axios";
 import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 
-import {mapState} from 'vuex';
+import {mapMutations, mapState} from 'vuex';
 
 
 import {Carousel, Navigation, Slide, Pagination} from 'vue3-carousel'
@@ -308,17 +308,20 @@ export default {
         localStorage.setItem('w_ls', JSON.stringify(wishlist));
         this.newProducts = this.newProducts.slice();
         this.topViewProducts = this.topViewProducts.slice();
-        // const updateWishlist = products => {
-        //   const index = products.findIndex(item => item.id === id);
-        //   if (index !== -1) {
-        //     products[index].wishlist = true;
-        //   }
-        // };
-        //
-        // updateWishlist(this.fetchNewProductAndWishlist);
-        // updateWishlist(this.fetchTopProductAndWishlist);
+        this.handleUpdateCountWlsItem()
       }
-    }
+    },
+
+    // use vuex store to update count wishlist and cartlist
+    ...mapMutations(['setCountWlsItem']),
+
+    handleUpdateCountWlsItem() {
+      let wls = JSON.parse(localStorage.getItem('w_ls')) || [];
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountWlsItem = wls.length;
+      // Cập nhật giá trị trong store Vuex
+      this.setCountWlsItem(newCountWlsItem);
+    },
   },
 
 

@@ -20,7 +20,6 @@ import $ from "jquery";
 export default {
   name: "LayoutView",
   components: {HeaderView, FooterView},
-  props: ["countCartItem"],
   methods: {
     initNavOpener() {
       $(".side-close , .side-opener , .mt-side-over").on('click',function () {
@@ -68,8 +67,8 @@ export default {
   <div id="wrapper">
     <!--    <LoaderView/>-->
     <div class="w1">
-      <HeaderView :countCartItem="countCartItem" />
-      <slot @fetchCartData="$emit('fetchCartData')"/>
+      <HeaderView/>
+      <slot/>
       <FooterView/>
     </div>
     <span ref="onTop" id="back-top" class="fa fa-arrow-up"></span>

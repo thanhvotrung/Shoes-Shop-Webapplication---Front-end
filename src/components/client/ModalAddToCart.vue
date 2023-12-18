@@ -3,6 +3,7 @@ import axios from "axios";
 import {Form, Field} from 'vee-validate';
 import * as Yup from 'yup';
 import {useToast} from "vue-toastification";
+import {mapMutations} from "vuex";
 
 export default {
   name: "ModalAddToCart",
@@ -68,9 +69,21 @@ export default {
 
       localStorage.setItem('cartList', JSON.stringify(cartList));
       this.toast.success("Đã thêm vào giỏ hàng.")
+      this.handleUpdateCountCartItem()
       setTimeout(() => {
         this.$refs.closeShortDetail.click()
       }, 500)
+    },
+
+    // use vuex store to update count wishlist and cartlist
+    ...mapMutations(['setCountCartItem']),
+
+    handleUpdateCountCartItem() {
+      let cls = JSON.parse(localStorage.getItem('cartList')) || [];
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountCartItem = cls.reduce((count, item) => count + item.quantity, 0);
+      // Cập nhật giá trị trong store Vuex
+      this.setCountCartItem(newCountCartItem);
     },
 
     formattedPrice(price) {

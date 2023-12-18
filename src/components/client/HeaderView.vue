@@ -4,15 +4,29 @@ import {Field, Form} from 'vee-validate';
 import * as Yup from 'yup';
 import {useToast} from "vue-toastification";
 import jwtDecode from "jwt-decode";
+import {mapState, mapMutations} from 'vuex';
 
 export default {
   name: "HeaderView",
   components: {Form, Field},
-  props: ['countCartItem'],
   setup() {
     const toast = useToast();
     return {toast}
   },
+
+  computed: {
+    ...mapState(['countCartItem', 'countWlsItem']),
+    handleCountCartItem() {
+      const cls = JSON.parse(localStorage.getItem('cartList')) || [];
+      return cls.reduce((count, item) => count + item.quantity, 0);
+    },
+
+    handleCountWlsItem() {
+      const wls = JSON.parse(localStorage.getItem('w_ls')) || [];
+      return wls.length;
+    }
+  },
+
   data() {
     const schemaLogin = Yup.object().shape({
       email: Yup.string().required("Email khônng được trống.")
@@ -50,7 +64,19 @@ export default {
     }
   },
 
+
   methods: {
+    // update count wishlist and cartlist
+    ...mapMutations(['setCountCartItem', 'setCountWlsItem']),
+    updateCounts() {
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountCartItem = this.handleCountCartItem;
+      const newCountWlsItem = this.handleCountWlsItem;
+      // Cập nhật giá trị trong store Vuex
+      this.setCountCartItem(newCountCartItem);
+      this.setCountWlsItem(newCountWlsItem);
+    },
+
     async login() {
       const body = {
         email: this.email,
@@ -114,7 +140,6 @@ export default {
     },
 
     // Giải mã JWT token sang object User
-
     decodeJwt(token) {
       // JWT token to be decoded
       if (token) {
@@ -130,14 +155,13 @@ export default {
       }
     },
 
-
     async getUser(email) {
       if (email) {
         await axios.get(`http://localhost:3030/user/${email}`).then(res => {
           const user = res.data
           let roles = res.data.roles
           let role = roles.includes("ADMIN") ? "ADMIN" : "USER";
-          this.$store.dispatch('login', { username: user.fullName, role: role });
+          this.$store.dispatch('login', {username: user.fullName, role: role});
           // this.$store.commit('setAuth', { isAuthenticated: true, name: user.fullName});
 
         }).catch(err => {
@@ -146,7 +170,6 @@ export default {
       }
     },
 
-
     signout() {
       // this.$store.commit('setAuth', { isAuthenticated: false, name: null});
       this.$store.dispatch('logout');
@@ -154,11 +177,10 @@ export default {
       localStorage.removeItem('AUTH');
       this.$router.push('/signin');
     },
-
-
-
   },
+
   mounted() {
+    this.updateCounts()
   }
 }
 </script>
@@ -208,12 +230,14 @@ export default {
               </li>
               <li><a href="#" class="icon-magnifier"></a></li>
               <li class="">
-                <router-link to="/wishlist" class="icon-heart cart-opener"><span style="margin-bottom: -3px;" class="num">0</span></router-link>
+                <router-link to="/wishlist" class="icon-heart cart-opener"><span style="margin-bottom: -3px;"
+                                                                                 class="num">{{ countWlsItem }}</span>
+                </router-link>
               </li>
               <li class="">
                 <router-link to="/cart" class="cart-opener">
                   <span class="icon-handbag"></span>
-                                    <span class="num">{{countCartItem}}</span>
+                  <span class="num">{{ countCartItem }}</span>
                 </router-link>
               </li>
 
@@ -236,10 +260,14 @@ export default {
                 <li>
                   <router-link to="/products">SẢN PHẨM</router-link>
                 </li>
-                <li><router-link to="/news">TIN TỨC</router-link></li>
+                <li>
+                  <router-link to="/news">TIN TỨC</router-link>
+                </li>
                 <li><a href="#">CHÍNH SÁCH</a></li>
                 <li><a href="">LIÊN HỆ</a></li>
-                <li v-if="this.$store.state.isAuthenticated && this.$store.state.user.role == 'ADMIN'"><router-link to="/admin">ADMIN</router-link></li>
+                <li v-if="this.$store.state.isAuthenticated && this.$store.state.user.role == 'ADMIN'">
+                  <router-link to="/admin">ADMIN</router-link>
+                </li>
               </ul>
             </nav>
             <!-- mt icon list end here -->

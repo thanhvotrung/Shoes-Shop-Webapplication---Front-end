@@ -1,42 +1,27 @@
 <template>
-  <router-view
-  :countCartItem="countCartItem"
-  @fetchCartData="fetchCartData"
-  />
+  <router-view/>
 </template>
 
 <script>
 
 export default {
-  created(){
-
-
+  created() {
   },
+
   data() {
-    return {
-      cartList: [],
-    }
+    return {}
   },
 
   computed: {
-    countCartItem() {
-      let count = 0
-      if (this.cartList) {
-        for (let i = 0; i < this.cartList.length; i++) {
-          count += this.cartList[i].quantity
-        }
-      }
-      return count
-    },
+  },
+
+  watch: {
   },
 
   methods: {
-    fetchCartData() {
-      this.cartList = JSON.parse(localStorage.getItem('cartList')) || [];
-    },
   },
+
   mounted() {
-    this.fetchCartData()
   }
 }
 </script>

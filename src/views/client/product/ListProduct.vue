@@ -2,6 +2,7 @@
 import LayoutView from "@/components/client/LayoutView.vue";
 import {onErrorCaptured, ref} from 'vue'
 import ListProductComponent from "@/components/client/product/ListProductComponent.vue";
+
 export default {
   name: "ListProduct",
   components: {LayoutView, ListProductComponent},

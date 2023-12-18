@@ -1,7 +1,8 @@
 <script>
-import {reactive } from 'vue'
+import {reactive} from 'vue'
 import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
 import axios from "axios";
+import {useStore} from "vuex";
 
 
 export default {
@@ -9,6 +10,7 @@ export default {
   components: {ModalAddToCart},
 
   async setup() {
+    const store = useStore()
     const wishlist2 = reactive(JSON.parse(localStorage.getItem('w_ls')) || [])
     const wishlist = reactive([])
 
@@ -33,12 +35,22 @@ export default {
       await fetchData();
     }
 
+    // Thực hiện mutations để cập nhật countWlsItem
+    const handleUpdateCountWlsItem = () => {
+      let wls = JSON.parse(localStorage.getItem('w_ls')) || [];
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountWlsItem = wls.length;
+      // Cập nhật giá trị trong store Vuex
+      store.commit('setCountWlsItem', newCountWlsItem);
+    };
+
     const handleDeleteItemInWls = (id) => {
       if (wishlist2.includes(id)) {
         // wishlist2.filter(item => item !== id);
         wishlist2.splice(wishlist2.findIndex(item => item === id), 1);
         localStorage.setItem('w_ls', JSON.stringify(wishlist2));
         wishlist.splice(wishlist.findIndex(item => item.id === id), 1);
+        handleUpdateCountWlsItem()
       }
     };
 
@@ -55,7 +67,6 @@ export default {
   },
 
   methods: {
-
     formattedPrice(price) {
       return price.toLocaleString('vi-VN', {
         style: 'currency',
@@ -69,7 +80,7 @@ export default {
 
 <template>
   <main style="background-color: #f4f2f2" id="mt-main">
-    <div class="banner-wls" >
+    <div class="banner-wls">
       <div>Danh sách sản phẩm yêu thích của bạn</div>
     </div>
     <div v-if="wishlist" class="container">
@@ -90,7 +101,8 @@ export default {
                       <ul class="links add">
                         <li><a href="#" data-bs-toggle="modal" @click="productId = product.id"
                                data-bs-target="#modal-add-to-cart"><i class="icon-handbag"></i></a></li>
-                        <li><a @click.prevent="handleDeleteItemInWls(product.id)" href="#"><i class="bi bi-trash3"></i></a></li>
+                        <li><a @click.prevent="handleDeleteItemInWls(product.id)" href="#"><i class="bi bi-trash3"></i></a>
+                        </li>
                         <li>
                           <router-link
                               :to="{name: 'ProductDetails', params: {slug: product.slug, id: product.id}}">
@@ -163,7 +175,7 @@ export default {
   outline: none;
 }
 
-.banner-wls{
+.banner-wls {
   background-color: #b4b4b4;
   color: #fff;
   text-align: center;

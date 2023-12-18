@@ -6,6 +6,7 @@ import {useToast} from "vue-toastification";
 import {Form, Field} from 'vee-validate';
 import * as Yup from 'yup';
 import ModalAddToCart from "@/components/client/ModalAddToCart.vue";
+import {mapMutations} from "vuex";
 
 export default {
   name: "ProductDetails",
@@ -106,7 +107,27 @@ export default {
         wishlist.splice(wishlist.findIndex(item => item === id), 1);
         localStorage.setItem('w_ls', JSON.stringify(wishlist));
         this.isFavorite = false
+        this.handleUpdateCountWlsItem()
       }
+    },
+
+    // use vuex store to update count wishlist and cartlist
+    ...mapMutations(['setCountWlsItem', 'setCountCartItem']),
+
+    handleUpdateCountWlsItem() {
+      let wls = JSON.parse(localStorage.getItem('w_ls')) || [];
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountWlsItem = wls.length;
+      // Cập nhật giá trị trong store Vuex
+      this.setCountWlsItem(newCountWlsItem);
+    },
+
+    handleUpdateCountCartItem() {
+      let cls = JSON.parse(localStorage.getItem('cartList')) || [];
+      // Lấy giá trị mới từ computed property của component hiện tại
+      const newCountCartItem = cls.reduce((count, item) => count + item.quantity, 0);
+      // Cập nhật giá trị trong store Vuex
+      this.setCountCartItem(newCountCartItem);
     },
 
     handleAddToWishlist(id) {
@@ -115,6 +136,7 @@ export default {
         wishlist.push(id);
         localStorage.setItem('w_ls', JSON.stringify(wishlist));
         this.relatedProducts = this.relatedProducts.slice();
+        this.handleUpdateCountWlsItem()
       }
     },
 
@@ -125,6 +147,7 @@ export default {
         wishlist.push(id);
         localStorage.setItem('w_ls', JSON.stringify(wishlist));
         this.isFavorite = true
+        this.handleUpdateCountWlsItem()
       }
     },
 
@@ -189,6 +212,7 @@ export default {
 
       localStorage.setItem('cartList', JSON.stringify(cartList));
       this.toast.success("Đã thêm vào giỏ hàng.")
+      this.handleUpdateCountCartItem()
       setTimeout(() => {
         this.$router.push("/cart")
       },1000)
