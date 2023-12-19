@@ -22,7 +22,7 @@ export default {
                  />
           </figure>
           <div class="profile-info" >
-            <span class="name text-3">Thành Võ</span>
+            <span class="name text-3">ADMIN</span>
             <span class="role text-2 pt-2">Administrator</span>
           </div>
           <i class="fa custom-caret"></i>
@@ -30,17 +30,17 @@ export default {
         <div class="dropdown-menu">
           <ul class="list-unstyled mb-2">
             <li class=""></li>
-            <li>
-              <a class="dropdown-item text-4" href="#"><i
-                  class="bx bx-user-circle"></i>Thông tin tài khoản</a>
-            </li>
+<!--            <li>-->
+<!--              <a class="dropdown-item text-4" href="#"><i-->
+<!--                  class="bx bx-user-circle"></i>Thông tin tài khoản</a>-->
+<!--            </li>-->
             <li>
               <router-link to="/" class="dropdown-item text-4"><i
                   class="bx bx-accessibility"></i>Quay lại trang chủ</router-link>
             </li>
-            <li>
-              <a class="dropdown-item text-4" href="#"><i class="bx bx-power-off"></i> Đăng xuất</a>
-            </li>
+<!--            <li>-->
+<!--              <a class="dropdown-item text-4" href="#"><i class="bx bx-power-off"></i> Đăng xuất</a>-->
+<!--            </li>-->
           </ul>
         </div>
       </div>

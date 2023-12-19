@@ -339,11 +339,11 @@ export default {
                           role="tab" aria-controls="profile" aria-selected="false">Nhập số lượng sản phẩm
                   </button>
                 </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
-                          role="tab" aria-controls="contact" aria-selected="false">Thêm ảnh feedback cho sản
-                  </button>
-                </li>
+<!--                <li class="nav-item" role="presentation">-->
+<!--                  <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"-->
+<!--                          role="tab" aria-controls="contact" aria-selected="false">Thêm ảnh feedback cho sản-->
+<!--                  </button>-->
+<!--                </li>-->
               </ul>
               <div class="tab-content" id="myTabContent">
                 <!--Start Tab Infomation Product-->

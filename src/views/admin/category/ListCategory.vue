@@ -182,7 +182,7 @@ export default {
             <th>ID</th>
             <th>Tên danh mục</th>
             <th>Trạng thái danh mục</th>
-            <th>Thứ tự danh mục</th>
+<!--            <th>Thứ tự danh mục</th>-->
             <th>Ngày tạo danh mục</th>
             <th>Ngày sửa danh mục</th>
             <th>Thao tác</th>
@@ -203,7 +203,7 @@ export default {
               </select>
             </th>
             <th></th>
-            <th></th>
+<!--            <th></th>-->
             <th></th>
             <th></th>
             <input type="hidden" name="page" id="page">
@@ -226,9 +226,10 @@ export default {
                 <label class="tgl-btn" for="cb2-7"/>
               </div>
             </td>
-            <td>{{ category.order }}</td>
+<!--            <td>{{ category.order }}</td>-->
             <td>{{ formattedDate(category.createdAt) }}</td>
-            <td>{{ formattedDate(category.modifiedAt) }}</td>
+            <td v-if="category.modifiedAt">{{ formattedDate(category.modifiedAt)  }}</td>
+            <td v-else> </td>
             <td class="actions">
               <button @click="findCategory(category.id)" data-bs-toggle="modal"
                       data-bs-target="#modal-update-category"

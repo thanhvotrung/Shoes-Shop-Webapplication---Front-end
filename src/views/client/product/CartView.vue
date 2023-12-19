@@ -432,7 +432,7 @@ export default {
       <!-- Mt Detail Section of the Page -->
       <section class="mt-detail-sec" style="padding: 0 0 40px 0">
         <div class="container" style="border-radius: 7px;background-color: #fff">
-          <Form @submit="handleOrder" class="bill-detail" :validation-schema="schema" v-slot="{ errors }">
+          <Form @submit="handleTest" class="bill-detail" :validation-schema="schema" v-slot="{ errors }">
             <div class="row py-5">
               <div class="col-xs-12 col-sm-6">
                 <h2>Thông tin nhận hàng</h2>
@@ -523,7 +523,7 @@ export default {
                 </ul>
                 <!--                <button v-if="user" class="btn process-btn" @submit="handleOrder()">Đặt hàng-->
                 <!--                </button>-->
-                <button v-if="user" class="btn process-btn" @click="handleTest">THỦ TỤC THANH TOÁN
+                <button type="submit" v-if="user" class="btn process-btn" >THỦ TỤC THANH TOÁN
                 </button>
               </div>
             </div>
