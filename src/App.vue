@@ -5,24 +5,7 @@
 <script>
 
 export default {
-  created() {
-  },
-
-  data() {
-    return {}
-  },
-
-  computed: {
-  },
-
-  watch: {
-  },
-
-  methods: {
-  },
-
-  mounted() {
-  }
+  
 }
 </script>
 
